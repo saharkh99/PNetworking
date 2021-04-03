@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="header1">60sp</dimen>
+    <dimen name="header2">48sp</dimen>
+    <dimen name="header3">34sp</dimen>
+    <dimen name="header4">24sp</dimen>
+    <dimen name="header5">20sp</dimen>
+    <dimen name="body1">16sp</dimen>
+    <dimen name="body2">14sp</dimen>
+    <dimen name="mid_size">10dp</dimen>
+    <dimen name="large_size">20dp</dimen>
+
+
+</resources>
