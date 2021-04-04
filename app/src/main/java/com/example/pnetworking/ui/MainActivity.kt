@@ -1,12 +1,14 @@
 package com.example.pnetworking.ui
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.example.pnetworking.R
+import com.example.pnetworking.utils.ChatActivity
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : ChatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        showProgressDialog(true,this)
+       // setProgressIndicator(true)
     }
 }
