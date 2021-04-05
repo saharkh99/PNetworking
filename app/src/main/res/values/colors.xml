@@ -8,4 +8,5 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="error">#B00020</color>
+    <color name="pink">#ffd5cf</color>
 </resources>
