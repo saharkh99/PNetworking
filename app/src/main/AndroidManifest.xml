@@ -10,7 +10,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.PNetworking">
-        <activity android:name=".ui.base.intro.IntroActivity"></activity>
+        <activity android:name=".ui.base.test.TestActivity"></activity>
+        <activity android:name=".ui.base.intro.IntroActivity" />
         <activity android:name=".ui.base.signup.SignupActivity" />
         <activity android:name=".ui.base.Splash">
             <intent-filter>

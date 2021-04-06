@@ -1,9 +1,13 @@
 package com.example.pnetworking.ui.base.intro
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import com.example.pnetworking.R
+import com.example.pnetworking.ui.MainActivity
+import com.example.pnetworking.ui.base.signup.SignupActivity
+import com.example.pnetworking.ui.base.test.TestActivity
 import com.github.appintro.AppIntro
 import com.github.appintro.AppIntro2
 import com.github.appintro.AppIntroFragment
@@ -16,7 +20,7 @@ class IntroActivity : AppIntro2() {
         addSlide(
             AppIntroFragment.newInstance(
                 "Welcome!",
-                "instant communication platform for all of your friends to communicate",
+                "instant communication platform for \n all of your friends to communicate ",
                 imageDrawable = R.drawable.intro,
                 backgroundDrawable = R.drawable.background
             )
@@ -39,7 +43,7 @@ class IntroActivity : AppIntro2() {
         addSlide(
             AppIntroFragment.newInstance(
                 "easy communication!",
-                "converse with your friends and enjoy your time",
+                "converse with your friends \n and enjoy your time",
                 imageDrawable = R.drawable.intro3,
                 backgroundDrawable = R.color.purple_200 ,
                 titleColor = resources.getColor(R.color.purple_700),
@@ -70,6 +74,7 @@ class IntroActivity : AppIntro2() {
 
     public override fun onDonePressed(currentFragment: Fragment?) {
         super.onDonePressed(currentFragment)
+        startActivity(Intent(this, TestActivity::class.java))
         finish()
     }
 }
