@@ -6,28 +6,36 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/purple_200"
+    android:padding="5dp"
+    android:paddingBottom="20dp"
     tools:context=".ui.base.test.TestActivity">
+
   <TextView
+      android:id="@+id/text_questions"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      app:layout_constraintTop_toTopOf="parent"
-      app:layout_constraintLeft_toLeftOf="parent"
-      android:text="please answer these questions. \n it takes less than 5 minutes."
-      android:textSize="@dimen/header5"
+      android:layout_margin="5dp"
+      android:fontFamily="casual"
       android:gravity="center"
       android:padding="10dp"
-      android:id="@+id/text_questions"
+      android:text="please answer these questions. \n it takes less than 5 minutes."
+      android:textColor="@color/purple_500"
+      android:textSize="@dimen/header5"
       android:textStyle="bold"
-      android:fontFamily="casual"
-      android:layout_margin="5dp"
-      android:textColor="@color/purple_500"/>
-    <androidx.recyclerview.widget.RecyclerView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/text_questions"
-        android:layout_margin="10dp"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        android:id="@+id/test_recyclerview"/>
+      app:layout_constraintLeft_toLeftOf="parent"
+      app:layout_constraintTop_toTopOf="parent" />
+
+  <androidx.recyclerview.widget.RecyclerView
+      android:id="@+id/test_recyclerview"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="9dp"
+      app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/text_questions"
+      app:layout_constraintVertical_bias="0.0"
+      android:paddingBottom="100dp"
+      tools:layout_editor_absoluteX="5dp" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
