@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "531785700670",
+    "project_id": "pnetworking-d437c",
+    "storage_bucket": "pnetworking-d437c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:531785700670:android:4f4cb019b7710fd3c4486f",
+        "android_client_info": {
+          "package_name": "com.example.pnetworking"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "531785700670-hi18fbipqpr98fa1e31n6obrqg9e4d92.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDQSIjGlbI6_R_-Lv9hFohA1-BM8D9NL68"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "531785700670-hi18fbipqpr98fa1e31n6obrqg9e4d92.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -5,7 +5,7 @@ import android.os.Parcelable
 
 data class Question(
     var title: String = "",
-    var score: Int = 1,
+    var score: Int = 0,
     var type: String = ""
 ) : Parcelable {
     constructor(parcel: Parcel) : this(

@@ -5,7 +5,7 @@ import com.example.pnetworking.R
 import com.example.pnetworking.utils.ChatActivity
 
 class MainActivity : ChatActivity() {
-    //intro-check internet connection-sign up-sign in-questions-model users-
+    //check internet connection-sign in-(sign up-model users(save score))-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
