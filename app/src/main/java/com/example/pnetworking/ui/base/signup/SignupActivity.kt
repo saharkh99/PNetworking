@@ -3,25 +3,22 @@ package com.example.pnetworking.ui.base.signup
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
+import android.util.Patterns
 import android.widget.Button
 import android.widget.EditText
-import android.widget.Toast
 import androidx.lifecycle.Observer
 import com.example.pnetworking.R
 import com.example.pnetworking.databinding.ActivitySignupBinding
-import com.example.pnetworking.databinding.ActivityTestBinding
 import com.example.pnetworking.ui.MainActivity
-import com.example.pnetworking.ui.base.test.TestViewModel
 import com.example.pnetworking.utils.ChatActivity
 import com.google.android.material.textfield.TextInputEditText
-import com.google.android.material.textfield.TextInputLayout
-import com.google.firebase.auth.FirebaseAuth
 import de.hdodenhof.circleimageview.CircleImageView
 import org.koin.android.viewmodel.ext.android.viewModel
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 class SignupActivity : ChatActivity() {
     lateinit var binding: ActivitySignupBinding
@@ -29,7 +26,7 @@ class SignupActivity : ChatActivity() {
     lateinit var password: TextInputEditText
     lateinit var image: CircleImageView
     lateinit var birthday: EditText
-     var gender: String=""
+    var gender: String = ""
     lateinit var start: Button
     var selectedPhotoUri: Uri? = null
     private val mainViewModel by viewModel<SignUpViewModel>()
@@ -53,16 +50,25 @@ class SignupActivity : ChatActivity() {
     }
 
     private fun performanceRegistration() {
-        if (email.text.toString().isEmpty() || password.text.toString().isEmpty()) {
-            Toast.makeText(this, "Please enter text in email/password", Toast.LENGTH_SHORT).show()
+        if (email.text.toString().isEmpty()) {
+            email.error = "Please enter your email"
             return
         }
-
+        if (password.text.toString().isEmpty()) {
+            password.error = "Please enter your password"
+            return
+        }
+        if(passwordCharValidation(password.text.toString().trim())){
+            password.error = "make sure your password contains capital letter and numbers"
+            return
+        }
+        showProgressDialog(this)
         Log.d("TAG", "Attempting to create user with email: $email")
         Log.d("email", email.text.toString())
         mainViewModel.signup(email.text.toString(), password.text.toString())
             .observe(this, Observer {
-                if (it) {
+                if (it == "true") {
+                    if (selectedPhotoUri == null) selectedPhotoUri = Uri.EMPTY
                     mainViewModel.uploadImageToFirebaseStorage(selectedPhotoUri!!)
                         .observe(this, Observer {
                             if (it != "false") {
@@ -73,17 +79,30 @@ class SignupActivity : ChatActivity() {
                                     it
                                 )
                                     .observe(this, Observer {
+                                        hideProgressDialog()
                                         val intent = Intent(this, MainActivity::class.java)
                                         intent.flags =
                                             Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
                                         startActivity(intent)
                                     })
+                            } else {
+                                showErrorSnackBar(
+                                    "something wrong with your image",
+                                    this,
+                                    binding.signupLayout
+                                )
+                                hideProgressDialog()
                             }
                         })
+
+                } else {
+                    showErrorSnackBar(it, this, binding.signupLayout)
+                    hideProgressDialog()
                 }
             })
 
     }
+
     private fun init() {
         email = binding.signupEmailEt
         password = binding.signupPasswordEt
@@ -100,6 +119,7 @@ class SignupActivity : ChatActivity() {
         }
         start = binding.signinStart
     }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == 0 && resultCode == Activity.RESULT_OK && data != null) {
@@ -109,6 +129,11 @@ class SignupActivity : ChatActivity() {
             image.setImageBitmap(bitmap)
 
         }
+    }
+    fun passwordCharValidation(passwordEd: String): Boolean {
+        val PASSWORD_PATTERN = "^(?=.*[A-Z])(?=.*[@_.]).*$"
+        val pattern: Pattern = Pattern.compile(PASSWORD_PATTERN)
+        return !pattern.matcher(passwordEd).matches()
     }
 
 }

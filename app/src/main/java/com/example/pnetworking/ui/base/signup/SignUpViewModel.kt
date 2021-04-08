@@ -8,7 +8,7 @@ import com.example.pnetworking.utils.ChatViewmodel
 
 class SignUpViewModel(private val signUpRepository: SignUpRepository):ChatViewmodel() {
 
-    fun signup(email: String, password: String):MutableLiveData<Boolean>{
+    fun signup(email: String, password: String):MutableLiveData<String>{
        return signUpRepository.signup(email, password)
     }
     fun uploadImageToFirebaseStorage(selectedPhotoUri: Uri): MutableLiveData<String>{

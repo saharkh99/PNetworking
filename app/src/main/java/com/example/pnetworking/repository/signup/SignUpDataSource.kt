@@ -12,8 +12,8 @@ import com.google.firebase.storage.FirebaseStorage
 import java.util.*
 
 class SignUpDataSource {
-    fun signup(email: String, password: String): MutableLiveData<Boolean> {
-        var result = MutableLiveData<Boolean>()
+    fun signup(email: String, password: String): MutableLiveData<String> {
+        var result = MutableLiveData<String>()
         Log.d("TAG", "Attempting to create user with email: $email")
         Log.d("email", email.toString())
         FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
@@ -21,18 +21,21 @@ class SignUpDataSource {
                 if (!it.isSuccessful) return@addOnCompleteListener
                 Log.d("TAG", "Successfully created user with uid: ${it.result}")
                 if (it.isSuccessful)
-                    result.value = true
+                    result.value = "true"
             }
             .addOnFailureListener {
                 Log.d("TAG", "Failed to create user: ${it.message}")
-                result.value = false
+                result.value = it.message.toString()
             }
         return result
     }
 
      fun uploadImageToFirebaseStorage(selectedPhotoUri: Uri): MutableLiveData<String> {
         var result = MutableLiveData<String>()
-        if (selectedPhotoUri == null) return result
+        if (selectedPhotoUri == null || selectedPhotoUri.path=="") {
+            result.value="true"
+            return result
+        }
 
         val filename = UUID.randomUUID().toString()
         val ref = FirebaseStorage.getInstance().getReference("/images/$filename")

@@ -4,7 +4,7 @@ import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 
 class SignUpRepoImpl(private val signUpDataSource: SignUpDataSource) : SignUpRepository {
-    override fun signup(email: String, password: String): MutableLiveData<Boolean> {
+    override fun signup(email: String, password: String): MutableLiveData<String> {
         return signUpDataSource.signup(email,password)
     }
 

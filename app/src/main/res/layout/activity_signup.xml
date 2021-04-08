@@ -4,6 +4,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/background"
     android:paddingTop="48dp"
+    android:id="@+id/signup_layout"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <de.hdodenhof.circleimageview.CircleImageView
         android:layout_width="150dp"
