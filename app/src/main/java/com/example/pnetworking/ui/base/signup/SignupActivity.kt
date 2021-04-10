@@ -13,7 +13,9 @@ import androidx.lifecycle.Observer
 import com.example.pnetworking.R
 import com.example.pnetworking.databinding.ActivitySignupBinding
 import com.example.pnetworking.ui.MainActivity
+import com.example.pnetworking.ui.base.signin.SigninActivity
 import com.example.pnetworking.utils.ChatActivity
+import com.google.android.gms.auth.api.signin.SignInAccount
 import com.google.android.material.textfield.TextInputEditText
 import de.hdodenhof.circleimageview.CircleImageView
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -80,7 +82,7 @@ class SignupActivity : ChatActivity() {
                                 )
                                     .observe(this, Observer {
                                         hideProgressDialog()
-                                        val intent = Intent(this, MainActivity::class.java)
+                                        val intent = Intent(this, SigninActivity::class.java)
                                         intent.flags =
                                             Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
                                         startActivity(intent)

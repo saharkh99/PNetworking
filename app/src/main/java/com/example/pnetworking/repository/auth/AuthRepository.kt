@@ -1,11 +1,11 @@
-package com.example.pnetworking.repository.signup
+package com.example.pnetworking.repository.auth
 
 import android.net.Uri
 import androidx.lifecycle.MutableLiveData
-import com.example.pnetworking.models.Question
 
-interface SignUpRepository {
+interface AuthRepository {
     fun signup(email: String, password: String): MutableLiveData<String>
+    fun signin(email: String, password: String): MutableLiveData<String>
     fun uploadImageToFirebaseStorage(selectedPhotoUri: Uri): MutableLiveData<String>
     fun saveUserToFirebaseDatabase( email: String, birth: String, gen: String, profileImageUrl: String): MutableLiveData<Boolean>
 }

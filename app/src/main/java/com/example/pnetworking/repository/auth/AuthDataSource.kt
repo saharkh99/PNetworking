@@ -1,6 +1,5 @@
-package com.example.pnetworking.repository.signup
+package com.example.pnetworking.repository.auth
 
-import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
@@ -11,7 +10,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import java.util.*
 
-class SignUpDataSource {
+class AuthDataSource {
     fun signup(email: String, password: String): MutableLiveData<String> {
         var result = MutableLiveData<String>()
         Log.d("TAG", "Attempting to create user with email: $email")
@@ -85,6 +84,20 @@ class SignUpDataSource {
             .addOnFailureListener {
                 Log.e("TAG", "Failed to set value to database: ${it.message}")
                 result.value = false
+            }
+        return result
+    }
+
+    fun signin(email: String,password: String):MutableLiveData<String>{
+        var result = MutableLiveData<String>()
+        FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    result.value="true"
+
+                } else {
+                  result.value=task.result.toString()
+                }
             }
         return result
     }

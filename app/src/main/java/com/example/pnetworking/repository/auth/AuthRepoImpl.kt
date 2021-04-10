@@ -1,11 +1,15 @@
-package com.example.pnetworking.repository.signup
+package com.example.pnetworking.repository.auth
 
 import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 
-class SignUpRepoImpl(private val signUpDataSource: SignUpDataSource) : SignUpRepository {
+class AuthRepoImpl(private val signUpDataSource: AuthDataSource) : AuthRepository {
     override fun signup(email: String, password: String): MutableLiveData<String> {
         return signUpDataSource.signup(email,password)
+    }
+
+    override fun signin(email: String, password: String): MutableLiveData<String> {
+        return signUpDataSource.signin(email,password)
     }
 
     override fun uploadImageToFirebaseStorage(selectedPhotoUri: Uri): MutableLiveData<String> {

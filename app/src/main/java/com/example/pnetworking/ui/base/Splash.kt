@@ -8,7 +8,9 @@ import android.view.WindowManager
 import com.example.pnetworking.R
 import com.example.pnetworking.ui.MainActivity
 import com.example.pnetworking.ui.base.intro.IntroActivity
+import com.example.pnetworking.ui.base.signin.SigninActivity
 import com.example.pnetworking.ui.base.signup.SignupActivity
+import com.google.firebase.auth.FirebaseAuth
 
 class Splash : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,12 +21,12 @@ class Splash : AppCompatActivity() {
             WindowManager.LayoutParams.FLAG_FULLSCREEN
         )
         Handler().postDelayed({
-            //   val currentUserID = FireStoreClass().getCurrentUserID()
-            //  if (currentUserID.isNotEmpty()) {
-            //   startActivity(Intent(this@SplashActivity, LatestMessageActivity::class.java))
-            //  } else {
-            startActivity(Intent(this, IntroActivity::class.java))
-            //  }
+            val currentUserID = FirebaseAuth.getInstance().currentUser.uid
+            if (currentUserID.isNotEmpty()) {
+                startActivity(Intent(this, MainActivity::class.java))
+            } else {
+                startActivity(Intent(this, IntroActivity::class.java))
+            }
             finish()
         }, 2500)
     }
