@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+    <navigation app:startDestination="@id/ProfileFragment"
+    android:id="@+id/profile"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <fragment android:id="@+id/ProfileFragment"
+        android:label="ProfileFragment"
+        android:name="com.example.pnetworking.ui.profile.ProfileFragment"/>
+
+</navigation>

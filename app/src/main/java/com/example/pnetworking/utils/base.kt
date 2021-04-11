@@ -43,7 +43,7 @@ abstract class ChatActivity : AppCompatActivity(), ChatView {
     }
 }
 
-abstract class ChatFragment : Fragment(), ChatView {
+abstract class ChatFragments : Fragment(), ChatView {
 
 }
 

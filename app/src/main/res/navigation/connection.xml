@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+    <navigation app:startDestination="@id/ConnectionFragment"
+    android:id="@+id/connection"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <fragment android:id="@+id/ConnectionFragment"
+        android:label="connection"
+        android:name="com.example.pnetworking.ui.connection.ConnectionFragment"/>
+
+</navigation>
