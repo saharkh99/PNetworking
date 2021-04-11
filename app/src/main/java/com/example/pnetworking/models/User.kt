@@ -15,7 +15,8 @@ class User(
     var birthday:String,
     var gender:String,
     var online:Boolean,
-    var score:String
+    var score:String,
+    var favorites:String,
 
 
 ): Parcelable {
@@ -31,11 +32,12 @@ class User(
          parcel.readString()!!,
          parcel.readBoolean(),
          parcel.readString()!!,
+         parcel.readString()!!,
 
          ) {
      }
 
-     constructor() : this("","", "", "",0,"","","",false,"0")
+     constructor() : this("","", "", "",0,"","","",false,"0","")
 
      override fun describeContents()=0
 
@@ -51,6 +53,7 @@ class User(
          writeString(gender)
          writeBoolean(online)
          writeString(score)
+         writeString(favorites)
 
      }
 

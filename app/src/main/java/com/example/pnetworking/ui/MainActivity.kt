@@ -9,7 +9,7 @@ import com.example.pnetworking.utils.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : ChatActivity() {
-    //check internet connection-profile-find friends
+    //check internet connection-profile(edit-error)-find friends
     private var currentNavController: LiveData<NavController>? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
