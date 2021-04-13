@@ -1,5 +1,6 @@
 package com.example.pnetworking.ui.profile
 
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.ContactsContract
@@ -10,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.lifecycle.Observer
+import androidx.navigation.Navigation
 import com.example.pnetworking.R
 import com.example.pnetworking.databinding.FragmentProfileBinding
 import com.example.pnetworking.ui.base.signin.SignInViewModel
@@ -27,6 +29,7 @@ class ProfileFragment: ChatFragments() {
     lateinit var name:TextView
     lateinit var email:TextView
     lateinit var connetion:TextView
+    var running:Boolean=false
 
 
     override fun onCreateView(
@@ -37,22 +40,45 @@ class ProfileFragment: ChatFragments() {
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
         val view = binding.root
         init()
+        getProfile()
+        edit.setOnClickListener {
+            Navigation.findNavController(it).navigate(R.id.action_ProfileFragment_to_profileEditActivity)
+        }
+        return view
+
+    }
+
+    private fun getProfile() {
         mainViewModel.getIDUser().observe(viewLifecycleOwner, Observer {
+            showProgressDialog(requireContext())
             if(it!=null) {
                 Log.d("uids",it)
                 mainViewModel.getCurrentUser(it).observe(viewLifecycleOwner, Observer {
                     val currentUser = it
-                    Log.d("uids",currentUser.id)
+                    hideProgressDialog()
+                    Log.d("image",currentUser.imageProfile)
                     if (currentUser.imageProfile != "")
                         Picasso.get().load(Uri.parse(currentUser.imageProfile)).into(image)
+                    else
+                        image.background=resources.getDrawable(R.drawable.user)
                     name.text = currentUser.name
                     email.text = currentUser.emailText
                     connetion.text = currentUser.connection.toString()
                 })
             }
-        })
 
-        return view
+        })
+        running=true
+    }
+
+    override fun onPause() {
+        super.onPause()
+        running=false
+    }
+    override fun onStart() {
+        super.onStart()
+        if(!running)
+           getProfile()
 
     }
 

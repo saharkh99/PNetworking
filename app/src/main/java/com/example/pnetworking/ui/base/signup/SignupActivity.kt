@@ -68,8 +68,8 @@ class SignupActivity : ChatActivity() {
         Log.d("TAG", "Attempting to create user with email: $email")
         Log.d("email", email.text.toString())
         mainViewModel.signup(email.text.toString(), password.text.toString())
-            .observe(this, Observer {
-                if (it == "true") {
+            .observe(this, Observer { s ->
+                if (s == "true") {
                     if (selectedPhotoUri == null) selectedPhotoUri = Uri.EMPTY
                     mainViewModel.uploadImageToFirebaseStorage(selectedPhotoUri!!)
                         .observe(this, Observer {
@@ -98,7 +98,7 @@ class SignupActivity : ChatActivity() {
                         })
 
                 } else {
-                    showErrorSnackBar(it, this, binding.signupLayout)
+                    showErrorSnackBar(s, this, binding.signupLayout)
                     hideProgressDialog()
                 }
             })

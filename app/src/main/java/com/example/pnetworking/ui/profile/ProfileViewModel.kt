@@ -12,5 +12,8 @@ class ProfileViewModel(private val profileRepository: ProfileRepository):ChatVie
     fun getCurrentUser(uid:String):MutableLiveData<User>{
         return profileRepository.getCurrentUser(uid)
     }
+    fun editProfile(name:String,bio:String,uid: String):MutableLiveData<Boolean>{
+        return profileRepository.editProfile(name, bio, uid)
+    }
 
 }

@@ -11,4 +11,8 @@ class ProfileRepoImpl(private val profileDataStore: ProfileDataStore):ProfileRep
     override fun getCurrentUser(uid: String): MutableLiveData<User> {
        return profileDataStore.fetchCurrentUser(uid)
     }
+
+    override fun editProfile(name: String, bio: String, uid: String): MutableLiveData<Boolean> {
+       return profileDataStore.editProfile(name, bio, uid)
+    }
 }

@@ -1,12 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-    <navigation app:startDestination="@id/ProfileFragment"
+    <navigation xmlns:tools="http://schemas.android.com/tools"
+        app:startDestination="@id/ProfileFragment"
     android:id="@+id/profile"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <fragment android:id="@+id/ProfileFragment"
-        android:label="ProfileFragment"
-        android:name="com.example.pnetworking.ui.profile.ProfileFragment"/>
+    <fragment
+        android:id="@+id/ProfileFragment"
+        android:name="com.example.pnetworking.ui.profile.ProfileFragment"
+        tools:layout="@layout/fragment_profile"
+        android:label="ProfileFragment">
+        <action
+            android:id="@+id/action_ProfileFragment_to_profileEditActivity"
+            app:destination="@id/profileEditActivity" />
+    </fragment>
+        <activity
+            android:id="@+id/profileEditActivity"
+            android:name="com.example.pnetworking.ui.profile.ProfileEditActivity"
+            android:label="activity_profile_edit"
+            tools:layout="@layout/activity_profile_edit" />
 
-</navigation>
+    </navigation>
