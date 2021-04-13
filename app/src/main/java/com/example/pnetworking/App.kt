@@ -1,5 +1,6 @@
 package com.example.pnetworking
 import android.app.Application
+import com.example.pnetworking.di.modules.connectionmodule
 import com.example.pnetworking.di.modules.profilemodule
 import com.example.pnetworking.di.modules.signupmodule
 import com.example.pnetworking.di.modules.testmodule
@@ -12,7 +13,7 @@ class App : Application() {
         super.onCreate()
         startKoin {
             androidContext(this@App)
-            modules(listOf(signupmodule, testmodule,profilemodule))
+            modules(listOf(signupmodule, testmodule,profilemodule,connectionmodule))
         }
     }
 }

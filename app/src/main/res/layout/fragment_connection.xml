@@ -5,17 +5,24 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
+        android:background="@drawable/background"
         android:layout_height="match_parent">
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="16dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginStart="8dp"
+            app:boxCornerRadiusBottomStart="5dp"
+            app:boxCornerRadiusTopStart="5dp"
+            app:boxCornerRadiusTopEnd="5dp"
+            app:boxCornerRadiusBottomEnd="5dp"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginEnd="8dp"
+            app:errorIconTint="@color/purple_500"
+            app:startIconDrawable="@drawable/search"
             android:id="@+id/textInputLayout3">
 
             <EditText
@@ -25,8 +32,59 @@
                 android:inputType="textNoSuggestions"
                 android:imeOptions="actionSearch"
                 android:hint="search here"
-                tools:text="google" />
+                />
         </com.google.android.material.textfield.TextInputLayout>
 
+
+    <TextView
+        android:id="@+id/next"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="26dp"
+        android:layout_marginLeft="24dp"
+        android:gravity="center"
+        android:text="make sure your profile is up to date "
+        android:textColor="@color/purple_200"
+        android:textSize="14dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textInputLayout3" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/next"
+        android:layout_marginTop="16dp"
+        android:id="@+id/find_friends_recycler_View"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/next"
+        android:layout_margin="16dp"
+        android:gravity="center"
+        android:text="sorry, nothing to show"
+        android:textSize="@dimen/header4"
+        android:visibility="invisible"
+        android:textColor="@color/purple_200"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:id="@+id/nothing_to_show"
+        app:layout_constraintRight_toRightOf="parent"
+        />
+    <Button
+        android:id="@+id/profile_edit"
+        android:layout_width="165dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="24dp"
+        android:backgroundTint="@color/teal_700"
+        android:text="find friends"
+        android:textColor="@color/purple_200"
+        app:boxCornerRadiusBottomEnd="10dp"
+        app:boxCornerRadiusBottomStart="10dp"
+        app:boxCornerRadiusTopEnd="10dp"
+        app:boxCornerRadiusTopStart="10dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/find_friends_recycler_View" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
