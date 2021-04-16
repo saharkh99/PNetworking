@@ -9,6 +9,7 @@ import android.util.Log
 import android.util.Patterns
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import androidx.lifecycle.Observer
 import com.example.pnetworking.R
 import com.example.pnetworking.databinding.ActivitySignupBinding
@@ -28,6 +29,7 @@ class SignupActivity : ChatActivity() {
     lateinit var password: TextInputEditText
     lateinit var image: CircleImageView
     lateinit var birthday: EditText
+    lateinit var account:TextView
     var gender: String = ""
     lateinit var start: Button
     var selectedPhotoUri: Uri? = null
@@ -47,7 +49,10 @@ class SignupActivity : ChatActivity() {
             intent.type = "image/*"
             startActivityForResult(intent, 0)
         }
-
+        account.setOnClickListener {
+            val intent = Intent(this, SigninActivity::class.java)
+            startActivity(intent)
+        }
 
     }
 
@@ -110,13 +115,14 @@ class SignupActivity : ChatActivity() {
         password = binding.signupPasswordEt
         image = binding.signupImage
         birthday = binding.signinBirthday
-        if (binding.radioButton1.isSelected) {
-            gender = "femail"
+        account=binding.signupAccount
+        if (binding.radioButton1.isChecked) {
+            gender = "female"
         }
-        if (binding.radioButton2.isSelected) {
+        if (binding.radioButton2.isChecked) {
             gender = "male"
         }
-        if (binding.radioButton3.isSelected) {
+        if (binding.radioButton3.isChecked) {
             gender = "other"
         }
         start = binding.signinStart

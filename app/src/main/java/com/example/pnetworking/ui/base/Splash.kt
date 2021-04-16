@@ -21,8 +21,8 @@ class Splash : AppCompatActivity() {
             WindowManager.LayoutParams.FLAG_FULLSCREEN
         )
         Handler().postDelayed({
-            val currentUserID = FirebaseAuth.getInstance().currentUser.uid
-            if (currentUserID.isNotEmpty()) {
+            val currentUserID = FirebaseAuth.getInstance().currentUser
+            if (currentUserID!=null) {
                 startActivity(Intent(this, MainActivity::class.java))
             } else {
                 startActivity(Intent(this, IntroActivity::class.java))

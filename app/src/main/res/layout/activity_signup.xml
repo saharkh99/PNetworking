@@ -127,4 +127,15 @@
         app:layout_constraintLeft_toLeftOf="@id/signin_birthday"
         app:layout_constraintRight_toRightOf="@id/signin_birthday"
         app:layout_constraintTop_toBottomOf="@id/signin_birthday" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/signin_start"
+        android:text="Do you have an account?"
+        android:textSize="@dimen/body2"
+        android:id="@+id/signup_Account"
+        android:gravity="center"
+        android:clickable="true"/>
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

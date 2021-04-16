@@ -1,9 +1,6 @@
 package com.example.pnetworking
 import android.app.Application
-import com.example.pnetworking.di.modules.connectionmodule
-import com.example.pnetworking.di.modules.profilemodule
-import com.example.pnetworking.di.modules.signupmodule
-import com.example.pnetworking.di.modules.testmodule
+import com.example.pnetworking.di.modules.*
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module

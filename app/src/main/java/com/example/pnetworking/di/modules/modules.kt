@@ -22,10 +22,13 @@ import java.sql.Connection
 val signupmodule = module {
     viewModel {
         SignUpViewModel(get())
+    }
+    viewModel {
         SignInViewModel(get())
     }
     single<AuthRepository>{AuthRepoImpl(AuthDataSource())}
 }
+
 val testmodule= module {
     viewModel {
         TestViewModel(get())

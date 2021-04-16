@@ -42,9 +42,9 @@ class AuthDataSource {
         ref.putFile(selectedPhotoUri!!)
             .addOnSuccessListener {
                 Log.d("TAG", "Successfully uploaded image: ${it.metadata?.path}")
-                ref.downloadUrl.addOnSuccessListener {
-                    Log.d("TAG", "File Location: $it")
-                    result.value = selectedPhotoUri.toString()
+                ref.downloadUrl.addOnSuccessListener { it1 ->
+                    Log.d("TAG", "File Location: $it1")
+                    result.value = it1.toString()
                 }
             }
             .addOnFailureListener {

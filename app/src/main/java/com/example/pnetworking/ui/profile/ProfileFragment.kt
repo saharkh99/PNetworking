@@ -27,6 +27,7 @@ class ProfileFragment: ChatFragments() {
     lateinit var edit: Button
     lateinit var image:CircleImageView
     lateinit var name:TextView
+    lateinit var bio:TextView
     lateinit var email:TextView
     lateinit var connetion:TextView
     var running:Boolean=false
@@ -64,6 +65,7 @@ class ProfileFragment: ChatFragments() {
                     name.text = currentUser.name
                     email.text = currentUser.emailText
                     connetion.text = currentUser.connection.toString()
+                    bio.text=currentUser.bio
                 })
             }
 
@@ -86,6 +88,7 @@ class ProfileFragment: ChatFragments() {
         edit=binding.profileEdit
         name=binding.profileNameUser
         image=binding.profilePictureUser
+        bio=binding.profileBioUser
         email=binding.profileEmailUser
         connetion=binding.profileFriendsUser
     }

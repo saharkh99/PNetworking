@@ -9,6 +9,7 @@ class User(
     var id: String ,
     var emailText:String,
     var name:String,
+    var bio:String,
     var imageProfile:String,
     var connection:Int,
     var isTypingTo:String,
@@ -26,6 +27,7 @@ class User(
          parcel.readString()!!,
          parcel.readString()!!,
          parcel.readString()!!,
+         parcel.readString()!!,
          parcel.readInt(),
          parcel.readString()!!,
          parcel.readString()!!,
@@ -37,7 +39,7 @@ class User(
          ) {
      }
 
-     constructor() : this("","", "", "",0,"","","",false,"0","")
+     constructor() : this("","","", "", "",0,"","","",false,"0","")
 
      override fun describeContents()=0
 
