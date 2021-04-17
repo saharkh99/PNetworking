@@ -17,14 +17,13 @@
         <activity android:name=".ui.base.test.TestActivity" />
         <activity android:name=".ui.base.intro.IntroActivity" />
         <activity android:name=".ui.base.signup.SignupActivity" >
+        </activity>
+        <activity android:name=".ui.base.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-        <activity android:name=".ui.base.Splash">
-
         </activity>
         <activity android:name=".ui.MainActivity" />
     </application>
