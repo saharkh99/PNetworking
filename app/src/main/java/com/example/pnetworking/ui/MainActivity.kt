@@ -13,7 +13,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 
 class MainActivity : ChatActivity() {
-    //check internet connection-bugs
+    //add user-follow-profile card view
     private var currentNavController: LiveData<NavController>? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

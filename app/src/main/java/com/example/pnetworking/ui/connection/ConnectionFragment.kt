@@ -3,6 +3,7 @@ package com.example.pnetworking.ui.connection
 import android.content.Context
 import android.os.Bundle
 import android.os.IBinder
+import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +11,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import com.example.chat.ui.main.connection.ConnectionViewModel
 
@@ -30,12 +32,12 @@ class ConnectionFragment : ChatFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        initRecyclerView()
         return inflater.inflate(R.layout.fragment_connection, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initRecyclerView()
         initSearchInputListener()
     }
 
@@ -69,12 +71,10 @@ class ConnectionFragment : ChatFragment() {
 
         val rec = view?.findViewById<RecyclerView>(R.id.find_friends_recycler_View)
         rec?.adapter = adapter
-        connectionViewModel.results.observe(viewLifecycleOwner) {
-            for (u: User in it) {
-                adapter.add(UserList(u))
+            for (u: User in connectionViewModel.getUsers(viewLifecycleOwner)) {
+                Log.d("u",u.id)
+                adapter.add(UserList(u,requireContext()))
             }
-        }
-
     }
 
     private fun dismissKeyboard(windowToken: IBinder) {

@@ -1,21 +1,39 @@
 package com.example.pnetworking.repository.connection
 
+import android.content.Intent
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.recyclerview.widget.RecyclerView
 import com.example.pnetworking.models.User
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import com.xwray.groupie.GroupAdapter
+import com.xwray.groupie.GroupieViewHolder
 
 class ConnectionRepository {
-    fun fakeUsers():LiveData<List<User>>{
+
+     fun fakeUsers() :MutableLiveData<List<User>>{
         val users=MutableLiveData<List<User>>()
-        var u=User()
-        u.emailText="sahar@gmail.com"
-        u.name="sahar"
-        var u1=User()
-        u1.emailText="sahar@gmail.com"
-        u1.name="saha"
         val l= ArrayList<User>()
-        l.add(u)
-        l.add(u1)
+        val ref = FirebaseDatabase.getInstance().getReference("/users")
+        ref.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(p0: DataSnapshot) {
+                p0.children.forEach {
+                    Log.d("NewMessage", it.toString())
+                    val user = it.getValue(User::class.java)
+                    if (user != null) {
+                        l.add(user as User)
+                    }
+                }
+            }
+
+            override fun onCancelled(p0: DatabaseError) {
+
+            }
+        })
         users.value=l
         return users
     }

@@ -1,5 +1,7 @@
 package com.example.chat.ui.main.connection
 
+import android.util.Log
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.pnetworking.models.User
@@ -13,13 +15,27 @@ class ConnectionViewModel(private val repoRepository: ConnectionRepository): Cha
 
     val query: LiveData<String> = _query
 
-    val results: LiveData<List<User>> = _query.let {
-        if (it.toString().trim().equals("")) {
-            AbsentLiveData.create()
-        } else {
-            repoRepository.fakeUsers()
-        }
+    fun getUsers(lifecycleOwner: LifecycleOwner):List<User>{
+        val l= ArrayList<User>()
+        repoRepository.fakeUsers().observe(lifecycleOwner, androidx.lifecycle.Observer {
+            Log.d("it",it[0].id)
+            it.forEach {
+                l.add(it)
+            }
+        })
+        return l
     }
+//    val results: LiveData<List<User>> = _query.let {
+//        if (it.toString().trim().equals("")) {
+//            AbsentLiveData.create()
+//        } else {
+//            Log.d("shod",it.value!!)
+//            repoRepository.fakeUsers()
+//        }
+//    }
+
+
+
 
 
     fun setQuery(originalInput: String) {
