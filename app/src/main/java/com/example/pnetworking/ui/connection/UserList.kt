@@ -19,8 +19,8 @@ class UserList(val user: User,val context:Context) : Item<GroupieViewHolder>() {
         val desc = viewHolder.itemView.findViewById<TextView>(R.id.user_row_bio)
         val img = viewHolder.itemView.findViewById<CircleImageView>(R.id.user_row_image)
         val online = viewHolder.itemView.findViewById<ImageView>(R.id.profile_online)
-        name.text = user.name
-        desc.text = user.emailText
+        name.text = user.emailText
+        desc.text = user.bio
         if (user.imageProfile != "")
             Picasso.get().load(Uri.parse(user.imageProfile)).into(img)
         else

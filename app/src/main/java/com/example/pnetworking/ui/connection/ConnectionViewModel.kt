@@ -15,15 +15,8 @@ class ConnectionViewModel(private val repoRepository: ConnectionRepository): Cha
 
     val query: LiveData<String> = _query
 
-    fun getUsers(lifecycleOwner: LifecycleOwner):List<User>{
-        val l= ArrayList<User>()
-        repoRepository.fakeUsers().observe(lifecycleOwner, androidx.lifecycle.Observer {
-            Log.d("it",it[0].id)
-            it.forEach {
-                l.add(it)
-            }
-        })
-        return l
+    fun getUsers():LiveData<List<User>>{
+        return  repoRepository.fakeUsers()
     }
 //    val results: LiveData<List<User>> = _query.let {
 //        if (it.toString().trim().equals("")) {

@@ -83,8 +83,8 @@
                 <com.google.android.material.button.MaterialButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="cancel"
-                    android:id="@+id/profile_card_cancel"
+                    android:text="Message"
+                    android:id="@+id/profile_card_Message"
                     android:textColor="@color/teal_700"
                     style="?attr/borderlessButtonStyle"
                     />

@@ -1,6 +1,7 @@
 package com.example.pnetworking.ui.connection
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
@@ -18,6 +19,7 @@ import com.example.chat.ui.main.connection.ConnectionViewModel
 import com.example.pnetworking.R
 import com.example.pnetworking.models.User
 import com.example.pnetworking.ui.chat.ChatFragment
+import com.example.pnetworking.ui.profile.CardProfileFragment
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -27,17 +29,25 @@ class ConnectionFragment : ChatFragment() {
     private val connectionViewModel by viewModel<ConnectionViewModel>()
     val adapter = GroupAdapter<GroupieViewHolder>()
     val binding = view?.findViewById<EditText>(R.id.input)
+    val l = ArrayList<User>()
+
+
+    companion object {
+        val USER_KEY = "USER_KEY"
+
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        initRecyclerView()
         return inflater.inflate(R.layout.fragment_connection, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initRecyclerView()
         initSearchInputListener()
     }
 
@@ -71,10 +81,20 @@ class ConnectionFragment : ChatFragment() {
 
         val rec = view?.findViewById<RecyclerView>(R.id.find_friends_recycler_View)
         rec?.adapter = adapter
-            for (u: User in connectionViewModel.getUsers(viewLifecycleOwner)) {
+        showProgressDialog(requireContext())
+        connectionViewModel.getUsers().observe(viewLifecycleOwner,{
+            hideProgressDialog()
+            for (u: User in it) {
                 Log.d("u",u.id)
                 adapter.add(UserList(u,requireContext()))
+                l.add(u)
             }
+        })
+        adapter.setOnItemClickListener { item, view ->
+            val userItem = item as UserList
+            Log.d("image",item.user.imageProfile)
+            CardProfileFragment.newInstance(item.user.name,item.user.bio,item.user.imageProfile,"friends: "+item.user.connection.toString(),item.user.favorites).show(parentFragmentManager, CardProfileFragment.TAG)
+        }
     }
 
     private fun dismissKeyboard(windowToken: IBinder) {

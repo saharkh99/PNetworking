@@ -14,10 +14,9 @@ import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 
 class ConnectionRepository {
-
-     fun fakeUsers() :MutableLiveData<List<User>>{
-        val users=MutableLiveData<List<User>>()
-        val l= ArrayList<User>()
+    val users = MutableLiveData<List<User>>()
+    val l = ArrayList<User>()
+    fun fakeUsers(): MutableLiveData<List<User>> {
         val ref = FirebaseDatabase.getInstance().getReference("/users")
         ref.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(p0: DataSnapshot) {
@@ -25,16 +24,16 @@ class ConnectionRepository {
                     Log.d("NewMessage", it.toString())
                     val user = it.getValue(User::class.java)
                     if (user != null) {
-                        l.add(user as User)
+                        l.add(user)
                     }
                 }
+                users.value = l
             }
 
             override fun onCancelled(p0: DatabaseError) {
 
             }
         })
-        users.value=l
         return users
     }
 }

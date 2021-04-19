@@ -6,19 +6,18 @@ import android.os.Parcelable
 import androidx.annotation.RequiresApi
 
 class User(
-    var id: String ,
-    var emailText:String,
+    var birthday:String,
+    var favorites:String,
+    var score:String,
+    var gender:String,
+    var typingTo:String,
     var name:String,
     var bio:String,
     var imageProfile:String,
-    var connection:Int,
-    var isTypingTo:String,
-    var birthday:String,
-    var gender:String,
     var online:Boolean,
-    var score:String,
-    var favorites:String,
-
+    var connection:Int,
+    var emailText:String,
+    var id: String ,
 
 ): Parcelable {
      @RequiresApi(Build.VERSION_CODES.Q)
@@ -28,18 +27,18 @@ class User(
          parcel.readString()!!,
          parcel.readString()!!,
          parcel.readString()!!,
-         parcel.readInt(),
          parcel.readString()!!,
          parcel.readString()!!,
          parcel.readString()!!,
          parcel.readBoolean(),
+         parcel.readInt(),
          parcel.readString()!!,
          parcel.readString()!!,
 
          ) {
      }
 
-     constructor() : this("","","", "", "",0,"","","",false,"0","")
+     constructor() : this("","","", "", "","","","",false,0,"0","")
 
      override fun describeContents()=0
 
@@ -50,7 +49,7 @@ class User(
          writeString(name)
          writeString(imageProfile)
          writeInt(connection)
-         writeString(isTypingTo)
+         writeString(typingTo)
          writeString(birthday)
          writeString(gender)
          writeBoolean(online)

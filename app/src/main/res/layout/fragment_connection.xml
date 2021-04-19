@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:background="@drawable/background"
+    tools:context=".ui.base.test.TestActivity"
+    android:layout_height="match_parent">
     <androidx.constraintlayout.widget.ConstraintLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:background="@drawable/background"
         android:layout_height="match_parent">
 
         <com.google.android.material.textfield.TextInputLayout
@@ -75,7 +78,8 @@
         android:id="@+id/profile_edit"
         android:layout_width="165dp"
         android:layout_height="60dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="24dp"
         android:backgroundTint="@color/teal_700"
         android:text="find friends"
         android:textColor="@color/purple_200"
@@ -88,3 +92,4 @@
         app:layout_constraintTop_toBottomOf="@id/find_friends_recycler_View" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>
