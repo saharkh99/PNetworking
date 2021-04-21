@@ -11,17 +11,24 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.lifecycle.Observer
 import androidx.navigation.Navigation
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.pnetworking.R
 import com.example.pnetworking.databinding.FragmentProfileBinding
+import com.example.pnetworking.ui.connection.UserList
 import com.example.pnetworking.utils.ChatFragments
 import com.squareup.picasso.Picasso
+import com.xwray.groupie.GroupAdapter
+import com.xwray.groupie.GroupieViewHolder
 import de.hdodenhof.circleimageview.CircleImageView
 import org.koin.android.viewmodel.ext.android.viewModel
+
 
 class ProfileFragment : ChatFragments() {
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
     private val mainViewModel by viewModel<ProfileViewModel>()
+    private val followViewModel by viewModel<FollowViewModel>()
     lateinit var edit: Button
     lateinit var image: CircleImageView
     lateinit var name: TextView
@@ -30,7 +37,10 @@ class ProfileFragment : ChatFragments() {
     lateinit var connetion: TextView
     lateinit var online: ImageView
     lateinit var onlineText:TextView
+    lateinit var connectionRecyclerView: RecyclerView
     var running: Boolean = false
+    val adapter = GroupAdapter<GroupieViewHolder>()
+
 
 
     override fun onCreateView(
@@ -50,6 +60,32 @@ class ProfileFragment : ChatFragments() {
 
     }
 
+    private fun initRec() {
+        connectionRecyclerView?.adapter = adapter
+        connectionRecyclerView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, true)
+        followViewModel.getFollowers().observe(viewLifecycleOwner, {
+            hideProgressDialog()
+            for (s: String in it) {
+                mainViewModel.getCurrentUser(s).observe(viewLifecycleOwner, { u ->
+                    adapter.add(UserList(u, requireContext()))
+                    Log.d("u", u.id)
+                })
+            }
+        })
+        adapter.setOnItemClickListener { item, view ->
+            val userItem = item as UserList
+            Log.d("image", item.user.imageProfile)
+            CardProfileFragment.newInstance(
+                item.user.id,
+                item.user.name,
+                item.user.bio,
+                item.user.imageProfile,
+                "friends: " + item.user.connection.toString(),
+                item.user.favorites
+            ).show(parentFragmentManager, CardProfileFragment.TAG)
+        }
+    }
+
     private fun getProfile() {
         mainViewModel.getIDUser().observe(viewLifecycleOwner, Observer {
             showProgressDialog(requireContext())
@@ -57,7 +93,6 @@ class ProfileFragment : ChatFragments() {
                 Log.d("uids", it)
                 mainViewModel.getCurrentUser(it).observe(viewLifecycleOwner, Observer {
                     val currentUser = it
-                    hideProgressDialog()
                     Log.d("image", currentUser.imageProfile)
                     if (currentUser.imageProfile != "")
                         Picasso.get().load(Uri.parse(currentUser.imageProfile)).into(image)
@@ -69,13 +104,13 @@ class ProfileFragment : ChatFragments() {
                     bio.text = currentUser.bio
                     if (currentUser.online) {
                         online.visibility = View.VISIBLE
-                        onlineText.visibility=View.VISIBLE
-                    }
-                    else{
+                        onlineText.visibility = View.VISIBLE
+                    } else {
                         online.visibility = View.GONE
                         onlineText.visibility = View.GONE
                     }
                 })
+                initRec()
             }
 
         })
@@ -102,6 +137,8 @@ class ProfileFragment : ChatFragments() {
         connetion = binding.profileFriendsUser
         online = binding.profileOnline
         onlineText=binding.profileOnlineText
+        connectionRecyclerView=binding.profileRecConnections
+
     }
 
 }

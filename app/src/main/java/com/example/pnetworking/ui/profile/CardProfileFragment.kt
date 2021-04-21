@@ -9,16 +9,22 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import com.example.chat.ui.main.connection.ConnectionViewModel
 import com.example.pnetworking.R
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
+import org.koin.android.viewmodel.ext.android.viewModel
 
 class CardProfileFragment : DialogFragment() {
-
     companion object {
-        val TAG="TAG"
+        val TAG = "TAG"
+        private const val KEY_ID = "KEY_ID"
         private const val KEY_NAME = "KEY_NAME"
         private const val KEY_BIO = "KEY_BIO"
         private const val KEY_IMG = "KEY_IMG"
@@ -26,6 +32,7 @@ class CardProfileFragment : DialogFragment() {
         private const val KEY_FAVORITE = "KEY_FAVORITE"
 
         fun newInstance(
+            id: String,
             name: String,
             bio: String,
             img: String,
@@ -34,6 +41,7 @@ class CardProfileFragment : DialogFragment() {
         ): CardProfileFragment {
 
             val args = Bundle()
+            args.putString(KEY_ID, id)
             args.putString(KEY_NAME, name)
             args.putString(KEY_BIO, bio)
             args.putString(KEY_IMG, img)
@@ -46,11 +54,14 @@ class CardProfileFragment : DialogFragment() {
 
     }
 
+    private val profileViewModel by viewModel<FollowViewModel>()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
         return inflater.inflate(R.layout.profile_card_view, container, false)
     }
 
@@ -78,21 +89,39 @@ class CardProfileFragment : DialogFragment() {
             KEY_FRIENDS
         )
         val img = view.findViewById<ImageView>(R.id.profile_card_image)
-        Log.d("image", KEY_IMG)
-        if (KEY_IMG != "")
-            Picasso.get().load(Uri.parse(KEY_IMG)).into(img)
+        Log.d("image", arguments?.getString(KEY_IMG)!!)
+        if (arguments?.getString(KEY_IMG) != "" || arguments?.getString(KEY_IMG) != "true")
+            Picasso.get().load(Uri.parse(arguments?.getString(KEY_IMG))).into(img)
         else
-            img.background = AppCompatResources.getDrawable(requireContext(), R.drawable.user)
+            img.setImageResource(R.drawable.user)
 
     }
 
     private fun setupClickListeners(view: View) {
         view.findViewById<TextView>(R.id.profile_card_connect).setOnClickListener {
-            dismiss()
+            Log.d("sd", viewLifecycleOwner.toString())
+            Log.d("sd", viewLifecycleOwner.lifecycleScope.toString())
+            profileViewModel.follow(arguments?.getString(KEY_ID)!!).observe(viewLifecycleOwner, {
+                if (it) {
+                    Log.d("shod", "shod12")
+                    profileViewModel.increasingConnections().observe(viewLifecycleOwner, { it1 ->
+                        if (it1) {
+                            Log.d("shod", "shod")
+                            view.findViewById<TextView>(R.id.profile_card_connect)
+                                .setTextColor(resources.getColor(R.color.teal_200))
+                            view.findViewById<TextView>(R.id.profile_card_connect).isClickable =
+                                false
+                            dismiss()
+                        }
+                    })
+                }
+            })
+
         }
         view.findViewById<TextView>(R.id.profile_card_Message).setOnClickListener {
             dismiss()
         }
     }
+
 
 }

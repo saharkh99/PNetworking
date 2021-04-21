@@ -20,6 +20,7 @@ import com.example.pnetworking.R
 import com.example.pnetworking.models.User
 import com.example.pnetworking.ui.chat.ChatFragment
 import com.example.pnetworking.ui.profile.CardProfileFragment
+import com.example.pnetworking.ui.profile.FollowViewModel
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -93,8 +94,9 @@ class ConnectionFragment : ChatFragment() {
         adapter.setOnItemClickListener { item, view ->
             val userItem = item as UserList
             Log.d("image",item.user.imageProfile)
-            CardProfileFragment.newInstance(item.user.name,item.user.bio,item.user.imageProfile,"friends: "+item.user.connection.toString(),item.user.favorites).show(parentFragmentManager, CardProfileFragment.TAG)
+            CardProfileFragment.newInstance(item.user.id,item.user.name,item.user.bio,item.user.imageProfile,"friends: "+item.user.connection.toString(),item.user.favorites).show(parentFragmentManager, CardProfileFragment.TAG)
         }
+
     }
 
     private fun dismissKeyboard(windowToken: IBinder) {

@@ -5,6 +5,9 @@ import com.example.pnetworking.repository.auth.AuthDataSource
 import com.example.pnetworking.repository.auth.AuthRepoImpl
 import com.example.pnetworking.repository.auth.AuthRepository
 import com.example.pnetworking.repository.connection.ConnectionRepository
+import com.example.pnetworking.repository.follow.FollowDataSource
+import com.example.pnetworking.repository.follow.FollowRepoImpl
+import com.example.pnetworking.repository.follow.FollowRepository
 import com.example.pnetworking.repository.profile.ProfileDataStore
 import com.example.pnetworking.repository.profile.ProfileRepoImpl
 import com.example.pnetworking.repository.profile.ProfileRepository
@@ -14,6 +17,7 @@ import com.example.pnetworking.repository.test.TestRepositoryImpl
 import com.example.pnetworking.ui.base.signin.SignInViewModel
 import com.example.pnetworking.ui.base.signup.SignUpViewModel
 import com.example.pnetworking.ui.base.test.TestViewModel
+import com.example.pnetworking.ui.profile.FollowViewModel
 import com.example.pnetworking.ui.profile.ProfileViewModel
 import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -40,6 +44,12 @@ val profilemodule= module {
         ProfileViewModel(get())
     }
     single<ProfileRepository> { ProfileRepoImpl(ProfileDataStore()) }
+}
+val followmodule= module {
+    viewModel {
+        FollowViewModel(get())
+    }
+    single<FollowRepository> { FollowRepoImpl(FollowDataSource()) }
 }
 val connectionmodule= module {
     viewModel {
