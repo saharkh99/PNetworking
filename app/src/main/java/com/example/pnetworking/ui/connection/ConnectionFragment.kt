@@ -1,7 +1,6 @@
 package com.example.pnetworking.ui.connection
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
@@ -12,7 +11,6 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import com.example.chat.ui.main.connection.ConnectionViewModel
 
@@ -20,12 +18,12 @@ import com.example.pnetworking.R
 import com.example.pnetworking.models.User
 import com.example.pnetworking.ui.chat.ChatFragment
 import com.example.pnetworking.ui.profile.CardProfileFragment
-import com.example.pnetworking.ui.profile.FollowViewModel
+import com.example.pnetworking.utils.ChatFragments
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import org.koin.android.viewmodel.ext.android.viewModel
 
-class ConnectionFragment : ChatFragment() {
+class ConnectionFragment : ChatFragments() {
 
     private val connectionViewModel by viewModel<ConnectionViewModel>()
     val adapter = GroupAdapter<GroupieViewHolder>()
@@ -35,7 +33,7 @@ class ConnectionFragment : ChatFragment() {
 
     companion object {
         val USER_KEY = "USER_KEY"
-
+        val Tag="Profile"
     }
 
     override fun onCreateView(
@@ -91,10 +89,18 @@ class ConnectionFragment : ChatFragment() {
                 l.add(u)
             }
         })
-        adapter.setOnItemClickListener { item, view ->
+        adapter.setOnItemClickListener { item, _ ->
             val userItem = item as UserList
             Log.d("image",item.user.imageProfile)
-            CardProfileFragment.newInstance(item.user.id,item.user.name,item.user.bio,item.user.imageProfile,"friends: "+item.user.connection.toString(),item.user.favorites).show(parentFragmentManager, CardProfileFragment.TAG)
+            CardProfileFragment.newInstance(
+                item.user.id,
+                item.user.name,
+                item.user.bio,
+                item.user.imageProfile,
+                "friends: "+item.user.connection.toString(),
+                item.user.favorites,
+                ConnectionFragment.Tag
+            ).show(parentFragmentManager, CardProfileFragment.TAG)
         }
 
     }

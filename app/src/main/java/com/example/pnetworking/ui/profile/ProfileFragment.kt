@@ -41,7 +41,9 @@ class ProfileFragment : ChatFragments() {
     var running: Boolean = false
     val adapter = GroupAdapter<GroupieViewHolder>()
 
-
+    companion object{
+         val TAG = "Profile"
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -81,7 +83,8 @@ class ProfileFragment : ChatFragments() {
                 item.user.bio,
                 item.user.imageProfile,
                 "friends: " + item.user.connection.toString(),
-                item.user.favorites
+                item.user.favorites,
+                ProfileFragment.TAG
             ).show(parentFragmentManager, CardProfileFragment.TAG)
         }
     }

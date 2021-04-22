@@ -1,7 +1,6 @@
 package com.example.pnetworking.ui
 
 import android.os.Bundle
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavController
@@ -13,7 +12,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 
 class MainActivity : ChatActivity() {
-    //follow- request-accept- connections- main page-fix bugs
+    //fix bugs, send message
     private var currentNavController: LiveData<NavController>? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

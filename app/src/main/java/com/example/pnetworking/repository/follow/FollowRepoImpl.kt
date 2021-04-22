@@ -2,20 +2,26 @@ package com.example.pnetworking.repository.follow
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.example.pnetworking.repository.profile.ProfileDataStore
-import com.example.pnetworking.repository.profile.ProfileRepository
 
-class FollowRepoImpl(private val profileDataStore: FollowDataSource): FollowRepository {
+class FollowRepoImpl(private val followDataSource: FollowDataSource): FollowRepository {
 
     override fun getFollowers():MutableLiveData<List<String>> {
-        return profileDataStore.getFollowers()
+        return followDataSource.getFollowers()
     }
 
     override fun increasingConnections(): MutableLiveData<Boolean> {
-        return profileDataStore.increasingConnections()
+        return followDataSource.increasingConnections()
     }
 
     override fun follow(fid: String): LiveData<Boolean> {
-        return profileDataStore.follow(fid)
+        return followDataSource.follow(fid)
+    }
+
+    override fun sendRequest(fid: String): MutableLiveData<Boolean> {
+        return followDataSource.sendRequest(fid)
+    }
+
+    override fun getRequests(): MutableLiveData<List<String>> {
+        return followDataSource.getRequests()
     }
 }
