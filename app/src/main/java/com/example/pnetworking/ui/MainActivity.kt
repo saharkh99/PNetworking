@@ -12,7 +12,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 
 class MainActivity : ChatActivity() {
-    //fix bugs, send message
+    //no default image-date-number of friends-favorites
     private var currentNavController: LiveData<NavController>? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,7 +24,7 @@ class MainActivity : ChatActivity() {
 
     private fun setupBottomNavigationBar() {
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationMain)
-        val navGraphIds = listOf(R.navigation.chat, R.navigation.connection, R.navigation.profile)
+        val navGraphIds = listOf(R.navigation.profile, R.navigation.chat, R.navigation.connection)
         val controller = bottomNavigationView.setupWithNavController(
             navGraphIds = navGraphIds,
             fragmentManager = supportFragmentManager,

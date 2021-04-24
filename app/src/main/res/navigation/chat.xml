@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-    <navigation app:startDestination="@id/chatFragment"
+<navigation app:startDestination="@id/chatFragment"
     android:id="@+id/chat"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <fragment android:id="@+id/chatFragment"
-        android:label="MainFragment"
+        android:label="ChatFragment"
+        tools:layout="@layout/fragment_chat"
         android:name="com.example.pnetworking.ui.chat.ChatFragment"/>
 
 </navigation>

@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.lifecycle.Observer
 import androidx.navigation.Navigation
@@ -52,14 +53,17 @@ class ProfileFragment : ChatFragments() {
     ): View? {
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
         val view = binding.root
+        return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         init()
         getProfile()
         edit.setOnClickListener {
             Navigation.findNavController(it)
                 .navigate(R.id.action_ProfileFragment_to_profileEditActivity)
         }
-        return view
-
     }
 
     private fun initRec() {
@@ -91,7 +95,7 @@ class ProfileFragment : ChatFragments() {
 
     private fun getProfile() {
         mainViewModel.getIDUser().observe(viewLifecycleOwner, Observer {
-            showProgressDialog(requireContext())
+            showProgressDialog2(requireContext())
             if (it != null) {
                 Log.d("uids", it)
                 mainViewModel.getCurrentUser(it).observe(viewLifecycleOwner, Observer {

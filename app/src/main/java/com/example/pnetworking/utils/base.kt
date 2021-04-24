@@ -10,9 +10,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
+import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -52,13 +54,27 @@ interface ChatView {
         mProgressDialog = Dialog(context)
         mProgressDialog.setContentView(R.layout.view_loading)
         mProgressDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-            mProgressDialog.show()
-           mProgressDialog.setCancelable(false)
+        mProgressDialog.show()
+        mProgressDialog.setCancelable(false)
     }
-    fun hideProgressDialog(){
+
+    fun showProgressDialog2(context: Context) {
+        mProgressDialog = Dialog(context)
+        mProgressDialog.setContentView(R.layout.view_loading)
+        mProgressDialog.window?.setLayout(
+            ConstraintLayout.LayoutParams.MATCH_PARENT,
+            ConstraintLayout.LayoutParams.MATCH_PARENT
+        )
+        mProgressDialog.window?.setBackgroundDrawable(ColorDrawable(Color.WHITE))
+        mProgressDialog.show()
+        mProgressDialog.setCancelable(false)
+    }
+
+    fun hideProgressDialog() {
         mProgressDialog.dismiss()
     }
-    fun showErrorSnackBar(message: String,content:Context,view:View) {
+
+    fun showErrorSnackBar(message: String, content: Context, view: View) {
         val snackBar =
             Snackbar.make(view, message, Snackbar.LENGTH_LONG)
         val snackBarView = snackBar.view

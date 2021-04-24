@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-    <navigation app:startDestination="@id/ConnectionFragment"
+<navigation app:startDestination="@id/ConnectionFragment"
     android:id="@+id/connection"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <fragment android:id="@+id/ConnectionFragment"
         android:label="connection"
+        tools:layout="@layout/fragment_connection"
         android:name="com.example.pnetworking.ui.connection.ConnectionFragment"/>
 
 </navigation>
