@@ -2,6 +2,7 @@ package com.example.pnetworking.ui.connection
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -21,10 +22,13 @@ class UserList(val user: User,val context:Context) : Item<GroupieViewHolder>() {
         val online = viewHolder.itemView.findViewById<ImageView>(R.id.profile_online)
         name.text = user.emailText
         desc.text = user.bio
-        if (user.imageProfile != "")
+        Log.d("image",user.imageProfile)
+        if (user.imageProfile.trim()!="true") {
             Picasso.get().load(Uri.parse(user.imageProfile)).into(img)
-        else
-            img.background = getDrawable(context,R.drawable.user)
+        }
+        else {
+            img.setBackgroundResource(R.drawable.user)
+        }
         if(user.online)
             online.visibility= View.VISIBLE
         else

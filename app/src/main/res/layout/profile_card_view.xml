@@ -12,12 +12,13 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- Media -->
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="194dp"
-                android:scaleType="fitXY"
+                android:scaleType="fitCenter"
                 android:padding="12sp"
+                android:backgroundTint="@color/purple_200"
+                android:layout_gravity="center"
                 android:id="@+id/profile_card_image"
                 android:src="@drawable/user"
                 />

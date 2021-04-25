@@ -1,27 +1,28 @@
 package com.example.pnetworking.ui.base.signup
 
 import android.app.Activity
+import android.app.DatePickerDialog
+import android.app.DatePickerDialog.OnDateSetListener
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
-import android.util.Patterns
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import androidx.lifecycle.Observer
 import com.example.pnetworking.R
 import com.example.pnetworking.databinding.ActivitySignupBinding
-import com.example.pnetworking.ui.MainActivity
 import com.example.pnetworking.ui.base.signin.SigninActivity
 import com.example.pnetworking.utils.ChatActivity
-import com.google.android.gms.auth.api.signin.SignInAccount
 import com.google.android.material.textfield.TextInputEditText
 import de.hdodenhof.circleimageview.CircleImageView
 import org.koin.android.viewmodel.ext.android.viewModel
-import java.util.regex.Matcher
+import java.text.SimpleDateFormat
+import java.util.*
 import java.util.regex.Pattern
+
 
 class SignupActivity : ChatActivity() {
     lateinit var binding: ActivitySignupBinding
@@ -53,7 +54,7 @@ class SignupActivity : ChatActivity() {
             val intent = Intent(this, SigninActivity::class.java)
             startActivity(intent)
         }
-
+        calculateBirthday()
     }
 
     private fun performanceRegistration() {
@@ -109,6 +110,26 @@ class SignupActivity : ChatActivity() {
             })
 
     }
+
+    private fun calculateBirthday(){
+        val myCalendar: Calendar = Calendar.getInstance()
+        val date =
+            OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
+                view.setBackgroundColor(resources.getColor(R.color.purple_200))
+                myCalendar.set(Calendar.YEAR, year)
+                myCalendar.set(Calendar.MONTH, monthOfYear)
+                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+                val myFormat = "MM/dd/yy"
+                val sdf = SimpleDateFormat(myFormat, Locale.US)
+                birthday.setText(sdf.format(myCalendar.getTime()))
+            }
+        birthday.setOnClickListener{
+                DatePickerDialog(this, date, myCalendar.get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                    myCalendar.get(Calendar.DAY_OF_MONTH)
+                ).show()
+        }
+    }
+
 
     private fun init() {
         email = binding.signupEmailEt

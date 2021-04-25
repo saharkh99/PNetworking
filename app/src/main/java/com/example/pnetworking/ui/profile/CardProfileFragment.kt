@@ -14,6 +14,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import com.example.pnetworking.R
 import com.squareup.picasso.Picasso
+import de.hdodenhof.circleimageview.CircleImageView
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class CardProfileFragment : DialogFragment() {
@@ -78,18 +79,19 @@ class CardProfileFragment : DialogFragment() {
     }
 
     private fun setupView(view: View) {
-        view.findViewById<TextView>(R.id.profile_card_name).text = arguments?.getString(KEY_NAME)
-        view.findViewById<TextView>(R.id.profile_card_bio).text = arguments?.getString(KEY_BIO)
-        view.findViewById<TextView>(R.id.profile_card_favorites).text = arguments?.getString(
+        view.findViewById<TextView>(R.id.profile_card_name).text = "name: "+arguments?.getString(KEY_NAME)
+        view.findViewById<TextView>(R.id.profile_card_bio).text = "BIO: "+arguments?.getString(KEY_BIO)
+        view.findViewById<TextView>(R.id.profile_card_favorites).text ="FAVORITES: "+arguments?.getString(
             KEY_FAVORITE
         )
-        view.findViewById<TextView>(R.id.profile_card_friends).text = arguments?.getString(
+        view.findViewById<TextView>(R.id.profile_card_friends).text =  arguments?.getString(
             KEY_FRIENDS
         )
         val img = view.findViewById<ImageView>(R.id.profile_card_image)
         Log.d("image", arguments?.getString(KEY_IMG)!!)
-        if (arguments?.getString(KEY_IMG) != "" || arguments?.getString(KEY_IMG) != "true")
+        if (arguments?.getString(KEY_IMG) != "true") {
             Picasso.get().load(Uri.parse(arguments?.getString(KEY_IMG))).into(img)
+        }
         else
             img.setImageResource(R.drawable.user)
 
@@ -97,12 +99,9 @@ class CardProfileFragment : DialogFragment() {
 
     private fun setupClickListeners(view: View) {
         view.findViewById<TextView>(R.id.profile_card_connect).setOnClickListener { view1->
-            Log.d("sd", viewLifecycleOwner.toString())
-            Log.d("sd", viewLifecycleOwner.lifecycleScope.toString())
             if(arguments?.getString(KEY_TAG)=="chat")
             profileViewModel.follow(arguments?.getString(KEY_ID)!!).observe(viewLifecycleOwner, {
                 if (it) {
-                    Log.d("shod", "shod12")
                     profileViewModel.increasingConnections().observe(viewLifecycleOwner, { it1 ->
                         if (it1) {
                             Log.d("shod", "shod")
