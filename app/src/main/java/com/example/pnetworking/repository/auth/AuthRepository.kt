@@ -7,5 +7,5 @@ interface AuthRepository {
     fun signup(email: String, password: String): MutableLiveData<String>
     fun signin(email: String, password: String): MutableLiveData<String>
     fun uploadImageToFirebaseStorage(selectedPhotoUri: Uri): MutableLiveData<String>
-    fun saveUserToFirebaseDatabase( email: String, birth: String, gen: String, profileImageUrl: String): MutableLiveData<Boolean>
+    fun saveUserToFirebaseDatabase( email: String, birth: String, gen: String, profileImageUrl: String,name: String): MutableLiveData<Boolean>
 }

@@ -1,6 +1,7 @@
 package com.example.pnetworking.ui.profile
 
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -8,8 +9,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.Observer
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,6 +19,8 @@ import com.example.pnetworking.R
 import com.example.pnetworking.databinding.FragmentProfileBinding
 import com.example.pnetworking.ui.connection.UserList
 import com.example.pnetworking.utils.ChatFragments
+import com.example.pnetworking.utils.findAge
+import com.example.pnetworking.utils.zodiac
 import com.squareup.picasso.Picasso
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
@@ -34,6 +37,8 @@ class ProfileFragment : ChatFragments() {
     lateinit var image: CircleImageView
     lateinit var name: TextView
     lateinit var bio: TextView
+    lateinit var age:TextView
+    lateinit var zodiac:TextView
     lateinit var email: TextView
     lateinit var connetion: TextView
     lateinit var online: ImageView
@@ -56,6 +61,7 @@ class ProfileFragment : ChatFragments() {
         return view
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         init()
@@ -66,6 +72,7 @@ class ProfileFragment : ChatFragments() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun initRec() {
         connectionRecyclerView?.adapter = adapter
         connectionRecyclerView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, true)
@@ -81,6 +88,7 @@ class ProfileFragment : ChatFragments() {
         adapter.setOnItemClickListener { item, view ->
             val userItem = item as UserList
             Log.d("image", item.user.imageProfile)
+            val age= findAge(item.user.birthday).toString() +", "+ zodiac(item.user.birthday)
             CardProfileFragment.newInstance(
                 item.user.id,
                 item.user.name,
@@ -88,11 +96,13 @@ class ProfileFragment : ChatFragments() {
                 item.user.imageProfile,
                 "friends: " + item.user.connection.toString(),
                 item.user.favorites,
+                age,
                 ProfileFragment.TAG
             ).show(parentFragmentManager, CardProfileFragment.TAG)
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun getProfile() {
         mainViewModel.getIDUser().observe(viewLifecycleOwner, Observer {
             showProgressDialog2(requireContext())
@@ -116,6 +126,8 @@ class ProfileFragment : ChatFragments() {
                         online.visibility = View.GONE
                         onlineText.visibility = View.GONE
                     }
+                    age.text= com.example.pnetworking.utils.findAge(currentUser.birthday).toString()
+                    zodiac.text=com.example.pnetworking.utils.zodiac(currentUser.birthday)
                 })
                 initRec()
             }
@@ -129,6 +141,7 @@ class ProfileFragment : ChatFragments() {
         running = false
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onStart() {
         super.onStart()
         if (!running)
@@ -145,7 +158,8 @@ class ProfileFragment : ChatFragments() {
         online = binding.profileOnline
         onlineText=binding.profileOnlineText
         connectionRecyclerView=binding.profileRecConnections
-
+        age=binding.profileBirthdayUser
+        zodiac=binding.profileAstro
     }
 
 }

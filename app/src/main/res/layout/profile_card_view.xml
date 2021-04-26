@@ -53,7 +53,7 @@
                     android:id="@+id/profile_card_bio"
                     android:text="bio : book lover "
                     android:textAppearance="?attr/textAppearanceBody2"
-                    android:textColor="@color/purple_200"
+                    android:textColor="?android:attr/textColorSecondary"
                     />
                 <TextView
                     android:layout_width="wrap_content"
@@ -62,9 +62,17 @@
                     android:id="@+id/profile_card_favorites"
                     android:text="favorites : book, music "
                     android:textAppearance="?attr/textAppearanceBody2"
-                    android:textColor="@color/purple_200"
+                    android:textColor="?android:attr/textColorSecondary"
                     />
-
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:id="@+id/profile_card_age"
+                    android:text="birth: 22, Lio "
+                    android:textAppearance="?attr/textAppearanceBody2"
+                    android:textColor="?android:attr/textColorSecondary"
+                    />
             </LinearLayout>
 
             <!-- Buttons -->

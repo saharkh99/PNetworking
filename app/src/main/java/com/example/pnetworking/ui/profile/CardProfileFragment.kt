@@ -27,6 +27,7 @@ class CardProfileFragment : DialogFragment() {
         private const val KEY_FRIENDS = "KEY_FRIENDS"
         private const val KEY_FAVORITE = "KEY_FAVORITE"
         private const val KEY_TAG = "KEY_TAG"
+        private const val KEY_AGE = "KEY_AGE"
 
         fun newInstance(
             id: String,
@@ -35,6 +36,7 @@ class CardProfileFragment : DialogFragment() {
             img: String,
             friends: String,
             fav: String,
+            age:String,
             tag: String
         ): CardProfileFragment {
 
@@ -45,6 +47,7 @@ class CardProfileFragment : DialogFragment() {
             args.putString(KEY_IMG, img)
             args.putString(KEY_FRIENDS, friends)
             args.putString(KEY_FAVORITE, fav)
+            args.putString(KEY_AGE, age)
             args.putString(KEY_TAG,tag)
             val fragment = CardProfileFragment()
             fragment.arguments = args
@@ -84,6 +87,8 @@ class CardProfileFragment : DialogFragment() {
         view.findViewById<TextView>(R.id.profile_card_favorites).text ="FAVORITES: "+arguments?.getString(
             KEY_FAVORITE
         )
+        view.findViewById<TextView>(R.id.profile_card_age).text="BIRTH: "+arguments?.getString(
+            KEY_AGE)
         view.findViewById<TextView>(R.id.profile_card_friends).text =  arguments?.getString(
             KEY_FRIENDS
         )

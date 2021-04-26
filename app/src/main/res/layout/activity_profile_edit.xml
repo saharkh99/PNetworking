@@ -115,6 +115,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="movies"
+            android:id="@+id/check_movie"
             android:textColor="@color/purple_200" />
 
         <CheckBox

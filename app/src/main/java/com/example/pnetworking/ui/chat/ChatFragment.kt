@@ -1,10 +1,12 @@
 package com.example.pnetworking.ui.chat
 
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.pnetworking.databinding.FragmentChatBinding
 import com.example.pnetworking.ui.connection.UserList
@@ -12,6 +14,8 @@ import com.example.pnetworking.ui.profile.CardProfileFragment
 import com.example.pnetworking.ui.profile.FollowViewModel
 import com.example.pnetworking.ui.profile.ProfileViewModel
 import com.example.pnetworking.utils.ChatFragments
+import com.example.pnetworking.utils.findAge
+import com.example.pnetworking.utils.zodiac
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -36,12 +40,14 @@ open class ChatFragment:ChatFragments() {
         return view
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initRecyclerView()
 
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun initRecyclerView(){
         val rec = binding.recentMessageRequests
         rec?.adapter = adapter
@@ -60,6 +66,7 @@ open class ChatFragment:ChatFragments() {
         adapter.setOnItemClickListener { item, view ->
             val userItem = item as UserList
             Log.d("image", item.user.imageProfile)
+            val age= findAge(item.user.birthday).toString() +", "+ zodiac(item.user.birthday)
             CardProfileFragment.newInstance(
                 item.user.id,
                 item.user.name,
@@ -67,6 +74,7 @@ open class ChatFragment:ChatFragments() {
                 item.user.imageProfile,
                 "friends: " + item.user.connection.toString(),
                 item.user.favorites,
+                age,
                 ChatFragment.TAG
             ).show(parentFragmentManager, CardProfileFragment.TAG)
         }

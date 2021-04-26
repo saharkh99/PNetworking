@@ -20,9 +20,10 @@ class AuthRepoImpl(private val signUpDataSource: AuthDataSource) : AuthRepositor
         email: String,
         birth: String,
         gen: String,
-        profileImageUrl: String
+        profileImageUrl: String,
+        name:String
     ): MutableLiveData<Boolean> {
-        return signUpDataSource.saveUserToFirebaseDatabase(email, birth, gen, profileImageUrl)
+        return signUpDataSource.saveUserToFirebaseDatabase(email, birth, gen, profileImageUrl,name)
     }
 
 }

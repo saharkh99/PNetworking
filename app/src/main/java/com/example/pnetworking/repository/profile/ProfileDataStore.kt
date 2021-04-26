@@ -37,11 +37,12 @@ class ProfileDataStore {
         return result
     }
 
-    fun editProfile(name: String, bio: String, uid: String): MutableLiveData<Boolean> {
+    fun editProfile(name: String, bio: String, uid: String,fav:String): MutableLiveData<Boolean> {
         var result = MutableLiveData<Boolean>()
         val hashmap = HashMap<String, Any>()
         hashmap.put("name", name)
         hashmap.put("bio", bio)
+        hashmap.put("favorites",fav)
         val ref = FirebaseDatabase.getInstance().getReference("/users/$uid")
         ref.updateChildren(hashmap).addOnSuccessListener {
             result.value = true

@@ -31,6 +31,7 @@ class SignupActivity : ChatActivity() {
     lateinit var image: CircleImageView
     lateinit var birthday: EditText
     lateinit var account:TextView
+    lateinit var name:TextInputEditText
     var gender: String = ""
     lateinit var start: Button
     var selectedPhotoUri: Uri? = null
@@ -66,6 +67,10 @@ class SignupActivity : ChatActivity() {
             password.error = "Please enter your password"
             return
         }
+        if (name.text.toString().isEmpty()) {
+            password.error = "Please enter your name"
+            return
+        }
         if(passwordCharValidation(password.text.toString().trim())){
             password.error = "make sure your password contains capital letter and numbers"
             return
@@ -84,7 +89,7 @@ class SignupActivity : ChatActivity() {
                                     email.text.toString(),
                                     birthday.text.toString(),
                                     gender,
-                                    it
+                                    it,name.text.toString()
                                 )
                                     .observe(this, Observer {
                                         hideProgressDialog()
@@ -119,7 +124,7 @@ class SignupActivity : ChatActivity() {
                 myCalendar.set(Calendar.YEAR, year)
                 myCalendar.set(Calendar.MONTH, monthOfYear)
                 myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
-                val myFormat = "MM/dd/yy"
+                val myFormat = "MM/dd/yyyy"
                 val sdf = SimpleDateFormat(myFormat, Locale.US)
                 birthday.setText(sdf.format(myCalendar.getTime()))
             }
@@ -134,6 +139,7 @@ class SignupActivity : ChatActivity() {
     private fun init() {
         email = binding.signupEmailEt
         password = binding.signupPasswordEt
+        name=binding.signupNameEt
         image = binding.signupImage
         birthday = binding.signinBirthday
         account=binding.signupAccount

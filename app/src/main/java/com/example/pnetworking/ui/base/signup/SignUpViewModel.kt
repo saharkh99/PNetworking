@@ -13,7 +13,7 @@ class SignUpViewModel(private val signUpRepository: AuthRepository):ChatViewmode
     fun uploadImageToFirebaseStorage(selectedPhotoUri: Uri): MutableLiveData<String>{
         return signUpRepository.uploadImageToFirebaseStorage(selectedPhotoUri)
     }
-    fun saveUserToFirebaseDatabase( email: String, birth: String, gen: String, profileImageUrl: String): MutableLiveData<Boolean>{
-        return signUpRepository.saveUserToFirebaseDatabase(email, birth, gen, profileImageUrl)
+    fun saveUserToFirebaseDatabase( email: String, birth: String, gen: String, profileImageUrl: String,name: String): MutableLiveData<Boolean>{
+        return signUpRepository.saveUserToFirebaseDatabase(email, birth, gen, profileImageUrl,name)
     }
 }

@@ -13,7 +13,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PNetworking">
         <activity android:name=".ui.profile.ProfileEditActivity"></activity>
-        <activity android:name=".ui.base.signin.SigninActivity" />
+        <activity android:name=".ui.base.signin.SigninActivity" >
+
+        </activity>
         <activity android:name=".ui.base.test.TestActivity" />
         <activity android:name=".ui.base.intro.IntroActivity" />
         <activity android:name=".ui.base.signup.SignupActivity" >

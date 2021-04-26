@@ -58,7 +58,8 @@ class AuthDataSource {
         email: String,
         birth: String,
         gen:String,
-        profileImageUrl: String
+        profileImageUrl: String,
+        names: String
 
     ): MutableLiveData<Boolean> {
         var result = MutableLiveData<Boolean>()
@@ -73,7 +74,7 @@ class AuthDataSource {
             imageProfile = profileImageUrl
             connection = 0
             gender=gen
-            name=""
+            name=names
             birthday=birth
             score="0"
         }
