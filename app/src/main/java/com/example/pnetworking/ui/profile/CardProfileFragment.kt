@@ -104,6 +104,7 @@ class CardProfileFragment : DialogFragment() {
 
     private fun setupClickListeners(view: View) {
         view.findViewById<TextView>(R.id.profile_card_connect).setOnClickListener { view1->
+            Log.d("tag",arguments?.getString(KEY_TAG).toString())
             if(arguments?.getString(KEY_TAG)=="chat")
             profileViewModel.follow(arguments?.getString(KEY_ID)!!).observe(viewLifecycleOwner, {
                 if (it) {

@@ -19,6 +19,13 @@
             android:id="@+id/profileEditActivity"
             android:name="com.example.pnetworking.ui.profile.ProfileEditActivity"
             android:label="activity_profile_edit"
-            tools:layout="@layout/activity_profile_edit" />
+            tools:layout="@layout/activity_profile_edit">
+            <argument
+                android:name="users"
+                app:argType="com.example.pnetworking.models.User" />
+        </activity>
+    <action
+        android:id="@+id/action_global_profileEditActivity"
+        app:destination="@id/profileEditActivity" />
 
-    </navigation>
+</navigation>

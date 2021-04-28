@@ -11,12 +11,14 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.RequiresApi
+import androidx.core.os.bundleOf
 import androidx.lifecycle.Observer
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pnetworking.R
 import com.example.pnetworking.databinding.FragmentProfileBinding
+import com.example.pnetworking.models.User
 import com.example.pnetworking.ui.connection.UserList
 import com.example.pnetworking.utils.ChatFragments
 import com.example.pnetworking.utils.findAge
@@ -41,14 +43,16 @@ class ProfileFragment : ChatFragments() {
     lateinit var zodiac:TextView
     lateinit var email: TextView
     lateinit var connetion: TextView
+    lateinit var favs: TextView
     lateinit var online: ImageView
     lateinit var onlineText:TextView
     lateinit var connectionRecyclerView: RecyclerView
     var running: Boolean = false
+    lateinit var user: User
     val adapter = GroupAdapter<GroupieViewHolder>()
 
     companion object{
-         val TAG = "Profile"
+         val TAG = "profile"
     }
 
     override fun onCreateView(
@@ -67,8 +71,10 @@ class ProfileFragment : ChatFragments() {
         init()
         getProfile()
         edit.setOnClickListener {
+            val bundle= bundleOf("users" to user)
             Navigation.findNavController(it)
-                .navigate(R.id.action_ProfileFragment_to_profileEditActivity)
+                .navigate(R.id.action_ProfileFragment_to_profileEditActivity,bundle)
+
         }
     }
 
@@ -87,7 +93,9 @@ class ProfileFragment : ChatFragments() {
         })
         adapter.setOnItemClickListener { item, view ->
             val userItem = item as UserList
+            user=item.user
             Log.d("image", item.user.imageProfile)
+
             val age= findAge(item.user.birthday).toString() +", "+ zodiac(item.user.birthday)
             CardProfileFragment.newInstance(
                 item.user.id,
@@ -118,6 +126,7 @@ class ProfileFragment : ChatFragments() {
                     name.text = currentUser.name
                     email.text = currentUser.emailText
                     connetion.text = currentUser.connection.toString()
+                    favs.text=currentUser.favorites
                     bio.text = currentUser.bio
                     if (currentUser.online) {
                         online.visibility = View.VISIBLE
@@ -155,6 +164,7 @@ class ProfileFragment : ChatFragments() {
         bio = binding.profileBioUser
         email = binding.profileEmailUser
         connetion = binding.profileFriendsUser
+        favs = binding.profileFavoritesUser
         online = binding.profileOnline
         onlineText=binding.profileOnlineText
         connectionRecyclerView=binding.profileRecConnections

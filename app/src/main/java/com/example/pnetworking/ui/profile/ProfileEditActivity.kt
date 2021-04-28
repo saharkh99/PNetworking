@@ -2,14 +2,20 @@ package com.example.pnetworking.ui.profile
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.Toast
 import androidx.lifecycle.Observer
+import androidx.navigation.NavArgs
+import androidx.navigation.NavArgument
+import androidx.navigation.Navigation
+import androidx.navigation.navArgs
 import com.example.pnetworking.R
 import com.example.pnetworking.databinding.ActivityProfileEditBinding
 import com.example.pnetworking.databinding.ActivitySignupBinding
+import com.example.pnetworking.models.User
 import com.example.pnetworking.utils.ChatActivity
 import com.google.android.material.textfield.TextInputEditText
 import de.hdodenhof.circleimageview.CircleImageView
@@ -28,8 +34,10 @@ class ProfileEditActivity : ChatActivity() {
     lateinit var checkMusic: CheckBox
     lateinit var checkDance: CheckBox
     lateinit var checkTravel: CheckBox
-    lateinit var fav: String
+     var fav: String=""
+
     private val mainViewModel by viewModel<ProfileViewModel>()
+    val user=navArgs<NavArgs>().value as User
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,8 +46,16 @@ class ProfileEditActivity : ChatActivity() {
         setContentView(view)
         init()
         save.setOnClickListener {
+            if (checkBook.isChecked) fav= "book $fav"
+            if (checkCook.isChecked)  fav= "cooking $fav"
+            if (checkDance.isChecked) fav= "dance $fav"
+            if (checkEnvironment.isChecked) fav="environment $fav"
+            if (checkMovie.isChecked) fav="movie $fav"
+            if (checkMusic.isChecked) fav="music $fav"
+            if (checkTech.isChecked) fav="tech $fav"
+            if (checkTravel.isChecked) fav="travel $fav"
             showProgressDialog(this)
-            mainViewModel.getIDUser().observe(this, Observer { uid ->
+            mainViewModel.getIDUser().observe(this, { uid ->
                 mainViewModel.editProfile(name.text.toString(), bio.text.toString(), uid!!,fav)
                     .observe(this,
                         {
@@ -75,14 +91,8 @@ class ProfileEditActivity : ChatActivity() {
         checkMusic = binding.checkMusic
         checkTech = binding.checkTechnology
         checkTravel = binding.checkTravel
+        name.setText(user.name)
+        bio.setText(user.bio)
 
-        if (checkBook.isChecked) fav.plus("book ")
-        if (checkCook.isChecked) fav.plus("cooking ")
-        if (checkDance.isChecked) fav.plus("dance ")
-        if (checkEnvironment.isChecked) fav.plus("environment ")
-        if (checkMovie.isChecked) fav.plus("movie ")
-        if (checkMusic.isChecked) fav.plus("music ")
-        if (checkTech.isChecked) fav.plus("tech ")
-        if (checkTravel.isChecked) fav.plus("travel ")
     }
 }
