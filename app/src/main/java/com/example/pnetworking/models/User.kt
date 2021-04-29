@@ -52,7 +52,7 @@ class User(
          writeString(typingTo)
          writeString(birthday)
          writeString(gender)
-         writeBoolean(online)
+         writeValue(online)
          writeString(score)
          writeString(favorites)
 

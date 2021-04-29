@@ -49,18 +49,22 @@ class MainActivity : ChatActivity() {
     }
 
     override fun onDestroy() {
-        super.onDestroy()
-        changeOnlineStatus(false)
+        changeOnlineStatus(false).observe(this,{
+            if(it){
+                super.onDestroy()
+            }
+        })
     }
 
-    private fun changeOnlineStatus(bool: Boolean) {
+    private fun changeOnlineStatus(bool: Boolean):MutableLiveData<Boolean> {
         var result = MutableLiveData<Boolean>()
         val uid = FirebaseAuth.getInstance().uid
         val ref = FirebaseDatabase.getInstance().getReference("/users/$uid")
         val hashmap = HashMap<String, Any>()
         hashmap.put("online", bool)
-        ref.updateChildren(hashmap).addOnSuccessListener {
+        ref.updateChildren(hashmap).addOnCompleteListener {
             result.value = true
         }
+        return result
     }
 }

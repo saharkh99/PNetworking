@@ -3,7 +3,7 @@ plugins {
     id 'kotlin-android'
 }
 apply plugin: 'com.google.gms.google-services'
-apply plugin: "androidx.navigation.safeargs.kotlin"
+apply plugin: "androidx.navigation.safeargs"
 repositories {
     maven { url "https://jitpack.io" }
 }

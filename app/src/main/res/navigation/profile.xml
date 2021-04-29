@@ -12,20 +12,19 @@
         tools:layout="@layout/fragment_profile"
         android:label="ProfileFragment">
         <action
-            android:id="@+id/action_ProfileFragment_to_profileEditActivity"
+            android:id="@+id/action_ProfileFragment_to_profileEditActivity2"
             app:destination="@id/profileEditActivity" />
     </fragment>
-        <activity
-            android:id="@+id/profileEditActivity"
-            android:name="com.example.pnetworking.ui.profile.ProfileEditActivity"
-            android:label="activity_profile_edit"
-            tools:layout="@layout/activity_profile_edit">
-            <argument
-                android:name="users"
-                app:argType="com.example.pnetworking.models.User" />
-        </activity>
-    <action
-        android:id="@+id/action_global_profileEditActivity"
-        app:destination="@id/profileEditActivity" />
-
+    <activity
+        android:id="@+id/profileEditActivity"
+        android:name="com.example.pnetworking.ui.profile.ProfileEditActivity"
+        android:label="activity_profile_edit"
+        tools:layout="@layout/activity_profile_edit" >
+        <argument
+            android:name="users"
+            app:argType="string" />
+        <argument
+            android:name="bio"
+            app:argType="string" />
+    </activity>
 </navigation>

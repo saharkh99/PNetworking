@@ -1,5 +1,6 @@
 package com.example.pnetworking.ui.profile
 
+import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -11,9 +12,9 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.RequiresApi
-import androidx.core.os.bundleOf
 import androidx.lifecycle.Observer
 import androidx.navigation.Navigation
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pnetworking.R
@@ -71,9 +72,8 @@ class ProfileFragment : ChatFragments() {
         init()
         getProfile()
         edit.setOnClickListener {
-            val bundle= bundleOf("users" to user)
-            Navigation.findNavController(it)
-                .navigate(R.id.action_ProfileFragment_to_profileEditActivity,bundle)
+            val action=ProfileFragmentDirections.actionProfileFragmentToProfileEditActivity2(user.name,user.bio)
+            view.findNavController().navigate(action)
 
         }
     }
@@ -81,7 +81,11 @@ class ProfileFragment : ChatFragments() {
     @RequiresApi(Build.VERSION_CODES.O)
     private fun initRec() {
         connectionRecyclerView?.adapter = adapter
-        connectionRecyclerView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, true)
+        connectionRecyclerView.layoutManager = LinearLayoutManager(
+            requireContext(),
+            LinearLayoutManager.VERTICAL,
+            true
+        )
         followViewModel.getFollowers().observe(viewLifecycleOwner, {
             hideProgressDialog()
             for (s: String in it) {
@@ -93,7 +97,7 @@ class ProfileFragment : ChatFragments() {
         })
         adapter.setOnItemClickListener { item, view ->
             val userItem = item as UserList
-            user=item.user
+
             Log.d("image", item.user.imageProfile)
 
             val age= findAge(item.user.birthday).toString() +", "+ zodiac(item.user.birthday)
@@ -118,6 +122,9 @@ class ProfileFragment : ChatFragments() {
                 Log.d("uids", it)
                 mainViewModel.getCurrentUser(it).observe(viewLifecycleOwner, Observer {
                     val currentUser = it
+                    user = User()
+                    user.name=currentUser.name
+                    user.bio=currentUser.bio
                     Log.d("image", currentUser.imageProfile)
                     if (currentUser.imageProfile != "")
                         Picasso.get().load(Uri.parse(currentUser.imageProfile)).into(image)
@@ -126,7 +133,7 @@ class ProfileFragment : ChatFragments() {
                     name.text = currentUser.name
                     email.text = currentUser.emailText
                     connetion.text = currentUser.connection.toString()
-                    favs.text=currentUser.favorites
+                    favs.text = currentUser.favorites
                     bio.text = currentUser.bio
                     if (currentUser.online) {
                         online.visibility = View.VISIBLE
@@ -135,8 +142,9 @@ class ProfileFragment : ChatFragments() {
                         online.visibility = View.GONE
                         onlineText.visibility = View.GONE
                     }
-                    age.text= com.example.pnetworking.utils.findAge(currentUser.birthday).toString()
-                    zodiac.text=com.example.pnetworking.utils.zodiac(currentUser.birthday)
+                    age.text =
+                        com.example.pnetworking.utils.findAge(currentUser.birthday).toString()
+                    zodiac.text = com.example.pnetworking.utils.zodiac(currentUser.birthday)
                 })
                 initRec()
             }

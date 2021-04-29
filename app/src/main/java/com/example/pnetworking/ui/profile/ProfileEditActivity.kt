@@ -1,25 +1,17 @@
 package com.example.pnetworking.ui.profile
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.CheckBox
-import android.widget.EditText
 import android.widget.Toast
-import androidx.lifecycle.Observer
-import androidx.navigation.NavArgs
-import androidx.navigation.NavArgument
-import androidx.navigation.Navigation
 import androidx.navigation.navArgs
-import com.example.pnetworking.R
 import com.example.pnetworking.databinding.ActivityProfileEditBinding
-import com.example.pnetworking.databinding.ActivitySignupBinding
 import com.example.pnetworking.models.User
 import com.example.pnetworking.utils.ChatActivity
 import com.google.android.material.textfield.TextInputEditText
-import de.hdodenhof.circleimageview.CircleImageView
 import org.koin.android.viewmodel.ext.android.viewModel
+
 
 class ProfileEditActivity : ChatActivity() {
     lateinit var binding: ActivityProfileEditBinding
@@ -35,15 +27,20 @@ class ProfileEditActivity : ChatActivity() {
     lateinit var checkDance: CheckBox
     lateinit var checkTravel: CheckBox
      var fav: String=""
+    lateinit var user:User
+    val args: ProfileEditActivityArgs by navArgs()
 
     private val mainViewModel by viewModel<ProfileViewModel>()
-    val user=navArgs<NavArgs>().value as User
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityProfileEditBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
+        user=User()
+        user.name=args.users
+        user.bio=args.bio
         init()
         save.setOnClickListener {
             if (checkBook.isChecked) fav= "book $fav"
@@ -56,7 +53,7 @@ class ProfileEditActivity : ChatActivity() {
             if (checkTravel.isChecked) fav="travel $fav"
             showProgressDialog(this)
             mainViewModel.getIDUser().observe(this, { uid ->
-                mainViewModel.editProfile(name.text.toString(), bio.text.toString(), uid!!,fav)
+                mainViewModel.editProfile(name.text.toString(), bio.text.toString(), uid!!, fav)
                     .observe(this,
                         {
                             hideProgressDialog()
