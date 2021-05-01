@@ -11,8 +11,8 @@ class FollowViewModel(private val followRepository: FollowRepository): ChatViewm
         return followRepository.getFollowers()
     }
 
-    fun increasingConnections(): MutableLiveData<Boolean> {
-        return followRepository.increasingConnections()
+    fun increasingConnections(fid: String): MutableLiveData<Boolean> {
+        return followRepository.increasingConnections(fid)
     }
 
     fun follow(fid: String):LiveData<Boolean>{
@@ -25,5 +25,8 @@ class FollowViewModel(private val followRepository: FollowRepository): ChatViewm
 
     fun getRequests(): MutableLiveData<List<String>>{
         return followRepository.getRequests()
+    }
+    fun deleteRequest(fid:String):MutableLiveData<Boolean>{
+        return followRepository.deleteRequest(fid)
     }
 }

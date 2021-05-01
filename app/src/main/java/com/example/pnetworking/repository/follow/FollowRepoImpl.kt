@@ -9,8 +9,8 @@ class FollowRepoImpl(private val followDataSource: FollowDataSource): FollowRepo
         return followDataSource.getFollowers()
     }
 
-    override fun increasingConnections(): MutableLiveData<Boolean> {
-        return followDataSource.increasingConnections()
+    override fun increasingConnections(fid:String): MutableLiveData<Boolean> {
+        return followDataSource.increasingConnections(fid)
     }
 
     override fun follow(fid: String): LiveData<Boolean> {
@@ -23,5 +23,9 @@ class FollowRepoImpl(private val followDataSource: FollowDataSource): FollowRepo
 
     override fun getRequests(): MutableLiveData<List<String>> {
         return followDataSource.getRequests()
+    }
+
+    override fun deleteRequest(fid: String): MutableLiveData<Boolean> {
+        return followDataSource.deleteRequest(fid)
     }
 }

@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import com.example.pnetworking.R
@@ -105,22 +106,29 @@ class CardProfileFragment : DialogFragment() {
     private fun setupClickListeners(view: View) {
         view.findViewById<TextView>(R.id.profile_card_connect).setOnClickListener { view1->
             Log.d("tag",arguments?.getString(KEY_TAG).toString())
-            if(arguments?.getString(KEY_TAG)=="chat")
-            profileViewModel.follow(arguments?.getString(KEY_ID)!!).observe(viewLifecycleOwner, {
-                if (it) {
-                    profileViewModel.increasingConnections().observe(viewLifecycleOwner, { it1 ->
-                        if (it1) {
+            if(arguments?.getString(KEY_TAG)=="Chat") {
+                profileViewModel.follow(arguments?.getString(KEY_ID)!!)
+                    .observe(viewLifecycleOwner, {
+                        if (it) {
                             Log.d("shod", "shod")
-                            view1.setBackgroundColor(getResources().getColor(R.color.teal_200))
-                            view1.isClickable =
-                                false
-                            dismiss()
+                            profileViewModel.increasingConnections(arguments?.getString(KEY_ID)!!)
+                                .observe(viewLifecycleOwner, { it1 ->
+                                    if (it1) {
+                                        view.findViewById<TextView>(R.id.profile_card_connect).setBackgroundColor(getResources().getColor(R.color.teal_200))
+                                        view1.background = resources.getDrawable(R.color.teal_200)
+                                        view1.isClickable =
+                                            false
+                                        profileViewModel.deleteRequest(arguments?.getString(KEY_ID)!!).observe(viewLifecycleOwner,{
+                                           if(it)
+                                               dismiss()
+                                        })
+                                    }
+                                })
                         }
                     })
-                }
-            })
+            }
 
-            if(arguments?.getString(KEY_TAG)=="profile")
+            if(arguments?.getString(KEY_TAG)=="Profile")
             profileViewModel.sendRequest(arguments?.getString(KEY_ID)!!).observe(viewLifecycleOwner,{
                 if(it){
                     Log.d("shod","shod")

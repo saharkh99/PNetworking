@@ -15,7 +15,7 @@ class FollowDataSource {
     fun follow(fid: String): MutableLiveData<Boolean> {
         var result = MutableLiveData<Boolean>()
         val uid = FirebaseAuth.getInstance().uid!!
-        if (uid != fid) {
+       // if (uid != fid) {
             val ref =
                 FirebaseDatabase.getInstance().getReference("/connection/$uid/$fid")
             val follow = Follow()
@@ -50,23 +50,46 @@ class FollowDataSource {
                     result.value = false
                 }
             return result
-        }
+      //  }
         return result
     }
 
-    fun increasingConnections(): MutableLiveData<Boolean> {
+    fun increasingConnections(fid: String): MutableLiveData<Boolean> {
         val uid = FirebaseAuth.getInstance().uid!!
         var result = MutableLiveData<Boolean>()
         val hashmap = HashMap<String, Any>()
         var con: Int = 0
-        hashmap.put("connection", con + 1)
         val ref = FirebaseDatabase.getInstance().getReference("/users/$uid")
         ref.addListenerForSingleValueEvent(object : ValueEventListener {
 
             override fun onDataChange(p0: DataSnapshot) {
                 val user = p0.getValue(User::class.java)
                 con = user!!.connection
+                hashmap.put("connection", con + 1)
                 Log.d("con", con.toString())
+                ref.updateChildren(hashmap).addOnSuccessListener {
+                    Log.d("con", "connnnnnnn")
+                    result.value = true
+                }.addOnFailureListener {
+                    result.value = false
+                }
+
+            }
+
+            override fun onCancelled(p0: DatabaseError) {
+                Log.d("error", p0.message)
+
+            }
+        })
+
+        con = 0
+        val ref1 = FirebaseDatabase.getInstance().getReference("/users/$fid")
+        ref.addListenerForSingleValueEvent(object : ValueEventListener {
+
+            override fun onDataChange(p0: DataSnapshot) {
+                val user = p0.getValue(User::class.java)
+                con = user!!.connection
+                hashmap.put("connection", con + 1)
                 ref.updateChildren(hashmap).addOnSuccessListener {
                     Log.d("con", "connnnnnnn")
                     result.value = true
