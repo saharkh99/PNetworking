@@ -91,6 +91,7 @@ class ConnectionFragment : ChatFragments() {
             hideProgressDialog()
             for (u: User in it) {
                 Log.d("u",u.id)
+                if(u!=null )
                 adapter.add(UserList(u,requireContext()))
                 l.add(u)
             }

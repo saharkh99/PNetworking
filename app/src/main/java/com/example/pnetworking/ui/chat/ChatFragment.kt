@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.pnetworking.databinding.FragmentChatBinding
 import com.example.pnetworking.ui.connection.UserList
 import com.example.pnetworking.ui.profile.CardProfileFragment
@@ -23,9 +24,11 @@ import org.koin.android.viewmodel.ext.android.viewModel
 open class ChatFragment:ChatFragments() {
     private val followViewModel by viewModel<FollowViewModel>()
     private val mainViewModel by viewModel<ProfileViewModel>()
-    val adapter = GroupAdapter<GroupieViewHolder>()
     private var _binding: FragmentChatBinding? = null
     private val binding get() = _binding!!
+    lateinit var rec:RecyclerView
+    val adapter = GroupAdapter<GroupieViewHolder>()
+
     companion object{
         val TAG = "Chat"
     }
@@ -37,27 +40,26 @@ open class ChatFragment:ChatFragments() {
     ): View? {
         _binding = FragmentChatBinding.inflate(inflater, container, false)
         val view = binding.root
+        rec = binding.recentMessageRequests
         return view
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initRecyclerView()
+          initRecyclerView()
 
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun initRecyclerView(){
-        val rec = binding.recentMessageRequests
-        rec?.adapter = adapter
-        rec?.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, true)
         showProgressDialog(requireContext())
         followViewModel.getRequests().observe(viewLifecycleOwner,{
             hideProgressDialog()
             for (s: String in it) {
                 mainViewModel.getCurrentUser(s).observe(viewLifecycleOwner, { u ->
-                    if(u!=null)
+                    rec?.adapter = adapter
+                    rec?.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, true)
                      adapter.add(UserList(u, requireContext()))
                      Log.d("u", u.id)
                 })
@@ -77,7 +79,9 @@ open class ChatFragment:ChatFragments() {
                 age,
                 ChatFragment.TAG
             ).show(parentFragmentManager, CardProfileFragment.TAG)
+
         }
 
     }
+
 }

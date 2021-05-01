@@ -90,6 +90,7 @@ class ProfileFragment : ChatFragments() {
             hideProgressDialog()
             for (s: String in it) {
                 mainViewModel.getCurrentUser(s).observe(viewLifecycleOwner, { u ->
+                    if(u!=null)
                     adapter.add(UserList(u, requireContext()))
                     Log.d("u", u.id)
                 })

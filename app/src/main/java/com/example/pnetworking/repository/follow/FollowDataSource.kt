@@ -133,7 +133,7 @@ class FollowDataSource {
         var result = MutableLiveData<Boolean>()
         val ref = FirebaseDatabase.getInstance().getReference("/users/$fid/requests")
         val hashmap = HashMap<String, Any>()
-        hashmap.put("user", uid)
+        hashmap.put(uid, uid)
         ref.setValue(hashmap).addOnSuccessListener {
             result.value = true
         }
@@ -165,8 +165,10 @@ class FollowDataSource {
 
     fun deleteRequest(fid:String):MutableLiveData<Boolean>{
         var result = MutableLiveData<Boolean>()
-        val ref = FirebaseDatabase.getInstance().getReference("/users/$fid/requests")
-        ref.child("users").removeValue().addOnSuccessListener {
+        val uid = FirebaseAuth.getInstance().uid!!
+        val ref = FirebaseDatabase.getInstance().getReference("/users/$fid/requests/")
+        ref.removeValue().addOnSuccessListener {
+            result.value=true
             Log.d("shod","shod")
         }
          return result

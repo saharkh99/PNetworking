@@ -119,8 +119,10 @@ class CardProfileFragment : DialogFragment() {
                                         view1.isClickable =
                                             false
                                         profileViewModel.deleteRequest(arguments?.getString(KEY_ID)!!).observe(viewLifecycleOwner,{
-                                           if(it)
+                                           if(it) {
+                                               Log.d("shod3", "shod3")
                                                dismiss()
+                                           }
                                         })
                                     }
                                 })
