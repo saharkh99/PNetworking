@@ -1,6 +1,6 @@
 package com.example.pnetworking.ui.profile
 
-import android.graphics.drawable.Drawable
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -12,10 +12,10 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
-import androidx.lifecycle.lifecycleScope
 import com.example.pnetworking.R
+import com.example.pnetworking.models.User
+import com.example.pnetworking.ui.pchat.PrivateChat
 import com.squareup.picasso.Picasso
-import de.hdodenhof.circleimageview.CircleImageView
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class CardProfileFragment : DialogFragment() {
@@ -29,8 +29,10 @@ class CardProfileFragment : DialogFragment() {
         private const val KEY_FAVORITE = "KEY_FAVORITE"
         private const val KEY_TAG = "KEY_TAG"
         private const val KEY_AGE = "KEY_AGE"
+        private const val KEY_USER= "KEY_USER"
 
         fun newInstance(
+            user: User,
             id: String,
             name: String,
             bio: String,
@@ -42,6 +44,7 @@ class CardProfileFragment : DialogFragment() {
         ): CardProfileFragment {
 
             val args = Bundle()
+            args.putParcelable(KEY_USER,user)
             args.putString(KEY_ID, id)
             args.putString(KEY_NAME, name)
             args.putString(KEY_BIO, bio)
@@ -140,7 +143,12 @@ class CardProfileFragment : DialogFragment() {
 
         }
         view.findViewById<TextView>(R.id.profile_card_Message).setOnClickListener {
-            dismiss()
+            val intent = Intent(this.requireActivity(), PrivateChat::class.java)
+            Log.d("user",(arguments?.getParcelable(KEY_USER) as User?)!!.id)
+            startActivity(intent)
+            intent.putExtra(KEY_USER, arguments?.getParcelable(KEY_USER) as User?)
+            Log.d("intent",(intent.getParcelableExtra(KEY_USER) as User?)!!.name)
+            //dismiss()
         }
     }
 

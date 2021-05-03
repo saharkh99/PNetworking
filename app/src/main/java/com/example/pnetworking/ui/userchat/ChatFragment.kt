@@ -1,4 +1,4 @@
-package com.example.pnetworking.ui.chat
+package com.example.pnetworking.ui.userchat
 
 import android.os.Build
 import android.os.Bundle
@@ -70,6 +70,7 @@ open class ChatFragment:ChatFragments() {
             Log.d("image", item.user.imageProfile)
             val age= findAge(item.user.birthday).toString() +", "+ zodiac(item.user.birthday)
             CardProfileFragment.newInstance(
+                item.user,
                 item.user.id,
                 item.user.name,
                 item.user.bio,

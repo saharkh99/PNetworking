@@ -103,6 +103,7 @@ class ProfileFragment : ChatFragments() {
 
             val age= findAge(item.user.birthday).toString() +", "+ zodiac(item.user.birthday)
             CardProfileFragment.newInstance(
+                item.user,
                 item.user.id,
                 item.user.name,
                 item.user.bio,

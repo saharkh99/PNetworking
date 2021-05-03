@@ -18,7 +18,6 @@ import com.example.chat.ui.main.connection.ConnectionViewModel
 
 import com.example.pnetworking.R
 import com.example.pnetworking.models.User
-import com.example.pnetworking.ui.chat.ChatFragment
 import com.example.pnetworking.ui.profile.CardProfileFragment
 import com.example.pnetworking.utils.ChatFragments
 import com.example.pnetworking.utils.findAge
@@ -101,6 +100,7 @@ class ConnectionFragment : ChatFragments() {
             val age= findAge(item.user.birthday).toString() +", "+ zodiac(item.user.birthday)
             Log.d("image",item.user.imageProfile)
             CardProfileFragment.newInstance(
+                item.user,
                 item.user.id,
                 item.user.name,
                 item.user.bio,
