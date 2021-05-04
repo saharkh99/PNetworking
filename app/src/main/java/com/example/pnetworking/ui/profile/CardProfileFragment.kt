@@ -145,9 +145,10 @@ class CardProfileFragment : DialogFragment() {
         view.findViewById<TextView>(R.id.profile_card_Message).setOnClickListener {
             val intent = Intent(this.requireActivity(), PrivateChat::class.java)
             Log.d("user",(arguments?.getParcelable(KEY_USER) as User?)!!.id)
+            intent.putExtra("KEY_USER", arguments?.getString(KEY_NAME))
+            intent.putExtra("KEY_USER2", arguments?.getString(KEY_IMG))
+            //intent.putExtra("KEY_USER3", arguments?.getParcelable(KEY_USER) as User?)
             startActivity(intent)
-            intent.putExtra(KEY_USER, arguments?.getParcelable(KEY_USER) as User?)
-            Log.d("intent",(intent.getParcelableExtra(KEY_USER) as User?)!!.name)
             //dismiss()
         }
     }
