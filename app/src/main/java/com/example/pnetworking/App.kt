@@ -10,7 +10,8 @@ class App : Application() {
         super.onCreate()
         startKoin {
             androidContext(this@App)
-            modules(listOf(signupmodule, testmodule,profilemodule,connectionmodule, followmodule))
+            modules(listOf(signupmodule, testmodule,profilemodule,connectionmodule, followmodule,
+                pchatmodule))
         }
     }
 }

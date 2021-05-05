@@ -16,18 +16,22 @@ import java.util.*
 
 class PChatDataSource {
 
-     fun performSendMessage(text: String, user: User, chat: Chat, selectedPhotoUri: Uri) {
-        val value = MutableLiveData<Boolean>()
+    fun performSendMessage(
+        text: String,
+        chat: String,
+        selectedPhotoUri: Uri
+    ): MutableLiveData<String> {
+        val value = MutableLiveData<String>()
         val fromId = FirebaseAuth.getInstance().uid
         var toChat = ""
         if (chat != null) {
-            toChat = chat.idChat
+            toChat = chat
         }
-        if (fromId == null) return
+        if (fromId == null) return value
         val reference =
             FirebaseDatabase.getInstance().getReference("/user_message/$fromId/$toChat").push()
         val toReference =
-            FirebaseDatabase.getInstance().getReference("/chat/$toChat/$fromId").push()
+            FirebaseDatabase.getInstance().getReference("/chat/$toChat/message/$fromId").push()
         var chatMessage = Message()
         if (selectedPhotoUri == null) {
             chatMessage =
@@ -43,10 +47,10 @@ class PChatDataSource {
             reference.setValue(chatMessage)
                 .addOnSuccessListener {
                     Log.d("TAG", "Saved our chat message: ${reference.key}")
-                    value.value = true
+                    value.value = "true"
                 }
             toReference.setValue(chatMessage).addOnSuccessListener {
-                value.value = true
+                value.value = "true"
             }
             val latestMessageRef =
                 FirebaseDatabase.getInstance().getReference("chat/$toChat/latest-messages/$fromId/")
@@ -57,7 +61,8 @@ class PChatDataSource {
 
         } else {
             val filename = UUID.randomUUID().toString()
-            val ref = FirebaseStorage.getInstance().getReference("/image_messages/$filename")
+            val ref =
+                FirebaseStorage.getInstance().getReference("chat/$toChat/image_messages/$filename")
             ref.putFile(selectedPhotoUri!!)
                 .addOnSuccessListener {
                     Log.d("TAG", "Successfully uploaded image: ${it.metadata?.path}")
@@ -92,14 +97,14 @@ class PChatDataSource {
                 .addOnFailureListener {
                     Log.d("TAG", "Failed to upload image to storage: ${it.message}")
                 }
-
         }
-
+        return value
     }
-     fun listenForMessages(text: String, chat: Chat) {
+
+    fun listenForMessages(text: String, chat: Chat) {
         val fromId = FirebaseAuth.getInstance().uid
         val toId = chat?.idChat
-        val ref = FirebaseDatabase.getInstance().getReference("/chat/$toId/$fromId")
+        val ref = FirebaseDatabase.getInstance().getReference("/chat/$toId/message/$fromId")
         ref.addChildEventListener(object : ChildEventListener {
             override fun onChildAdded(p0: DataSnapshot, p1: String?) {
                 val chatMessage = p0.getValue(Message::class.java)
@@ -108,6 +113,7 @@ class PChatDataSource {
                 }
 
             }
+
             override fun onCancelled(p0: DatabaseError) {
             }
 
@@ -125,5 +131,48 @@ class PChatDataSource {
 
         })
 
+    }
+
+    fun addChat(fid: String): MutableLiveData<String> {
+        var result = MutableLiveData<String>()
+        val uid = FirebaseAuth.getInstance().currentUser.uid
+        val chatId = uid.plus(fid)
+        val refrence = FirebaseDatabase.getInstance().getReference("/chat/users/$chatId").key
+        if (refrence == null) {
+            val ref = FirebaseDatabase.getInstance().getReference("/chat/users/")
+            Log.d("ref", ref.key!!)
+            val chat = Chat()
+            val chat1 = Chat()
+            with(chat) {
+                idChat = chatId
+                idUSer = uid
+                type = "private"
+            }
+            ref.setValue(chat).addOnSuccessListener {
+                Log.d("TAG", "add chat")
+                result.value = chatId
+            }
+                .addOnFailureListener {
+                    Log.e("TAG", "Failed to set value to database: ${it.message}")
+                    result.value = "false"
+                }
+            with(chat1) {
+                idChat = uid.plus(fid)
+                idUSer = uid
+                type = "private"
+            }
+            ref.setValue(chat1).addOnSuccessListener {
+                Log.d("TAG", "Finally we saved the user to Firebase Database")
+                result.value = chatId
+            }
+                .addOnFailureListener {
+                    Log.e("TAG", "Failed to set value to database: ${it.message}")
+                    result.value = "false"
+                }
+
+        } else {
+            result.value = chatId
+        }
+        return result
     }
 }

@@ -147,6 +147,7 @@ class CardProfileFragment : DialogFragment() {
             Log.d("user",(arguments?.getParcelable(KEY_USER) as User?)!!.id)
             intent.putExtra("KEY_USER", arguments?.getString(KEY_NAME))
             intent.putExtra("KEY_USER2", arguments?.getString(KEY_IMG))
+            intent.putExtra("KEY_USER3", arguments?.getString(KEY_ID))
             //intent.putExtra("KEY_USER3", arguments?.getParcelable(KEY_USER) as User?)
             startActivity(intent)
             //dismiss()
