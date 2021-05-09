@@ -15,7 +15,7 @@ import com.google.firebase.storage.FirebaseStorage
 import java.util.*
 
 class PChatDataSource {
-
+    // just 3 months(tolerate)
     fun performSendMessage(
         text: String,
         chat: String,
@@ -33,7 +33,7 @@ class PChatDataSource {
         val toReference =
             FirebaseDatabase.getInstance().getReference("/chat/$toChat/message/$fromId").push()
         var chatMessage = Message()
-        if (selectedPhotoUri == null) {
+        if (selectedPhotoUri.path =="") {
             chatMessage =
                 Message(
                     reference.key!!,
@@ -101,15 +101,21 @@ class PChatDataSource {
         return value
     }
 
-    fun listenForMessages(text: String, chat: Chat) {
+    fun listenForMessages( chat: String):MutableLiveData<Message> {
+        Log.d("get","getmessage")
+        var result = MutableLiveData<Message>()
         val fromId = FirebaseAuth.getInstance().uid
-        val toId = chat?.idChat
+        val toId = chat
+        Log.d("toid",toId)
+        Log.d("from",fromId.toString())
         val ref = FirebaseDatabase.getInstance().getReference("/chat/$toId/message/$fromId")
         ref.addChildEventListener(object : ChildEventListener {
             override fun onChildAdded(p0: DataSnapshot, p1: String?) {
+                Log.d("get","getmessage")
                 val chatMessage = p0.getValue(Message::class.java)
                 if (chatMessage != null) {
-                    Log.d("TAG", chatMessage.idUSer)
+                    Log.d("TAG1", chatMessage.context)
+                    result.value=chatMessage
                 }
 
             }
@@ -130,7 +136,7 @@ class PChatDataSource {
             }
 
         })
-
+      return result
     }
 
     fun addChat(fid: String): MutableLiveData<String> {

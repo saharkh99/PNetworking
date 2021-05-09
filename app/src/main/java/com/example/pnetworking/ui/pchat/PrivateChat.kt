@@ -16,7 +16,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pnetworking.R
 import com.example.pnetworking.databinding.ActivityPrivateChatBinding
+import com.example.pnetworking.ui.MainActivity
+import com.example.pnetworking.ui.profile.ProfileEditActivity
+import com.example.pnetworking.ui.profile.ProfileFragment
 import com.example.pnetworking.ui.profile.ProfileViewModel
+import com.google.firebase.auth.FirebaseAuth
 import com.squareup.picasso.Picasso
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
@@ -51,7 +55,7 @@ class PrivateChat : AppCompatActivity() {
         userImage = intent.getStringExtra("KEY_USER2")!!
         userId = intent.getStringExtra("KEY_USER3")!!
         init()
-        listenForMessages(editChat.text.toString())
+        listenForMessages()
         uploadImage()
         send.setOnClickListener {
             Log.d("TAG", "Attempt to send message....")
@@ -65,8 +69,15 @@ class PrivateChat : AppCompatActivity() {
     }
 
     private fun performSendMessage(text: String) {
+        if(selectedPhotoUri==null)
+            selectedPhotoUri=Uri.parse("")
        mainViewModel.performSendMessage(text,chatId,selectedPhotoUri!!).observe(this,{
            Log.d("send message",it)
+           if(it=="true")
+               editChat.setText("")
+           else{
+               Log.d("send message","try again")
+           }
        })
     }
 
@@ -90,8 +101,15 @@ class PrivateChat : AppCompatActivity() {
         }
     }
 
-    private fun listenForMessages(text: String) {
-        
+    private fun listenForMessages() {
+        mainViewModel.listenForMessages(chatId).observe(this,{chatMessage->
+            Log.d("from", "1")
+            if (chatMessage.idUSer == FirebaseAuth.getInstance().uid) {
+                adapter.add(ChatItem(chatMessage,userImage, false))
+            } else {
+                adapter.add(ChatItem(chatMessage,userImage,true))
+            }
+        })
     }
 
     private fun init() {
