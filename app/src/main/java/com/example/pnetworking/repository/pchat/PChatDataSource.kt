@@ -60,6 +60,7 @@ class PChatDataSource {
 
 
         } else {
+            Log.d("image",selectedPhotoUri.path!!)
             val filename = UUID.randomUUID().toString()
             val ref =
                 FirebaseStorage.getInstance().getReference("chat/$toChat/image_messages/$filename")

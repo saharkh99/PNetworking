@@ -55,7 +55,7 @@ class PrivateChat : AppCompatActivity() {
         userImage = intent.getStringExtra("KEY_USER2")!!
         userId = intent.getStringExtra("KEY_USER3")!!
         init()
-        listenForMessages()
+
         uploadImage()
         send.setOnClickListener {
             Log.d("TAG", "Attempt to send message....")
@@ -65,12 +65,14 @@ class PrivateChat : AppCompatActivity() {
             Log.d("add chat",it)
             if(it!="false")
                 chatId=it
+            listenForMessages()
         })
     }
 
     private fun performSendMessage(text: String) {
         if(selectedPhotoUri==null)
             selectedPhotoUri=Uri.parse("")
+        Log.d("selected",selectedPhotoUri?.path!!)
        mainViewModel.performSendMessage(text,chatId,selectedPhotoUri!!).observe(this,{
            Log.d("send message",it)
            if(it=="true")
@@ -98,6 +100,7 @@ class PrivateChat : AppCompatActivity() {
             Log.d("TAG", "Photo was selected")
             selectedPhotoUri = data.data
             Log.d("chat",selectedPhotoUri.toString()+"1")
+
         }
     }
 
@@ -105,9 +108,9 @@ class PrivateChat : AppCompatActivity() {
         mainViewModel.listenForMessages(chatId).observe(this,{chatMessage->
             Log.d("from", "1")
             if (chatMessage.idUSer == FirebaseAuth.getInstance().uid) {
-                adapter.add(ChatItem(chatMessage,userImage, false))
+                adapter.add(0,ChatItem(chatMessage,userImage, false))
             } else {
-                adapter.add(ChatItem(chatMessage,userImage,true))
+                adapter.add(0,ChatItem(chatMessage,userImage,true))
             }
         })
     }
