@@ -15,7 +15,6 @@ import com.google.firebase.storage.FirebaseStorage
 import java.util.*
 
 class PChatDataSource {
-    // just 3 months(tolerate)
     fun performSendMessage(
         text: String,
         chat: String,

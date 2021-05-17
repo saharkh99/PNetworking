@@ -6,7 +6,6 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
@@ -16,10 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pnetworking.R
 import com.example.pnetworking.databinding.ActivityPrivateChatBinding
-import com.example.pnetworking.ui.MainActivity
-import com.example.pnetworking.ui.profile.ProfileEditActivity
-import com.example.pnetworking.ui.profile.ProfileFragment
-import com.example.pnetworking.ui.profile.ProfileViewModel
+import com.example.pnetworking.models.Message
 import com.google.firebase.auth.FirebaseAuth
 import com.squareup.picasso.Picasso
 import com.xwray.groupie.GroupAdapter
@@ -28,7 +24,7 @@ import de.hdodenhof.circleimageview.CircleImageView
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class PrivateChat : AppCompatActivity() {
-    //(send message and receive with image and notification-notification)- image-recent message-delete/edit
+    //image(attachment)-notification-delete-reply-seen-new message-typing
     var username = ""
     var userImage = ""
     var chatId=""
@@ -75,8 +71,12 @@ class PrivateChat : AppCompatActivity() {
         Log.d("selected",selectedPhotoUri?.path!!)
        mainViewModel.performSendMessage(text,chatId,selectedPhotoUri!!).observe(this,{
            Log.d("send message",it)
-           if(it=="true")
+           if(it=="true"){
                editChat.setText("")
+               var msg= Message()
+               msg.context=text
+               mainViewModel.sendNotification(msg,chatId,true)
+           }
            else{
                Log.d("send message","try again")
            }

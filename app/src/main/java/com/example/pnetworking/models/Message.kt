@@ -8,7 +8,7 @@ import androidx.annotation.RequiresApi
 data class Message(
     val id: String = "",
     val idUSer: String = "",
-    val context: String = "",
+    var context: String = "",
     val idTo: String = "",
     val timestamp: Long,//string in format yy/mm/dd:mm
     val type: String = "text",

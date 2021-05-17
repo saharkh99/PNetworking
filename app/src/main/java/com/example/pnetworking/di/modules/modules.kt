@@ -8,6 +8,7 @@ import com.example.pnetworking.repository.connection.ConnectionRepository
 import com.example.pnetworking.repository.follow.FollowDataSource
 import com.example.pnetworking.repository.follow.FollowRepoImpl
 import com.example.pnetworking.repository.follow.FollowRepository
+import com.example.pnetworking.repository.notifications.NotificationDataSource
 import com.example.pnetworking.repository.pchat.PChatDataSource
 import com.example.pnetworking.repository.pchat.PChatRepoImpl
 import com.example.pnetworking.repository.pchat.PChatRepository
@@ -62,7 +63,7 @@ val connectionmodule= module {
 }
 val pchatmodule= module {
     viewModel {
-        PrivateChateViewModel(get())
+        PrivateChateViewModel(get(), NotificationDataSource())
     }
     single<PChatRepository> { PChatRepoImpl(PChatDataSource()) }
 }

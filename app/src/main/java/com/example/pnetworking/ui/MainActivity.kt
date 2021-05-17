@@ -1,15 +1,18 @@
 package com.example.pnetworking.ui
 
 import android.os.Bundle
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavController
 import com.example.pnetworking.R
+import com.example.pnetworking.models.Token
 import com.example.pnetworking.utils.ChatActivity
 import com.example.pnetworking.utils.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.iid.FirebaseInstanceId
 
 class MainActivity : ChatActivity() {
     //repeat itself- remove request-block user-ugly chat recyclerview
@@ -20,6 +23,7 @@ class MainActivity : ChatActivity() {
         if (savedInstanceState == null) {
             setupBottomNavigationBar()
         }
+        updateToken(FirebaseInstanceId.getInstance().getToken()!!)
     }
 
     private fun setupBottomNavigationBar() {
@@ -66,5 +70,25 @@ class MainActivity : ChatActivity() {
             result.value = true
         }
         return result
+    }
+
+    fun updateToken(token: String){
+        val ref=FirebaseDatabase.getInstance().getReference("token")
+        val mtoken=Token(token)
+        Log.d("token",mtoken.token)
+        ref.child(FirebaseAuth.getInstance().uid!!).setValue(mtoken)
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        checkUserStatus()
+    }
+
+    private fun checkUserStatus() {
+        val sp=getSharedPreferences("SP_USER", MODE_PRIVATE)
+        val editor=sp.edit()
+        editor.putString("CURRENT_USERID",FirebaseAuth.getInstance().uid!!)
+        editor.apply()
     }
 }

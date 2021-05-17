@@ -39,9 +39,8 @@ class ChatItem(val text: Message, val image: String, val type:Boolean) : Item<Gr
             textview.text = text.context
         }
         val uri = image
-        val imageView = viewHolder.itemView.findViewById<ImageView>(R.id.chat_image_user)
-        if (uri != "" && !type)
-            Picasso.get().load(uri).into(imageView)
+//        if (uri != "" && !type)
+//            Picasso.get().load(uri).into(imageView)
         val formatter =  SimpleDateFormat("hh:mm");
         val dateString = formatter.format( Date(toLong(text.timestamp,0)));
         time.text=dateString

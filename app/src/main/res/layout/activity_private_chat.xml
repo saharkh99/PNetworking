@@ -29,11 +29,14 @@
     </androidx.appcompat.widget.Toolbar>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:padding="15dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/chat_message_box_et"
         app:layout_constraintTop_toBottomOf="@id/chat_toolbar"
         android:id="@+id/chat_recycler_views_messages"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
     <EditText
