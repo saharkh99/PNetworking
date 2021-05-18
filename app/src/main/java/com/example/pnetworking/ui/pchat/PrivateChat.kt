@@ -3,14 +3,12 @@ package com.example.pnetworking.ui.pchat
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.EditText
-import android.widget.ImageButton
-import android.widget.TextView
+import android.view.Menu
+import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pnetworking.R
@@ -22,9 +20,11 @@ import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import de.hdodenhof.circleimageview.CircleImageView
 import org.koin.android.viewmodel.ext.android.viewModel
+import java.lang.reflect.Method
+
 
 class PrivateChat : AppCompatActivity() {
-    //image(attachment)-notification-delete-reply-seen-new message-typing
+    //image(attachment)-edit-reply-seen-new message-typing
     var username = ""
     var userImage = ""
     var chatId=""
@@ -57,10 +57,10 @@ class PrivateChat : AppCompatActivity() {
             Log.d("TAG", "Attempt to send message....")
             performSendMessage(editChat.text.toString())
         }
-        mainViewModel.addChat(userId).observe(this,{
-            Log.d("add chat",it)
-            if(it!="false")
-                chatId=it
+        mainViewModel.addChat(userId).observe(this, {
+            Log.d("add chat", it)
+            if (it != "false")
+                chatId = it
             listenForMessages()
         })
     }
@@ -68,17 +68,16 @@ class PrivateChat : AppCompatActivity() {
     private fun performSendMessage(text: String) {
         if(selectedPhotoUri==null)
             selectedPhotoUri=Uri.parse("")
-        Log.d("selected",selectedPhotoUri?.path!!)
-       mainViewModel.performSendMessage(text,chatId,selectedPhotoUri!!).observe(this,{
-           Log.d("send message",it)
-           if(it=="true"){
+        Log.d("selected", selectedPhotoUri?.path!!)
+       mainViewModel.performSendMessage(text, chatId, selectedPhotoUri!!).observe(this, {
+           Log.d("send message", it)
+           if (it == "true") {
                editChat.setText("")
-               var msg= Message()
-               msg.context=text
-               mainViewModel.sendNotification(msg,chatId,true)
-           }
-           else{
-               Log.d("send message","try again")
+               var msg = Message()
+               msg.context = text
+               mainViewModel.sendNotification(msg, chatId, true)
+           } else {
+               Log.d("send message", "try again")
            }
        })
     }
@@ -99,18 +98,43 @@ class PrivateChat : AppCompatActivity() {
         if (requestCode == 0 && resultCode == Activity.RESULT_OK && data != null) {
             Log.d("TAG", "Photo was selected")
             selectedPhotoUri = data.data
-            Log.d("chat",selectedPhotoUri.toString()+"1")
+            Log.d("chat", selectedPhotoUri.toString() + "1")
 
         }
     }
 
     private fun listenForMessages() {
-        mainViewModel.listenForMessages(chatId).observe(this,{chatMessage->
+        mainViewModel.listenForMessages(chatId).observe(this, { chatMessage ->
             Log.d("from", "1")
+            var type=false
             if (chatMessage.idUSer == FirebaseAuth.getInstance().uid) {
-                adapter.add(0,ChatItem(chatMessage,userImage, false))
+                adapter.add(0, ChatItem(chatMessage, userImage, false))
+                type=false
             } else {
-                adapter.add(0,ChatItem(chatMessage,userImage,true))
+                adapter.add(0, ChatItem(chatMessage, userImage, true))
+                type=true
+            }
+            adapter.setOnItemClickListener { item, view ->
+                val popup = PopupMenu(this, view)
+                val msg = item as ChatItem
+                popup.inflate(R.menu.options_menu)
+                popup.setOnMenuItemClickListener { item ->
+                    when (item.itemId) {
+                        R.id.edit ->
+
+                            true
+                        R.id.delete ->
+                        {
+                            if(!type)
+                                mainViewModel.removeMessage(chatId,msg.id.toString())
+                            true
+                        }
+                        R.id.reply ->
+                            true
+                        else -> false
+                    }
+                }
+                popup.show()
             }
         })
     }
@@ -134,5 +158,26 @@ class PrivateChat : AppCompatActivity() {
             LinearLayoutManager.VERTICAL,
             true
         )
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        if (menu != null) {
+            if (menu.javaClass.simpleName == "MenuBuilder") {
+                try {
+                    val m: Method = menu.javaClass.getDeclaredMethod(
+                        "setOptionalIconsVisible", java.lang.Boolean.TYPE
+                    )
+                    m.isAccessible = true
+                    m.invoke(menu, true)
+                } catch (e: Exception) {
+                    Log.e(
+                        javaClass.simpleName,
+                        "onMenuOpened...unable to set icons for overflow menu",
+                        e
+                    )
+                }
+            }
+        }
+        return super.onPrepareOptionsMenu(menu)
     }
 }

@@ -25,4 +25,7 @@ class PrivateChateViewModel(private val pChatRepository: PChatRepository,
      fun sendNotification(msg:Message,toChat:String,notify:Boolean){
           notificationDataSource.sendNotification(msg, toChat, notify)
      }
+     fun removeMessage(toChat:String,msgId:String){
+          pChatRepository.removeMessage(toChat, msgId)
+     }
 }

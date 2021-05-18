@@ -10,4 +10,5 @@ interface PChatRepository {
     fun addChat(fid:String): MutableLiveData<String>
     fun performSendMessage(text: String, chat: String, selectedPhotoUri: Uri):MutableLiveData<String>
     fun listenForMessages( chat: String):MutableLiveData<Message>
+    fun removeMessage(toChat:String,msgId:String)
 }

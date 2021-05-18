@@ -181,4 +181,15 @@ class PChatDataSource {
         }
         return result
     }
+    fun removeMessage(toChat:String,msgId:String) {
+        val fromId = FirebaseAuth.getInstance().uid
+            val ref = FirebaseDatabase.getInstance()
+                .getReference("/user_message/$fromId/$toChat/${msgId}")
+            ref.removeValue()
+           val ref1=FirebaseDatabase.getInstance().getReference("/chat/$toChat/message/$fromId/${msgId}")
+            ref1.removeValue()
+        val latestMessageRef =
+            FirebaseDatabase.getInstance().getReference("chat/$toChat/latest-messages/$fromId/${msgId}")
+        latestMessageRef.removeValue()
+    }
 }

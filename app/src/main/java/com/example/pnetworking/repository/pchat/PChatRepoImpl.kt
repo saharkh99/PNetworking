@@ -18,5 +18,9 @@ class PChatRepoImpl(private val pChatDataSource: PChatDataSource):PChatRepositor
         return pChatDataSource.listenForMessages(chat)
     }
 
+    override fun removeMessage(toChat: String, msgId: String){
+        pChatDataSource.removeMessage(toChat, msgId)
+    }
+
 
 }
