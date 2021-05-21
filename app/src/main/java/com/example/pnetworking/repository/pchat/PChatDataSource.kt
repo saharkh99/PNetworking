@@ -18,7 +18,8 @@ class PChatDataSource {
     fun performSendMessage(
         text: String,
         chat: String,
-        selectedPhotoUri: Uri
+        selectedPhotoUri: Uri,
+        reply:String
     ): MutableLiveData<String> {
         val value = MutableLiveData<String>()
         val fromId = FirebaseAuth.getInstance().uid
@@ -41,7 +42,8 @@ class PChatDataSource {
                     toChat,
                     System.currentTimeMillis() / 1000,
                     "text",
-                    ""
+                    "",
+                     reply
                 )
             reference.setValue(chatMessage)
                 .addOnSuccessListener {
@@ -192,4 +194,27 @@ class PChatDataSource {
             FirebaseDatabase.getInstance().getReference("chat/$toChat/latest-messages/$fromId/${msgId}")
         latestMessageRef.removeValue()
     }
+
+    fun editMessage(text: String,toChat:String) {
+        val fromId = FirebaseAuth.getInstance().uid
+        val reference =
+            FirebaseDatabase.getInstance().getReference("/user_message/$fromId/$toChat").push()
+        val toReference =
+            FirebaseDatabase.getInstance().getReference("/chat/$toChat/message/$fromId").push()
+        val latestMessageRef =
+            FirebaseDatabase.getInstance().getReference("chat/$toChat/latest-messages/$fromId/")
+        val hashmap = HashMap<String, Any>()
+        hashmap.put("context", text)
+        reference.updateChildren(hashmap)
+        toReference.updateChildren(hashmap)
+        latestMessageRef.updateChildren(hashmap)
+    }
+    private fun changeTypingStatus(idChat: String) {
+        val fromId = FirebaseAuth.getInstance().uid
+        val ref = FirebaseDatabase.getInstance().getReference("/users/$fromId")
+        val hashmap = HashMap<String, Any>()
+        hashmap.put("typingTo", idChat)
+        ref.updateChildren(hashmap)
+    }
+
 }

@@ -19,14 +19,20 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class ChatItem(val text: Message, val image: String, val type:Boolean) : Item<GroupieViewHolder>() {
+class ChatItem(val text: Message, val image: String, val type:Boolean, val reply:String) : Item<GroupieViewHolder>() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {
+
         val textview = viewHolder.itemView.findViewById<TextView>(R.id.chat_message_tv)
+        val textReply = viewHolder.itemView.findViewById<TextView>(R.id.chat_message__reply_tv)
         val image_message=viewHolder.itemView.findViewById<CircleImageView>(R.id.chat_image_user)
         val image_Text=viewHolder.itemView.findViewById<ImageView>(R.id.chat_message_image_tv)
         val time=viewHolder.itemView.findViewById<TextView>(R.id.chat_massage_date)
+        if(reply!=""){
+            textReply.text=reply
+            textReply.visibility=View.VISIBLE
+        }
         if(text.type=="photo"){
             image_Text.visibility= View.VISIBLE
             textview.visibility= View.GONE
@@ -52,4 +58,5 @@ class ChatItem(val text: Message, val image: String, val type:Boolean) : Item<Gr
             return R.layout.row_to_chat
 
     }
+
 }

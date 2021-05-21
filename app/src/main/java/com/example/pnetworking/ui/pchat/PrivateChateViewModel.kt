@@ -15,9 +15,10 @@ class PrivateChateViewModel(private val pChatRepository: PChatRepository,
      fun performSendMessage(
           text: String,
           chat: String,
-          selectedPhotoUri: Uri
+          selectedPhotoUri: Uri,
+          reply:String
      ): MutableLiveData<String> {
-          return pChatRepository.performSendMessage(text,  chat, selectedPhotoUri)
+          return pChatRepository.performSendMessage(text,  chat, selectedPhotoUri,reply)
      }
      fun listenForMessages(chat: String): MutableLiveData<Message> {
           return pChatRepository.listenForMessages(chat)
@@ -27,5 +28,8 @@ class PrivateChateViewModel(private val pChatRepository: PChatRepository,
      }
      fun removeMessage(toChat:String,msgId:String){
           pChatRepository.removeMessage(toChat, msgId)
+     }
+     fun editMessage(text: String,toChat:String){
+          pChatRepository.editMessage(text, toChat)
      }
 }

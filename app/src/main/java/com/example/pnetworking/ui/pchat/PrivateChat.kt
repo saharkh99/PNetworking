@@ -2,6 +2,7 @@ package com.example.pnetworking.ui.pchat
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -9,6 +10,8 @@ import android.view.Menu
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.widget.doAfterTextChanged
+import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pnetworking.R
@@ -19,16 +22,19 @@ import com.squareup.picasso.Picasso
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import de.hdodenhof.circleimageview.CircleImageView
+import org.koin.android.ext.android.get
 import org.koin.android.viewmodel.ext.android.viewModel
 import java.lang.reflect.Method
 
 
 class PrivateChat : AppCompatActivity() {
-    //image(attachment)-edit-reply-seen-new message-typing
+    //image(attachment)-seen-new message-typing
     var username = ""
     var userImage = ""
     var chatId=""
     var userId = ""
+    var reply=""
+    var edit=false
     lateinit var nameTextView: TextView
     lateinit var imageCircle: CircleImageView
     lateinit var toolbar: Toolbar
@@ -63,23 +69,39 @@ class PrivateChat : AppCompatActivity() {
                 chatId = it
             listenForMessages()
         })
+        changingTypingStatus()
+    }
+
+    private fun changingTypingStatus() {
+        editChat.doOnTextChanged { text, start, before, count ->
+
+        }
+        editChat.doAfterTextChanged {
+
+        }
     }
 
     private fun performSendMessage(text: String) {
         if(selectedPhotoUri==null)
             selectedPhotoUri=Uri.parse("")
         Log.d("selected", selectedPhotoUri?.path!!)
-       mainViewModel.performSendMessage(text, chatId, selectedPhotoUri!!).observe(this, {
-           Log.d("send message", it)
-           if (it == "true") {
-               editChat.setText("")
-               var msg = Message()
-               msg.context = text
-               mainViewModel.sendNotification(msg, chatId, true)
-           } else {
-               Log.d("send message", "try again")
-           }
-       })
+        if(edit){
+            mainViewModel.editMessage(text,chatId)
+        }
+        else{
+            mainViewModel.performSendMessage(text, chatId, selectedPhotoUri!!,reply).observe(this, {
+                Log.d("send message", it)
+                if (it == "true") {
+                    editChat.setText("")
+                    var msg = Message()
+                    msg.context = text
+                    mainViewModel.sendNotification(msg, chatId, true)
+                } else {
+                    Log.d("send message", "try again")
+                }
+            })
+        }
+
     }
 
     private fun uploadImage() {
@@ -108,29 +130,34 @@ class PrivateChat : AppCompatActivity() {
             Log.d("from", "1")
             var type=false
             if (chatMessage.idUSer == FirebaseAuth.getInstance().uid) {
-                adapter.add(0, ChatItem(chatMessage, userImage, false))
+                adapter.add(0, ChatItem(chatMessage, userImage, false,chatMessage.reply))
                 type=false
             } else {
-                adapter.add(0, ChatItem(chatMessage, userImage, true))
+                adapter.add(0, ChatItem(chatMessage, userImage, true,chatMessage.reply))
                 type=true
             }
-            adapter.setOnItemClickListener { item, view ->
+            adapter.setOnItemClickListener { i, view ->
                 val popup = PopupMenu(this, view)
-                val msg = item as ChatItem
+                val msg = i as ChatItem
                 popup.inflate(R.menu.options_menu)
                 popup.setOnMenuItemClickListener { item ->
                     when (item.itemId) {
-                        R.id.edit ->
-
+                        R.id.edit -> {
+                            view.setBackgroundColor(Color.parseColor("#000000"))
+                            edit=true
                             true
+                        }
                         R.id.delete ->
                         {
                             if(!type)
                                 mainViewModel.removeMessage(chatId,msg.id.toString())
                             true
                         }
-                        R.id.reply ->
+                        R.id.reply ->{
+                            view.setBackgroundColor(Color.parseColor("#000000"))
+                            reply=msg.text.context
                             true
+                        }
                         else -> false
                     }
                 }
@@ -180,4 +207,5 @@ class PrivateChat : AppCompatActivity() {
         }
         return super.onPrepareOptionsMenu(menu)
     }
+
 }

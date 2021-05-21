@@ -11,8 +11,10 @@ class PChatRepoImpl(private val pChatDataSource: PChatDataSource):PChatRepositor
     override fun performSendMessage(
         text: String,
         chat: String,
-        selectedPhotoUri: Uri
-    ): MutableLiveData<String> =pChatDataSource.performSendMessage(text, chat, selectedPhotoUri)
+        selectedPhotoUri: Uri,
+        reply:String
+
+    ): MutableLiveData<String> =pChatDataSource.performSendMessage(text, chat, selectedPhotoUri,reply)
 
     override fun listenForMessages(chat: String): MutableLiveData<Message> {
         return pChatDataSource.listenForMessages(chat)
@@ -20,6 +22,10 @@ class PChatRepoImpl(private val pChatDataSource: PChatDataSource):PChatRepositor
 
     override fun removeMessage(toChat: String, msgId: String){
         pChatDataSource.removeMessage(toChat, msgId)
+    }
+
+    override fun editMessage(text: String, toChat: String) {
+        pChatDataSource.editMessage(text, toChat)
     }
 
 

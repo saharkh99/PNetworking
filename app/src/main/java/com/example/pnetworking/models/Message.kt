@@ -13,6 +13,7 @@ data class Message(
     val timestamp: Long,//string in format yy/mm/dd:mm
     val type: String = "text",
     val imageUrl: String = "",
+    val reply: String = "",
     val isSeen:Boolean=false
 ) : Parcelable {
     @RequiresApi(Build.VERSION_CODES.Q)
@@ -24,10 +25,11 @@ data class Message(
         parcel.readLong()!!,
         parcel.readString()!!,
         parcel.readString()!!,
+        parcel.readString()!!,
         parcel.readBoolean()!!
     )
 
-    constructor() : this("", "", "", "", 0, "", "",false)
+    constructor() : this("", "", "", "", 0, "", "","",false)
 
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -38,6 +40,7 @@ data class Message(
         parcel.writeLong(timestamp)
         parcel.writeString(type)
         parcel.writeString(imageUrl)
+        parcel.writeString(reply)
         parcel.writeBoolean(isSeen)
     }
 

@@ -13,6 +13,26 @@
     android:id="@+id/chat_image_user"
     android:clickable="true"
     android:layout_margin="16dp"/>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rounded_corner"
+        app:layout_constraintTop_toTopOf="@id/chat_image_user"
+        app:layout_constraintRight_toLeftOf="@id/chat_image_user"
+        android:id="@+id/chat_message_tv_linear"
+        android:orientation="vertical">
+        <TextView android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            app:layout_constraintTop_toTopOf="@id/chat_image_user"
+            app:layout_constraintRight_toLeftOf="@id/chat_image_user"
+            android:padding="16dp"
+            android:background="@color/purple_200"
+            android:maxWidth="240dp"
+            android:visibility="gone"
+            android:textColor="@color/cardview_light_background"
+            android:text="This is my message that will wrap into multiple lines and keep on going"
+            android:layout_margin="8dp"
+            android:id="@+id/chat_message__reply_tv"/>
     <TextView android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         app:layout_constraintTop_toTopOf="@id/chat_image_user"
@@ -25,7 +45,9 @@
         android:text="This is my message that will wrap into multiple lines and keep on going"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
-        android:id="@+id/chat_message_tv"/>
+        android:id="@+id/chat_message_tv">
+    </TextView>
+    </LinearLayout>
     <ImageView
         android:layout_height="60dp"
         android:layout_width="60dp"
@@ -43,8 +65,8 @@
         android:text="delivered"
         android:textSize="12dp"
         android:textColor="@color/purple_200"
-        app:layout_constraintTop_toBottomOf="@id/chat_message_tv"
-        app:layout_constraintRight_toRightOf="@id/chat_message_tv"
+        app:layout_constraintTop_toBottomOf="@+id/chat_message_tv_linear"
+        app:layout_constraintRight_toRightOf="@+id/chat_message_tv_linear"
         android:id="@+id/chat_is_seen_tv"/>
 
     <TextView
@@ -52,8 +74,8 @@
         android:layout_height="wrap_content"
         android:text="3:40"
         android:textSize="12dp"
-        app:layout_constraintRight_toLeftOf="@id/chat_message_tv"
-        app:layout_constraintBottom_toBottomOf="@id/chat_message_tv"
+        app:layout_constraintRight_toLeftOf="@id/chat_message_tv_linear"
+        app:layout_constraintBottom_toBottomOf="@id/chat_message_tv_linear"
         android:layout_margin="8dp"
         android:id="@+id/chat_massage_date"
         android:textColor="@color/purple_200"/>
