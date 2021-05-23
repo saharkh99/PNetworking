@@ -1,4 +1,5 @@
 package com.example.pnetworking.ui.pchat
+import android.icu.text.DateFormat
 import android.icu.util.UniversalTimeScale.toLong
 import android.net.Uri
 import android.os.Build
@@ -20,6 +21,7 @@ import java.util.*
 
 
 class ChatItem(val text: Message, val image: String, val type:Boolean, val reply:String) : Item<GroupieViewHolder>() {
+
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {
@@ -45,10 +47,14 @@ class ChatItem(val text: Message, val image: String, val type:Boolean, val reply
             textview.text = text.context
         }
         val uri = image
+        if(!type){
+            image_message.visibility=View.GONE
+        }
 //        if (uri != "" && !type)
 //            Picasso.get().load(uri).into(imageView)
         val formatter =  SimpleDateFormat("hh:mm");
-        val dateString = formatter.format( Date(toLong(text.timestamp,0)));
+        val dateString = formatter.format( Date(toLong(text.timestamp,0)))
+        Log.d("date",text.timestamp.toString())
         time.text=dateString
     }
     override fun getLayout(): Int {

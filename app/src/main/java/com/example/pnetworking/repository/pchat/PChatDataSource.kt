@@ -7,10 +7,7 @@ import com.example.pnetworking.models.Chat
 import com.example.pnetworking.models.Message
 import com.example.pnetworking.models.User
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.ChildEventListener
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 import java.util.*
 
@@ -33,6 +30,7 @@ class PChatDataSource {
         val toReference =
             FirebaseDatabase.getInstance().getReference("/chat/$toChat/message/$fromId").push()
         var chatMessage = Message()
+        Log.d("time",System.currentTimeMillis().toString())
         if (selectedPhotoUri.path =="") {
             chatMessage =
                 Message(
@@ -215,6 +213,24 @@ class PChatDataSource {
         val hashmap = HashMap<String, Any>()
         hashmap.put("typingTo", idChat)
         ref.updateChildren(hashmap)
+    }
+    private fun seenMessage(toChat:String):MutableLiveData<ValueEventListener>{
+        var result = MutableLiveData<ValueEventListener>()
+        val fromId = FirebaseAuth.getInstance().uid
+        val ref=FirebaseDatabase.getInstance().getReference("/chat/$toChat/message/$fromId").push()
+        val seenListener=ref.addValueEventListener(object :ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val hashmap = HashMap<String, Any>()
+                hashmap.put("seen", true)
+                ref.updateChildren(hashmap)
+
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+            }
+
+        })
+       return result
     }
 
 }

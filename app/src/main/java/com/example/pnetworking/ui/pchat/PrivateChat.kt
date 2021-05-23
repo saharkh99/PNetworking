@@ -18,11 +18,12 @@ import com.example.pnetworking.R
 import com.example.pnetworking.databinding.ActivityPrivateChatBinding
 import com.example.pnetworking.models.Message
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.squareup.picasso.Picasso
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import de.hdodenhof.circleimageview.CircleImageView
-import org.koin.android.ext.android.get
 import org.koin.android.viewmodel.ext.android.viewModel
 import java.lang.reflect.Method
 
@@ -35,6 +36,8 @@ class PrivateChat : AppCompatActivity() {
     var userId = ""
     var reply=""
     var edit=false
+    lateinit var refrence:FirebaseDatabase
+    lateinit var seenListener:ValueEventListener
     lateinit var nameTextView: TextView
     lateinit var imageCircle: CircleImageView
     lateinit var toolbar: Toolbar
@@ -86,20 +89,22 @@ class PrivateChat : AppCompatActivity() {
             selectedPhotoUri=Uri.parse("")
         Log.d("selected", selectedPhotoUri?.path!!)
         if(edit){
-            mainViewModel.editMessage(text,chatId)
+            mainViewModel.editMessage(text, chatId)
         }
         else{
-            mainViewModel.performSendMessage(text, chatId, selectedPhotoUri!!,reply).observe(this, {
-                Log.d("send message", it)
-                if (it == "true") {
-                    editChat.setText("")
-                    var msg = Message()
-                    msg.context = text
-                    mainViewModel.sendNotification(msg, chatId, true)
-                } else {
-                    Log.d("send message", "try again")
-                }
-            })
+            mainViewModel.performSendMessage(text, chatId, selectedPhotoUri!!, reply).observe(
+                this,
+                {
+                    Log.d("send message", it)
+                    if (it == "true") {
+                        editChat.setText("")
+                        var msg = Message()
+                        msg.context = text
+                        mainViewModel.sendNotification(msg, chatId, true)
+                    } else {
+                        Log.d("send message", "try again")
+                    }
+                })
         }
 
     }
@@ -128,13 +133,13 @@ class PrivateChat : AppCompatActivity() {
     private fun listenForMessages() {
         mainViewModel.listenForMessages(chatId).observe(this, { chatMessage ->
             Log.d("from", "1")
-            var type=false
+            var type = false
             if (chatMessage.idUSer == FirebaseAuth.getInstance().uid) {
-                adapter.add(0, ChatItem(chatMessage, userImage, false,chatMessage.reply))
-                type=false
+                adapter.add(0, ChatItem(chatMessage, userImage, false, chatMessage.reply))
+                type = false
             } else {
-                adapter.add(0, ChatItem(chatMessage, userImage, true,chatMessage.reply))
-                type=true
+                adapter.add(0, ChatItem(chatMessage, userImage, true, chatMessage.reply))
+                type = true
             }
             adapter.setOnItemClickListener { i, view ->
                 val popup = PopupMenu(this, view)
@@ -144,18 +149,17 @@ class PrivateChat : AppCompatActivity() {
                     when (item.itemId) {
                         R.id.edit -> {
                             view.setBackgroundColor(Color.parseColor("#000000"))
-                            edit=true
+                            edit = true
                             true
                         }
-                        R.id.delete ->
-                        {
-                            if(!type)
-                                mainViewModel.removeMessage(chatId,msg.id.toString())
+                        R.id.delete -> {
+                            if (!type)
+                                mainViewModel.removeMessage(chatId, msg.id.toString())
                             true
                         }
-                        R.id.reply ->{
+                        R.id.reply -> {
                             view.setBackgroundColor(Color.parseColor("#000000"))
-                            reply=msg.text.context
+                            reply = msg.text.context
                             true
                         }
                         else -> false
