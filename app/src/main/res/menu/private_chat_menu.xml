@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/block"
+        android:icon="@drawable/block"
+        android:title="block"></item>
+    <item android:id="@+id/search"
+        android:icon="@drawable/search"
+        android:title="search"></item>
+    <item android:id="@+id/mute"
+        android:icon="@drawable/unmute"
+        android:title="mute"></item>
+</menu>

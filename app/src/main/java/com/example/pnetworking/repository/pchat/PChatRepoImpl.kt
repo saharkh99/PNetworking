@@ -27,6 +27,8 @@ class PChatRepoImpl(private val pChatDataSource: PChatDataSource):PChatRepositor
     override fun editMessage(text: String, toChat: String) {
         pChatDataSource.editMessage(text, toChat)
     }
-
+    override fun seenMessage(toChat:String,userId:String):MutableLiveData<Boolean>{
+        return pChatDataSource.seenMessage(toChat, userId)
+    }
 
 }

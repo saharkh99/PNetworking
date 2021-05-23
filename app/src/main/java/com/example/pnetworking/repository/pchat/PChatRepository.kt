@@ -12,4 +12,5 @@ interface PChatRepository {
     fun listenForMessages( chat: String):MutableLiveData<Message>
     fun removeMessage(toChat:String,msgId:String)
     fun editMessage(text: String,toChat:String)
+    fun seenMessage(toChat:String,userId:String):MutableLiveData<Boolean>
 }

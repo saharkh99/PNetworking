@@ -7,11 +7,13 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
+import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.widget.doAfterTextChanged
 import androidx.core.widget.doOnTextChanged
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pnetworking.R
@@ -36,6 +38,7 @@ class PrivateChat : AppCompatActivity() {
     var userId = ""
     var reply=""
     var edit=false
+    var type = false
     lateinit var refrence:FirebaseDatabase
     lateinit var seenListener:ValueEventListener
     lateinit var nameTextView: TextView
@@ -133,7 +136,6 @@ class PrivateChat : AppCompatActivity() {
     private fun listenForMessages() {
         mainViewModel.listenForMessages(chatId).observe(this, { chatMessage ->
             Log.d("from", "1")
-            var type = false
             if (chatMessage.idUSer == FirebaseAuth.getInstance().uid) {
                 adapter.add(0, ChatItem(chatMessage, userImage, false, chatMessage.reply))
                 type = false
@@ -189,6 +191,22 @@ class PrivateChat : AppCompatActivity() {
             LinearLayoutManager.VERTICAL,
             true
         )
+
+      chatRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+
+          override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+              super.onScrolled(recyclerView, dx, dy)
+              val visibleItemCount = (chatRecyclerView.layoutManager as LinearLayoutManager).childCount
+              val totalItemCount = (chatRecyclerView.layoutManager as LinearLayoutManager).itemCount
+              val firstVisibleItemPosition = (chatRecyclerView.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
+              if ( (visibleItemCount + firstVisibleItemPosition) >= totalItemCount && firstVisibleItemPosition >= 0) {
+                 if(!type)
+                     mainViewModel.seenMessage(chatId,userId).observe(this@PrivateChat, Observer {
+                         Log.d("getit",it.toString())
+                     })
+              }
+          }
+      })
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
@@ -212,4 +230,21 @@ class PrivateChat : AppCompatActivity() {
         return super.onPrepareOptionsMenu(menu)
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        return super.onCreateOptionsMenu(menu)
+        val clickListener = View.OnClickListener { view ->
+            when (view.id) {
+                R.id.block -> {
+                    TODO()
+                }
+                R.id.mute -> {
+                    TODO()
+                }
+                R.id.search -> {
+                    TODO()
+                }
+            }
+        }
+
+    }
 }

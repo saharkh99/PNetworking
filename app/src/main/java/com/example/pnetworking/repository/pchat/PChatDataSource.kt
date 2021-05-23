@@ -138,7 +138,6 @@ class PChatDataSource {
         })
       return result
     }
-
     fun addChat(fid: String): MutableLiveData<String> {
         var result = MutableLiveData<String>()
         val uid = FirebaseAuth.getInstance().currentUser.uid
@@ -192,7 +191,6 @@ class PChatDataSource {
             FirebaseDatabase.getInstance().getReference("chat/$toChat/latest-messages/$fromId/${msgId}")
         latestMessageRef.removeValue()
     }
-
     fun editMessage(text: String,toChat:String) {
         val fromId = FirebaseAuth.getInstance().uid
         val reference =
@@ -207,30 +205,28 @@ class PChatDataSource {
         toReference.updateChildren(hashmap)
         latestMessageRef.updateChildren(hashmap)
     }
-    private fun changeTypingStatus(idChat: String) {
+    fun changeTypingStatus(idChat: String) {
         val fromId = FirebaseAuth.getInstance().uid
         val ref = FirebaseDatabase.getInstance().getReference("/users/$fromId")
         val hashmap = HashMap<String, Any>()
         hashmap.put("typingTo", idChat)
         ref.updateChildren(hashmap)
     }
-    private fun seenMessage(toChat:String):MutableLiveData<ValueEventListener>{
-        var result = MutableLiveData<ValueEventListener>()
-        val fromId = FirebaseAuth.getInstance().uid
-        val ref=FirebaseDatabase.getInstance().getReference("/chat/$toChat/message/$fromId").push()
+    fun seenMessage(toChat:String,userId:String):MutableLiveData<Boolean>{
+        var result = MutableLiveData<Boolean>()
+        val ref=FirebaseDatabase.getInstance().getReference("/chat/$toChat/message/$userId").push()
         val seenListener=ref.addValueEventListener(object :ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 val hashmap = HashMap<String, Any>()
                 hashmap.put("seen", true)
                 ref.updateChildren(hashmap)
-
             }
-
             override fun onCancelled(error: DatabaseError) {
             }
 
         })
        return result
     }
+
 
 }
