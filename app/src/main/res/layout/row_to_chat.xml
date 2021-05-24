@@ -37,14 +37,14 @@
         android:layout_width="wrap_content"
         app:layout_constraintTop_toTopOf="@id/chat_image_user"
         app:layout_constraintRight_toLeftOf="@id/chat_image_user"
-        android:padding="16dp"
+        android:padding="10dp"
         android:background="@drawable/rounded_corner"
         android:maxWidth="240dp"
         android:visibility="visible"
         android:textColor="@color/cardview_light_background"
         android:text="This is my message that will wrap into multiple lines and keep on going"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginLeft="5dp"
         android:id="@+id/chat_message_tv">
     </TextView>
     </LinearLayout>

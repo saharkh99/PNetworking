@@ -1,6 +1,8 @@
 package com.example.pnetworking.ui.pchat
 
+import android.R.attr
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
@@ -8,9 +10,11 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.widget.doAfterTextChanged
 import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.Observer
@@ -26,32 +30,35 @@ import com.squareup.picasso.Picasso
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import de.hdodenhof.circleimageview.CircleImageView
+import droidninja.filepicker.FilePickerBuilder
+import droidninja.filepicker.FilePickerConst
 import org.koin.android.viewmodel.ext.android.viewModel
 import java.lang.reflect.Method
+import java.security.AccessController.getContext
 
 
 class PrivateChat : AppCompatActivity() {
     //image(attachment)-seen-new message-typing
     var username = ""
     var userImage = ""
-    var chatId=""
+    var chatId = ""
     var userId = ""
-    var reply=""
-    var edit=false
+    var reply = ""
+    var edit = false
     var type = false
-    lateinit var refrence:FirebaseDatabase
-    lateinit var seenListener:ValueEventListener
+    lateinit var refrence: FirebaseDatabase
+    lateinit var seenListener: ValueEventListener
     lateinit var nameTextView: TextView
     lateinit var imageCircle: CircleImageView
     lateinit var toolbar: Toolbar
-    lateinit var send:ImageButton
-    lateinit var editChat:EditText
-    lateinit var imageSend:ImageButton
+    lateinit var send: ImageButton
+    lateinit var editChat: EditText
+    lateinit var imageSend: ImageButton
+    lateinit var mainlayout: ConstraintLayout
     lateinit var binding: ActivityPrivateChatBinding
     val adapter = GroupAdapter<GroupieViewHolder>()
     lateinit var chatRecyclerView: RecyclerView
     private val mainViewModel by viewModel<PrivateChateViewModel>()
-
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -88,13 +95,12 @@ class PrivateChat : AppCompatActivity() {
     }
 
     private fun performSendMessage(text: String) {
-        if(selectedPhotoUri==null)
-            selectedPhotoUri=Uri.parse("")
+        if (selectedPhotoUri == null)
+            selectedPhotoUri = Uri.parse("")
         Log.d("selected", selectedPhotoUri?.path!!)
-        if(edit){
+        if (edit) {
             mainViewModel.editMessage(text, chatId)
-        }
-        else{
+        } else {
             mainViewModel.performSendMessage(text, chatId, selectedPhotoUri!!, reply).observe(
                 this,
                 {
@@ -104,6 +110,7 @@ class PrivateChat : AppCompatActivity() {
                         var msg = Message()
                         msg.context = text
                         mainViewModel.sendNotification(msg, chatId, true)
+                        hideKeyboardFrom(this, mainlayout)
                     } else {
                         Log.d("send message", "try again")
                     }
@@ -114,10 +121,15 @@ class PrivateChat : AppCompatActivity() {
 
     private fun uploadImage() {
         imageSend.setOnClickListener {
-            Log.d("1", "1")
-            val intent = Intent(Intent.ACTION_PICK)
-            intent.type = "image/*"
-            startActivityForResult(intent, 0)
+//            Log.d("1", "1")
+//            val intent = Intent(Intent.ACTION_PICK)
+//            intent.type = "image/*"
+//            startActivityForResult(intent, 0)
+//
+            FilePickerBuilder.instance
+                .setMaxCount(5) //optional
+                .setActivityTheme(R.style.LibAppTheme) //optional
+                .pickPhoto(this);
         }
     }
 
@@ -127,8 +139,11 @@ class PrivateChat : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == 0 && resultCode == Activity.RESULT_OK && data != null) {
             Log.d("TAG", "Photo was selected")
-            selectedPhotoUri = data.data
-            Log.d("chat", selectedPhotoUri.toString() + "1")
+            val photoPaths = ArrayList<Uri>()
+            photoPaths.addAll(data.getParcelableArrayListExtra<Uri>(FilePickerConst.KEY_SELECTED_MEDIA)!!)
+
+//            selectedPhotoUri = data.data
+            Log.d("chat", photoPaths.toString() + "1")
 
         }
     }
@@ -143,6 +158,7 @@ class PrivateChat : AppCompatActivity() {
                 adapter.add(0, ChatItem(chatMessage, userImage, true, chatMessage.reply))
                 type = true
             }
+            adapter.notifyDataSetChanged()
             adapter.setOnItemClickListener { i, view ->
                 val popup = PopupMenu(this, view)
                 val msg = i as ChatItem
@@ -176,10 +192,11 @@ class PrivateChat : AppCompatActivity() {
         toolbar = binding.chatToolbar
         imageCircle = binding.chatImage
         nameTextView = binding.chatName
-        send=binding.chatSendMessageButton
-        chatRecyclerView=binding.chatRecyclerViewsMessages
-        editChat=binding.chatMessageBoxEt
-        imageSend=binding.chatAttachmentButton
+        send = binding.chatSendMessageButton
+        chatRecyclerView = binding.chatRecyclerViewsMessages
+        editChat = binding.chatMessageBoxEt
+        mainlayout = binding.mainLayout
+        imageSend = binding.chatAttachmentButton
         if (userImage != "true")
             Picasso.get().load(Uri.parse(userImage)).into(imageCircle)
         else
@@ -192,21 +209,25 @@ class PrivateChat : AppCompatActivity() {
             true
         )
 
-      chatRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        chatRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
 
-          override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-              super.onScrolled(recyclerView, dx, dy)
-              val visibleItemCount = (chatRecyclerView.layoutManager as LinearLayoutManager).childCount
-              val totalItemCount = (chatRecyclerView.layoutManager as LinearLayoutManager).itemCount
-              val firstVisibleItemPosition = (chatRecyclerView.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
-              if ( (visibleItemCount + firstVisibleItemPosition) >= totalItemCount && firstVisibleItemPosition >= 0) {
-                 if(!type)
-                     mainViewModel.seenMessage(chatId,userId).observe(this@PrivateChat, Observer {
-                         Log.d("getit",it.toString())
-                     })
-              }
-          }
-      })
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                val visibleItemCount =
+                    (chatRecyclerView.layoutManager as LinearLayoutManager).childCount
+                val totalItemCount =
+                    (chatRecyclerView.layoutManager as LinearLayoutManager).itemCount
+                val firstVisibleItemPosition =
+                    (chatRecyclerView.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
+                if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount && firstVisibleItemPosition >= 0) {
+                    if (!type)
+                        mainViewModel.seenMessage(chatId, userId)
+                            .observe(this@PrivateChat, Observer {
+                                Log.d("getit", it.toString())
+                            })
+                }
+            }
+        })
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
@@ -247,4 +268,11 @@ class PrivateChat : AppCompatActivity() {
         }
 
     }
+
+    fun hideKeyboardFrom(context: Context, view: View) {
+        val imm: InputMethodManager =
+            context.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
+    }
+
 }
