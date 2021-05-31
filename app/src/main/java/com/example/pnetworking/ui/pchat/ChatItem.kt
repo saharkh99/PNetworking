@@ -1,5 +1,4 @@
 package com.example.pnetworking.ui.pchat
-import android.icu.text.DateFormat
 import android.icu.util.UniversalTimeScale.toLong
 import android.net.Uri
 import android.os.Build
@@ -10,12 +9,10 @@ import android.widget.TextView
 import androidx.annotation.RequiresApi
 import com.example.pnetworking.models.Message
 import com.example.pnetworking.R
-import com.example.pnetworking.ui.base.test.s
 import com.squareup.picasso.Picasso
 import com.xwray.groupie.GroupieViewHolder
 import com.xwray.groupie.Item
 import de.hdodenhof.circleimageview.CircleImageView
-import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import java.util.*
 

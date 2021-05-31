@@ -14,4 +14,45 @@
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
     </style>
+    <style name="LibAppTheme" parent="Theme.MaterialComponents.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/purple_200</item>
+        <item name="colorPrimaryDark">@color/purple_500</item>
+        <item name="colorAccent">@android:color/white</item>
+        <item name="android:colorBackground">@android:color/background_light</item>
+        <item name="android:windowBackground">@android:color/white</item>
+        <item name="toolbarStyle">@style/ToolbarTheme</item>
+        <item name="tabStyle">@style/PickerTabLayout</item>
+    </style>
+
+    <style name="LibAppTheme.Dark" parent="LibAppTheme">
+        <!-- Customize your theme here. -->
+        <item name="colorAccent">@android:color/white</item>
+        <item name="toolbarStyle">@style/ToolbarTheme.Dark</item>
+        <item name="tabStyle">@style/PickerTabLayout.Dark</item>
+    </style>
+
+    <style name="PickerTabLayout" parent="Widget.MaterialComponents.TabLayout">
+        <!--        tab background-->
+        <item name="tabBackground">@color/purple_500</item>
+        <!--        tab text color selector : set selector accordingly to dark or light theme-->
+        <item name="tabTextColor">@color/purple_200</item>
+        <!--        tab indicator color: set indicator color accordingly-->
+        <item name="tabIndicatorColor">@android:color/white</item>
+        <item name="tabGravity">fill</item>
+        <item name="tabMaxWidth">0dp</item>
+    </style>
+
+
+    <style name="ToolbarTheme" parent="Widget.MaterialComponents.Toolbar.Primary">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.Toolbar.Light</item>
+        <item name="android:theme">@style/ThemeOverlay.App.Toolbar.Light</item>
+    </style>
+
+    <style name="SmoothCheckBoxStyle">
+        <item name="color_checked">@color/purple_200</item>
+        <item name="color_unchecked">@android:color/white</item>
+        <item name="color_unchecked_stroke">@color/checkbox_unchecked_color</item>
+        <item name="color_tick">@android:color/white</item>
+    </style>
 </resources>

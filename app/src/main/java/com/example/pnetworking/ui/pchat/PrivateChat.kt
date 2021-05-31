@@ -1,11 +1,14 @@
 package com.example.pnetworking.ui.pchat
 
+import android.Manifest
 import android.R.attr
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -15,9 +18,10 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
 import androidx.core.widget.doOnTextChanged
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pnetworking.R
@@ -31,10 +35,9 @@ import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import de.hdodenhof.circleimageview.CircleImageView
 import droidninja.filepicker.FilePickerBuilder
-import droidninja.filepicker.FilePickerConst
+import droidninja.filepicker.FilePickerConst.KEY_SELECTED_MEDIA
 import org.koin.android.viewmodel.ext.android.viewModel
 import java.lang.reflect.Method
-import java.security.AccessController.getContext
 
 
 class PrivateChat : AppCompatActivity() {
@@ -58,6 +61,7 @@ class PrivateChat : AppCompatActivity() {
     lateinit var binding: ActivityPrivateChatBinding
     val adapter = GroupAdapter<GroupieViewHolder>()
     lateinit var chatRecyclerView: RecyclerView
+    private val PERMISSION_REQUEST_CODE = 1
     private val mainViewModel by viewModel<PrivateChateViewModel>()
 
 
@@ -122,14 +126,22 @@ class PrivateChat : AppCompatActivity() {
     private fun uploadImage() {
         imageSend.setOnClickListener {
 //            Log.d("1", "1")
-//            val intent = Intent(Intent.ACTION_PICK)
-//            intent.type = "image/*"
-//            startActivityForResult(intent, 0)
-//
-            FilePickerBuilder.instance
-                .setMaxCount(5) //optional
-                .setActivityTheme(R.style.LibAppTheme) //optional
-                .pickPhoto(this);
+
+
+            if (Build.VERSION.SDK_INT >= 23) {
+                if (checkPermission()) {
+//                    val intent = Intent(Intent.ACTION_PICK)
+//                    intent.type = "image/*"
+//                    startActivityForResult(intent, 0)
+                    FilePickerBuilder.instance
+                        .setMaxCount(5) //optional
+                        .setActivityTheme(R.style.LibAppTheme) //optional
+                        .pickPhoto(this, 0)
+
+                } else {
+                    requestPermission() // Code for permission
+                }
+            }
         }
     }
 
@@ -139,12 +151,10 @@ class PrivateChat : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == 0 && resultCode == Activity.RESULT_OK && data != null) {
             Log.d("TAG", "Photo was selected")
-            val photoPaths = ArrayList<Uri>()
-            photoPaths.addAll(data.getParcelableArrayListExtra<Uri>(FilePickerConst.KEY_SELECTED_MEDIA)!!)
-
 //            selectedPhotoUri = data.data
-            Log.d("chat", photoPaths.toString() + "1")
-
+            val photoPaths = ArrayList<Uri>()
+            photoPaths.addAll(data.getParcelableArrayListExtra<Uri>(KEY_SELECTED_MEDIA)!!)
+            Log.d("photo",photoPaths.toString())
         }
     }
 
@@ -222,7 +232,7 @@ class PrivateChat : AppCompatActivity() {
                 if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount && firstVisibleItemPosition >= 0) {
                     if (!type)
                         mainViewModel.seenMessage(chatId, userId)
-                            .observe(this@PrivateChat, Observer {
+                            .observe(this@PrivateChat, {
                                 Log.d("getit", it.toString())
                             })
                 }
@@ -275,4 +285,53 @@ class PrivateChat : AppCompatActivity() {
         imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
+    private fun checkPermission(): Boolean {
+        val result = ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        )
+        return if (result == PackageManager.PERMISSION_GRANTED) {
+            true
+        } else {
+            false
+        }
+    }
+
+    private fun requestPermission() {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(
+                this,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            )
+        ) {
+            Toast.makeText(
+                this,
+                "Write External Storage permission allows us to do store images. Please allow this permission in App Settings.",
+                Toast.LENGTH_LONG
+            ).show()
+        } else {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+                ),
+                PERMISSION_REQUEST_CODE
+            )
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when (requestCode) {
+            PERMISSION_REQUEST_CODE -> if (grantResults.isNotEmpty() && grantResults[0] === PackageManager.PERMISSION_GRANTED) {
+                Log.e("value", "Permission Granted, Now you can use local drive .")
+            } else {
+                Log.e("value", "Permission Denied, You cannot use local drive .")
+            }
+        }
+    }
 }
