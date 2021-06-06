@@ -22,6 +22,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
 import androidx.core.widget.doOnTextChanged
+import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pnetworking.R
@@ -41,7 +42,7 @@ import java.lang.reflect.Method
 
 
 class PrivateChat : AppCompatActivity() {
-    //image(attachment)-seen-new message-typing
+    //-seen-new message-typing
     var username = ""
     var userImage = ""
     var chatId = ""
@@ -49,6 +50,7 @@ class PrivateChat : AppCompatActivity() {
     var reply = ""
     var edit = false
     var type = false
+    var isText=true
     lateinit var refrence: FirebaseDatabase
     lateinit var seenListener: ValueEventListener
     lateinit var nameTextView: TextView
@@ -100,12 +102,12 @@ class PrivateChat : AppCompatActivity() {
 
     private fun performSendMessage(text: String) {
         if (selectedPhotoUri == null)
-            selectedPhotoUri = Uri.parse("")
-        Log.d("selected", selectedPhotoUri?.path!!)
+            selectedPhotoUri=ArrayList()
+//        Log.d("selected", selectedPhotoUri?.path!!)
         if (edit) {
             mainViewModel.editMessage(text, chatId)
         } else {
-            mainViewModel.performSendMessage(text, chatId, selectedPhotoUri!!, reply).observe(
+            mainViewModel.performSendMessage(text, chatId, selectedPhotoUri!!, reply,isText).observe(
                 this,
                 {
                     Log.d("send message", it)
@@ -125,9 +127,6 @@ class PrivateChat : AppCompatActivity() {
 
     private fun uploadImage() {
         imageSend.setOnClickListener {
-//            Log.d("1", "1")
-
-
             if (Build.VERSION.SDK_INT >= 23) {
                 if (checkPermission()) {
 //                    val intent = Intent(Intent.ACTION_PICK)
@@ -145,7 +144,7 @@ class PrivateChat : AppCompatActivity() {
         }
     }
 
-    var selectedPhotoUri: Uri? = null
+    var selectedPhotoUri: ArrayList<Uri>? = null
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -154,6 +153,8 @@ class PrivateChat : AppCompatActivity() {
 //            selectedPhotoUri = data.data
             val photoPaths = ArrayList<Uri>()
             photoPaths.addAll(data.getParcelableArrayListExtra<Uri>(KEY_SELECTED_MEDIA)!!)
+            selectedPhotoUri=photoPaths
+            isText=false
             Log.d("photo",photoPaths.toString())
         }
     }
@@ -162,10 +163,10 @@ class PrivateChat : AppCompatActivity() {
         mainViewModel.listenForMessages(chatId).observe(this, { chatMessage ->
             Log.d("from", "1")
             if (chatMessage.idUSer == FirebaseAuth.getInstance().uid) {
-                adapter.add(0, ChatItem(chatMessage, userImage, false, chatMessage.reply))
+                adapter.add(0, ChatItem(this,chatMessage, userImage, false, chatMessage.reply))
                 type = false
             } else {
-                adapter.add(0, ChatItem(chatMessage, userImage, true, chatMessage.reply))
+                adapter.add(0, ChatItem(this,chatMessage, userImage, true, chatMessage.reply))
                 type = true
             }
             adapter.notifyDataSetChanged()

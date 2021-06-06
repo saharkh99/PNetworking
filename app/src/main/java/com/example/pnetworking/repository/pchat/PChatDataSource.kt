@@ -2,6 +2,7 @@ package com.example.pnetworking.repository.pchat
 
 import android.net.Uri
 import android.util.Log
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import com.example.pnetworking.models.Chat
 import com.example.pnetworking.models.Message
@@ -10,13 +11,15 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 import java.util.*
+import kotlin.collections.ArrayList
 
 class PChatDataSource {
     fun performSendMessage(
         text: String,
         chat: String,
-        selectedPhotoUri: Uri,
-        reply:String
+        selectedPhotoUri: ArrayList<Uri>,
+        reply:String,
+        isText:Boolean
     ): MutableLiveData<String> {
         val value = MutableLiveData<String>()
         val fromId = FirebaseAuth.getInstance().uid
@@ -31,7 +34,7 @@ class PChatDataSource {
             FirebaseDatabase.getInstance().getReference("/chat/$toChat/message/$fromId").push()
         var chatMessage = Message()
         Log.d("time",System.currentTimeMillis().toString())
-        if (selectedPhotoUri.path =="") {
+        if (isText) {
             chatMessage =
                 Message(
                     reference.key!!,
@@ -59,44 +62,47 @@ class PChatDataSource {
 
 
         } else {
-            Log.d("image",selectedPhotoUri.path!!)
-            val filename = UUID.randomUUID().toString()
-            val ref =
-                FirebaseStorage.getInstance().getReference("chat/$toChat/image_messages/$filename")
-            ref.putFile(selectedPhotoUri!!)
-                .addOnSuccessListener {
-                    Log.d("TAG", "Successfully uploaded image: ${it.metadata?.path}")
+            for (i in selectedPhotoUri){
+                Log.d("image",i.path!!)
+                val filename = UUID.randomUUID().toString()
+                val ref =
+                    FirebaseStorage.getInstance().getReference("chat/$toChat/image_messages/$filename")
+                ref.putFile(i!!)
+                    .addOnSuccessListener {
+                        Log.d("TAG", "Successfully uploaded image: ${it.metadata?.path}")
 
-                    ref.downloadUrl.addOnSuccessListener {
-                        Log.d("TAG", "File Location: $it")
-                        chatMessage = Message(
-                            reference.key!!,
-                            fromId,
-                            "sent photo",
-                            toChat,
-                            System.currentTimeMillis() / 1000,
-                            "photo",
-                            it.toString()
+                        ref.downloadUrl.addOnSuccessListener {
+                            Log.d("TAG", "File Location: $it")
+                            chatMessage = Message(
+                                reference.key!!,
+                                fromId,
+                                "sent photo",
+                                toChat,
+                                System.currentTimeMillis() / 1000,
+                                "photo",
+                                it.toString()
 
-                        )
-                        reference.setValue(chatMessage)
-                            .addOnSuccessListener {
+                            )
+                            reference.setValue(chatMessage)
+                                .addOnSuccessListener {
+                                    Log.d("TAG", "Saved our chat message: ${reference.key}")
+                                }
+                            toReference.setValue(chatMessage).addOnSuccessListener {
                                 Log.d("TAG", "Saved our chat message: ${reference.key}")
                             }
-                        toReference.setValue(chatMessage).addOnSuccessListener {
-                            Log.d("TAG", "Saved our chat message: ${reference.key}")
+                            val latestMessageRef =
+                                FirebaseDatabase.getInstance()
+                                    .getReference("chat/$toChat/latest-messages/$fromId/")
+                            latestMessageRef.setValue(chatMessage)
+                            Log.d("chat", it.toString() + " 2 " + chatMessage.type)
                         }
-                        val latestMessageRef =
-                            FirebaseDatabase.getInstance()
-                                .getReference("chat/$toChat/latest-messages/$fromId/")
-                        latestMessageRef.setValue(chatMessage)
-                        Log.d("chat", it.toString() + " 2 " + chatMessage.type)
-                    }
 
-                }
-                .addOnFailureListener {
-                    Log.d("TAG", "Failed to upload image to storage: ${it.message}")
-                }
+                    }
+                    .addOnFailureListener {
+                        Log.d("TAG", "Failed to upload image to storage: ${it.message}")
+                    }
+            }
+
         }
         return value
     }

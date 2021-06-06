@@ -1,4 +1,5 @@
 package com.example.pnetworking.ui.pchat
+import android.content.Context
 import android.icu.util.UniversalTimeScale.toLong
 import android.net.Uri
 import android.os.Build
@@ -7,6 +8,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.RequiresApi
+import com.bumptech.glide.Glide
 import com.example.pnetworking.models.Message
 import com.example.pnetworking.R
 import com.squareup.picasso.Picasso
@@ -15,9 +17,10 @@ import com.xwray.groupie.Item
 import de.hdodenhof.circleimageview.CircleImageView
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.coroutines.coroutineContext
 
 
-class ChatItem(val text: Message, val image: String, val type:Boolean, val reply:String) : Item<GroupieViewHolder>() {
+class ChatItem(val context: Context, val text: Message, val image: String, val type:Boolean, val reply:String) : Item<GroupieViewHolder>() {
 
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -36,7 +39,9 @@ class ChatItem(val text: Message, val image: String, val type:Boolean, val reply
             image_Text.visibility= View.VISIBLE
             textview.visibility= View.GONE
             Log.d("chat",text.imageUrl)
-            Picasso.get().load(Uri.parse(text.imageUrl)).into(image_Text)
+            Glide.with(context)
+                .load(Uri.parse(text.imageUrl))
+                .into(image_Text)
         }
         else{
             image_Text.visibility= View.GONE

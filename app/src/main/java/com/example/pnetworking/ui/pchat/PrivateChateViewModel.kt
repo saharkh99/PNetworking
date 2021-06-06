@@ -15,10 +15,11 @@ class PrivateChateViewModel(private val pChatRepository: PChatRepository,
      fun performSendMessage(
           text: String,
           chat: String,
-          selectedPhotoUri: Uri,
-          reply:String
+          selectedPhotoUri: ArrayList<Uri>,
+          reply:String,
+          isText:Boolean
      ): MutableLiveData<String> {
-          return pChatRepository.performSendMessage(text,  chat, selectedPhotoUri,reply)
+          return pChatRepository.performSendMessage(text,  chat, selectedPhotoUri,reply,isText)
      }
      fun listenForMessages(chat: String): MutableLiveData<Message> {
           return pChatRepository.listenForMessages(chat)
