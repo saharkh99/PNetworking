@@ -39,10 +39,13 @@ import droidninja.filepicker.FilePickerBuilder
 import droidninja.filepicker.FilePickerConst.KEY_SELECTED_MEDIA
 import org.koin.android.viewmodel.ext.android.viewModel
 import java.lang.reflect.Method
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 class PrivateChat : AppCompatActivity() {
-    //-seen-new message-typing
+    //-seen-new message-typing-docs
     var username = ""
     var userImage = ""
     var chatId = ""
@@ -51,6 +54,7 @@ class PrivateChat : AppCompatActivity() {
     var edit = false
     var type = false
     var isText=true
+    var preMessageDate=""
     lateinit var refrence: FirebaseDatabase
     lateinit var seenListener: ValueEventListener
     lateinit var nameTextView: TextView
@@ -80,6 +84,7 @@ class PrivateChat : AppCompatActivity() {
         uploadImage()
         send.setOnClickListener {
             Log.d("TAG", "Attempt to send message....")
+            isText=true
             performSendMessage(editChat.text.toString())
         }
         mainViewModel.addChat(userId).observe(this, {
@@ -138,7 +143,7 @@ class PrivateChat : AppCompatActivity() {
                         .pickPhoto(this, 0)
 
                 } else {
-                    requestPermission() // Code for permission
+                    requestPermission()
                 }
             }
         }
@@ -150,23 +155,29 @@ class PrivateChat : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == 0 && resultCode == Activity.RESULT_OK && data != null) {
             Log.d("TAG", "Photo was selected")
-//            selectedPhotoUri = data.data
             val photoPaths = ArrayList<Uri>()
             photoPaths.addAll(data.getParcelableArrayListExtra<Uri>(KEY_SELECTED_MEDIA)!!)
             selectedPhotoUri=photoPaths
             isText=false
             Log.d("photo",photoPaths.toString())
+            performSendMessage("sent photo")
         }
     }
 
     private fun listenForMessages() {
         mainViewModel.listenForMessages(chatId).observe(this, { chatMessage ->
             Log.d("from", "1")
+            val sdf = SimpleDateFormat("dd/MM/yyyy")
+            val date = Date(chatMessage.timestamp * 1000)
+            if(preMessageDate!=sdf.format(date)){
+                adapter.add(0, ChatItem(this,chatMessage, userImage, "date", chatMessage.reply))
+                preMessageDate=sdf.format(date)
+            }
             if (chatMessage.idUSer == FirebaseAuth.getInstance().uid) {
-                adapter.add(0, ChatItem(this,chatMessage, userImage, false, chatMessage.reply))
+                adapter.add(0, ChatItem(this,chatMessage, userImage, "false", chatMessage.reply))
                 type = false
             } else {
-                adapter.add(0, ChatItem(this,chatMessage, userImage, true, chatMessage.reply))
+                adapter.add(0, ChatItem(this,chatMessage, userImage, "true", chatMessage.reply))
                 type = true
             }
             adapter.notifyDataSetChanged()

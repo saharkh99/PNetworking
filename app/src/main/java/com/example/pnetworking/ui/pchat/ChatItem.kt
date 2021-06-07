@@ -20,7 +20,7 @@ import java.util.*
 import kotlin.coroutines.coroutineContext
 
 
-class ChatItem(val context: Context, val text: Message, val image: String, val type:Boolean, val reply:String) : Item<GroupieViewHolder>() {
+class ChatItem(val context: Context, val text: Message, val image: String, val type:String, val reply:String) : Item<GroupieViewHolder>() {
 
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -31,39 +31,50 @@ class ChatItem(val context: Context, val text: Message, val image: String, val t
         val image_message=viewHolder.itemView.findViewById<CircleImageView>(R.id.chat_image_user)
         val image_Text=viewHolder.itemView.findViewById<ImageView>(R.id.chat_message_image_tv)
         val time=viewHolder.itemView.findViewById<TextView>(R.id.chat_massage_date)
-        if(reply!=""){
-            textReply.text=reply
-            textReply.visibility=View.VISIBLE
-        }
-        if(text.type=="photo"){
-            image_Text.visibility= View.VISIBLE
-            textview.visibility= View.GONE
-            Log.d("chat",text.imageUrl)
-            Glide.with(context)
-                .load(Uri.parse(text.imageUrl))
-                .into(image_Text)
+        if(type=="date"){
+            val textview = viewHolder.itemView.findViewById<TextView>(R.id.chat_date)
+            val sdf = SimpleDateFormat("MM/dd/yyyy")
+            val date = Date(text.timestamp * 1000)
+            textview.text=sdf.format(date)
         }
         else{
-            image_Text.visibility= View.GONE
-            textview.visibility= View.VISIBLE
-            textview.text = text.context
-        }
-        val uri = image
-        if(!type){
-            image_message.visibility=View.GONE
-        }
+            if(reply!=""){
+                textReply.text=reply
+                textReply.visibility=View.VISIBLE
+            }
+            if(text.type=="photo"){
+                image_Text.visibility= View.VISIBLE
+                textview.visibility= View.GONE
+                Log.d("chat",text.imageUrl)
+                Glide.with(context)
+                    .load(Uri.parse(text.imageUrl))
+                    .into(image_Text)
+            }
+            else{
+                image_Text.visibility= View.GONE
+                textview.visibility= View.VISIBLE
+                textview.text = text.context
+            }
+            val uri = image
+            if(type=="false"){
+                image_message.visibility=View.GONE
+            }
 //        if (uri != "" && !type)
 //            Picasso.get().load(uri).into(imageView)
-        val formatter =  SimpleDateFormat("hh:mm");
-        val dateString = formatter.format( Date(toLong(text.timestamp,0)))
-        Log.d("date",text.timestamp.toString())
-        time.text=dateString
+            val sdf = SimpleDateFormat("hh:mm a")
+            val date = Date(text.timestamp * 1000)
+            Log.d("date2", sdf.format(date))
+            time.text=sdf.format(date)
+        }
+
     }
     override fun getLayout(): Int {
-        if(type)
+        if(type=="true")
           return R.layout.row_from_chat
-        else
+        else if(type=="false")
             return R.layout.row_to_chat
+        else
+            return R.layout.row_date_message
 
     }
 
