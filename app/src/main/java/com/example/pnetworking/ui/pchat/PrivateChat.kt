@@ -1,7 +1,8 @@
 package com.example.pnetworking.ui.pchat
 
 import android.Manifest
-import android.R.attr
+import android.R.menu
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -11,18 +12,20 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
 import android.view.Menu
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.view.menu.MenuBuilder
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
 import androidx.core.widget.doOnTextChanged
-import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pnetworking.R
@@ -38,7 +41,6 @@ import de.hdodenhof.circleimageview.CircleImageView
 import droidninja.filepicker.FilePickerBuilder
 import droidninja.filepicker.FilePickerConst.KEY_SELECTED_MEDIA
 import org.koin.android.viewmodel.ext.android.viewModel
-import java.lang.reflect.Method
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -71,6 +73,8 @@ class PrivateChat : AppCompatActivity() {
     private val mainViewModel by viewModel<PrivateChateViewModel>()
 
 
+    @RequiresApi(Build.VERSION_CODES.Q)
+    @ExperimentalStdlibApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPrivateChatBinding.inflate(layoutInflater)
@@ -112,7 +116,7 @@ class PrivateChat : AppCompatActivity() {
         if (edit) {
             mainViewModel.editMessage(text, chatId)
         } else {
-            mainViewModel.performSendMessage(text, chatId, selectedPhotoUri!!, reply,isText).observe(
+            mainViewModel.performSendMessage(text, chatId, selectedPhotoUri!!, reply, isText).observe(
                 this,
                 {
                     Log.d("send message", it)
@@ -159,25 +163,27 @@ class PrivateChat : AppCompatActivity() {
             photoPaths.addAll(data.getParcelableArrayListExtra<Uri>(KEY_SELECTED_MEDIA)!!)
             selectedPhotoUri=photoPaths
             isText=false
-            Log.d("photo",photoPaths.toString())
+            Log.d("photo", photoPaths.toString())
             performSendMessage("sent photo")
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
+    @SuppressLint("RestrictedApi")
     private fun listenForMessages() {
         mainViewModel.listenForMessages(chatId).observe(this, { chatMessage ->
             Log.d("from", "1")
             val sdf = SimpleDateFormat("dd/MM/yyyy")
             val date = Date(chatMessage.timestamp * 1000)
-            if(preMessageDate!=sdf.format(date)){
-                adapter.add(0, ChatItem(this,chatMessage, userImage, "date", chatMessage.reply))
-                preMessageDate=sdf.format(date)
+            if (preMessageDate != sdf.format(date)) {
+                adapter.add(0, ChatItem(this, chatMessage, userImage, "date", chatMessage.reply))
+                preMessageDate = sdf.format(date)
             }
             if (chatMessage.idUSer == FirebaseAuth.getInstance().uid) {
-                adapter.add(0, ChatItem(this,chatMessage, userImage, "false", chatMessage.reply))
+                adapter.add(0, ChatItem(this, chatMessage, userImage, "false", chatMessage.reply))
                 type = false
             } else {
-                adapter.add(0, ChatItem(this,chatMessage, userImage, "true", chatMessage.reply))
+                adapter.add(0, ChatItem(this, chatMessage, userImage, "true", chatMessage.reply))
                 type = true
             }
             adapter.notifyDataSetChanged()
@@ -185,8 +191,14 @@ class PrivateChat : AppCompatActivity() {
                 val popup = PopupMenu(this, view)
                 val msg = i as ChatItem
                 popup.inflate(R.menu.options_menu)
+                if (popup is MenuBuilder) {
+                    val m = popup as MenuBuilder
+                    m.setOptionalIconsVisible(true)
+                }
+                popup.gravity=Gravity.RIGHT
                 popup.setOnMenuItemClickListener { item ->
                     when (item.itemId) {
+
                         R.id.edit -> {
                             view.setBackgroundColor(Color.parseColor("#000000"))
                             edit = true
@@ -210,6 +222,7 @@ class PrivateChat : AppCompatActivity() {
         })
     }
 
+    @ExperimentalStdlibApi
     private fun init() {
         toolbar = binding.chatToolbar
         imageCircle = binding.chatImage
@@ -223,14 +236,15 @@ class PrivateChat : AppCompatActivity() {
             Picasso.get().load(Uri.parse(userImage)).into(imageCircle)
         else
             imageCircle.setImageResource(R.drawable.user)
-        nameTextView.text = username
+        nameTextView.text = username.uppercase()
         chatRecyclerView?.adapter = adapter
         chatRecyclerView.layoutManager = LinearLayoutManager(
             this,
             LinearLayoutManager.VERTICAL,
             true
         )
-
+        toolbar.inflateMenu(R.menu.private_chat_menu)
+        toolbar.overflowIcon = ContextCompat.getDrawable(this, R.drawable.more)
         chatRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
 
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -252,29 +266,9 @@ class PrivateChat : AppCompatActivity() {
         })
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-        if (menu != null) {
-            if (menu.javaClass.simpleName == "MenuBuilder") {
-                try {
-                    val m: Method = menu.javaClass.getDeclaredMethod(
-                        "setOptionalIconsVisible", java.lang.Boolean.TYPE
-                    )
-                    m.isAccessible = true
-                    m.invoke(menu, true)
-                } catch (e: Exception) {
-                    Log.e(
-                        javaClass.simpleName,
-                        "onMenuOpened...unable to set icons for overflow menu",
-                        e
-                    )
-                }
-            }
-        }
-        return super.onPrepareOptionsMenu(menu)
-    }
-
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         return super.onCreateOptionsMenu(menu)
+        menuInflater.inflate(R.menu.private_chat_menu, menu);
         val clickListener = View.OnClickListener { view ->
             when (view.id) {
                 R.id.block -> {
@@ -288,7 +282,6 @@ class PrivateChat : AppCompatActivity() {
                 }
             }
         }
-
     }
 
     fun hideKeyboardFrom(context: Context, view: View) {
@@ -345,5 +338,27 @@ class PrivateChat : AppCompatActivity() {
                 Log.e("value", "Permission Denied, You cannot use local drive .")
             }
         }
+    }
+
+    @SuppressLint("RestrictedApi")
+    override fun onPrepareOptionsPanel(view: View?, menu: Menu): Boolean {
+        if (menu != null) {
+            if (menu.javaClass.simpleName == "MenuBuilder") {
+                try {
+                    val m = menu.javaClass.getDeclaredMethod(
+                        "setOptionalIconsVisible", java.lang.Boolean.TYPE
+                    )
+                    m.isAccessible = true
+                    m.invoke(menu, true)
+                } catch (e: java.lang.Exception) {
+                    Log.e(
+                        javaClass.simpleName,
+                        "onMenuOpened...unable to set icons for overflow menu",
+                        e
+                    )
+                }
+            }
+        }
+        return super.onPrepareOptionsPanel(view, menu)
     }
 }
