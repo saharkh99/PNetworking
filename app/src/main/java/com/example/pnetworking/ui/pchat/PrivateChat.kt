@@ -14,6 +14,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
 import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
@@ -24,6 +25,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.get
 import androidx.core.widget.doAfterTextChanged
 import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -56,6 +58,7 @@ class PrivateChat : AppCompatActivity() {
     var edit = false
     var type = false
     var isText=true
+    var mute=false
     var preMessageDate=""
     lateinit var refrence: FirebaseDatabase
     lateinit var seenListener: ValueEventListener
@@ -64,6 +67,7 @@ class PrivateChat : AppCompatActivity() {
     lateinit var toolbar: Toolbar
     lateinit var send: ImageButton
     lateinit var editChat: EditText
+    lateinit var chatMute:ImageView
     lateinit var imageSend: ImageButton
     lateinit var mainlayout: ConstraintLayout
     lateinit var binding: ActivityPrivateChatBinding
@@ -124,7 +128,8 @@ class PrivateChat : AppCompatActivity() {
                         editChat.setText("")
                         var msg = Message()
                         msg.context = text
-                        mainViewModel.sendNotification(msg, chatId, true)
+                        if(!mute)
+                             mainViewModel.sendNotification(msg, chatId, true)
                         hideKeyboardFrom(this, mainlayout)
                     } else {
                         Log.d("send message", "try again")
@@ -200,6 +205,7 @@ class PrivateChat : AppCompatActivity() {
                     when (item.itemId) {
 
                         R.id.edit -> {
+                            item.icon=getDrawable(R.drawable.edit)
                             view.setBackgroundColor(Color.parseColor("#000000"))
                             edit = true
                             true
@@ -243,6 +249,7 @@ class PrivateChat : AppCompatActivity() {
             LinearLayoutManager.VERTICAL,
             true
         )
+        setSupportActionBar(toolbar)
         toolbar.inflateMenu(R.menu.private_chat_menu)
         toolbar.overflowIcon = ContextCompat.getDrawable(this, R.drawable.more)
         chatRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -266,24 +273,42 @@ class PrivateChat : AppCompatActivity() {
         })
     }
 
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        return super.onCreateOptionsMenu(menu)
-        menuInflater.inflate(R.menu.private_chat_menu, menu);
-        val clickListener = View.OnClickListener { view ->
-            when (view.id) {
-                R.id.block -> {
-                    TODO()
-                }
-                R.id.mute -> {
-                    TODO()
-                }
-                R.id.search -> {
-                    TODO()
-                }
-            }
-        }
+        menuInflater.inflate(R.menu.private_chat_menu, menu)
+        return true
     }
 
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            R.id.block -> {
+                TODO()
+                return true
+            }
+            R.id.mute -> {
+                Log.d("x",item?.title.toString())
+                if(item?.title=="mute") {
+                    item.icon = getDrawable(R.drawable.unmute)
+                    item?.title = "unmute"
+                    mute=false
+                }
+                else {
+                    item?.title = "mute"
+                    item?.icon = getDrawable(R.drawable.mute)
+                    mute=true
+                }
+               return true
+            }
+            R.id.search -> {
+                TODO()
+                return true
+            }
+
+        }
+          return true
+
+    }
     fun hideKeyboardFrom(context: Context, view: View) {
         val imm: InputMethodManager =
             context.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
