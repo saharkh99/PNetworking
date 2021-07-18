@@ -19,6 +19,7 @@ class PChatDataSource {
         chat: String,
         selectedPhotoUri: ArrayList<Uri>,
         reply:String,
+        toID:String,
         isText:Boolean
     ): MutableLiveData<String> {
         val value = MutableLiveData<String>()
@@ -55,8 +56,13 @@ class PChatDataSource {
                 value.value = "true"
             }
             val latestMessageRef =
-                FirebaseDatabase.getInstance().getReference("chat/$toChat/latest-messages/$fromId/")
+                FirebaseDatabase.getInstance().getReference("chat/latest-messages/$fromId/$toID")
             latestMessageRef.setValue(chatMessage).addOnSuccessListener {
+                Log.d("shod", "shod")
+            }
+            val latestMessageRef2 =
+                FirebaseDatabase.getInstance().getReference("chat/latest-messages/$toID/$fromId")
+            latestMessageRef2.setValue(chatMessage).addOnSuccessListener {
                 Log.d("shod", "shod")
             }
 
@@ -91,10 +97,15 @@ class PChatDataSource {
                                 Log.d("TAG", "Saved our chat message: ${reference.key}")
                             }
                             val latestMessageRef =
-                                FirebaseDatabase.getInstance()
-                                    .getReference("chat/$toChat/latest-messages/$fromId/")
-                            latestMessageRef.setValue(chatMessage)
-                            Log.d("chat", it.toString() + " 2 " + chatMessage.type)
+                                FirebaseDatabase.getInstance().getReference("chat/latest-messages/$fromId/$toID")
+                            latestMessageRef.setValue(chatMessage).addOnSuccessListener {
+                                Log.d("shod", "shod")
+                            }
+                            val latestMessageRef2 =
+                                FirebaseDatabase.getInstance().getReference("chat/latest-messages/$toID/$fromId")
+                            latestMessageRef2.setValue(chatMessage).addOnSuccessListener {
+                                Log.d("shod", "shod")
+                            }
                         }
 
                     }
@@ -218,20 +229,36 @@ class PChatDataSource {
         hashmap.put("typingTo", idChat)
         ref.updateChildren(hashmap)
     }
-    fun seenMessage(toChat:String,userId:String):MutableLiveData<Boolean>{
+    fun seenMessage(toChat:String,messageId:String):MutableLiveData<Boolean>{
         var result = MutableLiveData<Boolean>()
-        val ref=FirebaseDatabase.getInstance().getReference("/chat/$toChat/message/$userId").push()
+        val fromId = FirebaseAuth.getInstance().uid
+        val ref=FirebaseDatabase.getInstance().getReference("/chat/$toChat/message/$fromId/$messageId").push()
         val seenListener=ref.addValueEventListener(object :ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 val hashmap = HashMap<String, Any>()
                 hashmap.put("seen", true)
                 ref.updateChildren(hashmap)
+                result.value=true
             }
             override fun onCancelled(error: DatabaseError) {
+                result.value=false
             }
 
         })
        return result
+    }
+    fun addToBlackList(toChat:String):MutableLiveData<Boolean>{
+        val value = MutableLiveData<Boolean>()
+        value.value=false
+        val fromId = FirebaseAuth.getInstance().uid
+        val reference =
+            FirebaseDatabase.getInstance().getReference("/black_lists/$fromId").push()
+        reference.setValue(toChat)
+            .addOnSuccessListener {
+                Log.d("TAG", "Saved our chat message: ${reference.key}")
+                value.value = true
+            }
+          return value
     }
 
 

@@ -4,6 +4,9 @@ import com.example.chat.ui.main.connection.ConnectionViewModel
 import com.example.pnetworking.repository.auth.AuthDataSource
 import com.example.pnetworking.repository.auth.AuthRepoImpl
 import com.example.pnetworking.repository.auth.AuthRepository
+import com.example.pnetworking.repository.chatfragment.ChatFragmentDataSource
+import com.example.pnetworking.repository.chatfragment.ChatFragmentRepoImpl
+import com.example.pnetworking.repository.chatfragment.ChatFragmentRepository
 import com.example.pnetworking.repository.connection.ConnectionRepository
 import com.example.pnetworking.repository.follow.FollowDataSource
 import com.example.pnetworking.repository.follow.FollowRepoImpl
@@ -24,6 +27,7 @@ import com.example.pnetworking.ui.base.test.TestViewModel
 import com.example.pnetworking.ui.pchat.PrivateChateViewModel
 import com.example.pnetworking.ui.profile.FollowViewModel
 import com.example.pnetworking.ui.profile.ProfileViewModel
+import com.example.pnetworking.ui.userchat.ChatFViewModel
 import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import java.sql.Connection
@@ -66,5 +70,11 @@ val pchatmodule= module {
         PrivateChateViewModel(get(), NotificationDataSource())
     }
     single<PChatRepository> { PChatRepoImpl(PChatDataSource()) }
+}
+val chatFmodule= module {
+    viewModel {
+        ChatFViewModel(get())
+    }
+    single<ChatFragmentRepository> { ChatFragmentRepoImpl(ChatFragmentDataSource()) }
 }
 

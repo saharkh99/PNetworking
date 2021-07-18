@@ -13,9 +13,10 @@ class PChatRepoImpl(private val pChatDataSource: PChatDataSource):PChatRepositor
         chat: String,
         selectedPhotoUri: ArrayList<Uri>,
         reply:String,
+        toId:String,
         isText:Boolean
 
-    ): MutableLiveData<String> =pChatDataSource.performSendMessage(text, chat, selectedPhotoUri,reply,isText)
+    ): MutableLiveData<String> =pChatDataSource.performSendMessage(text, chat, selectedPhotoUri,reply,toId,isText)
 
     override fun listenForMessages(chat: String): MutableLiveData<Message> {
         return pChatDataSource.listenForMessages(chat)
@@ -30,6 +31,10 @@ class PChatRepoImpl(private val pChatDataSource: PChatDataSource):PChatRepositor
     }
     override fun seenMessage(toChat:String,userId:String):MutableLiveData<Boolean>{
         return pChatDataSource.seenMessage(toChat, userId)
+    }
+
+    override fun addToBlackList(toChat: String): MutableLiveData<Boolean> {
+        return pChatDataSource.addToBlackList(toChat)
     }
 
 }

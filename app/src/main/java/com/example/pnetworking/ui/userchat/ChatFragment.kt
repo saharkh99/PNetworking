@@ -6,10 +6,12 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pnetworking.databinding.FragmentChatBinding
+import com.example.pnetworking.models.Message
 import com.example.pnetworking.ui.connection.UserList
 import com.example.pnetworking.ui.profile.CardProfileFragment
 import com.example.pnetworking.ui.profile.FollowViewModel
@@ -20,16 +22,20 @@ import com.example.pnetworking.utils.zodiac
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import org.koin.android.viewmodel.ext.android.viewModel
+import java.lang.Exception
 
-open class ChatFragment:ChatFragments() {
+open class ChatFragment : ChatFragments() {
     private val followViewModel by viewModel<FollowViewModel>()
     private val mainViewModel by viewModel<ProfileViewModel>()
+    private val chatViewModel by viewModel<ChatFViewModel>()
     private var _binding: FragmentChatBinding? = null
     private val binding get() = _binding!!
-    lateinit var rec:RecyclerView
+    lateinit var rec: RecyclerView
+    lateinit var recRecent: RecyclerView
     val adapter = GroupAdapter<GroupieViewHolder>()
+    val adapter2 = GroupAdapter<GroupieViewHolder>()
 
-    companion object{
+    companion object {
         val TAG = "Chat"
     }
 
@@ -41,34 +47,67 @@ open class ChatFragment:ChatFragments() {
         _binding = FragmentChatBinding.inflate(inflater, container, false)
         val view = binding.root
         rec = binding.recentMessageRequests
+        recRecent = binding.recentMessageRecyclerview
         return view
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-          initRecyclerView()
+        initRecyclerView()
+        getRecentMessage()
 
     }
 
+    private fun getRecentMessage() {
+        try {
+            chatViewModel.getRecentMessages().observe(viewLifecycleOwner, {
+                adapter2.clear()
+                recRecent?.adapter = adapter2
+                recRecent?.layoutManager =
+                    LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, true)
+                mainViewModel.getCurrentUser(it.idUSer).observe(viewLifecycleOwner, { u ->
+                    recRecent?.adapter = adapter2
+                    recRecent?.layoutManager =
+                        LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, true)
+                    u.bio = it.context
+                    val x = it.idTo.removePrefix(it.idUSer)
+                    mainViewModel.getCurrentUser(x).observe(viewLifecycleOwner, { to ->
+                        u.emailText = to.emailText
+                        Log.d("x", u.emailText)
+                        u.imageProfile=to.imageProfile
+                        adapter2.add(UserList(u, requireContext()))
+                        adapter2.notifyDataSetChanged()
+                    })
+                    Log.d("u", u.emailText)
+                })
+
+            })
+        } catch (e: Exception) {
+            Log.d("recent", e.message!!)
+        }
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun initRecyclerView(){
+    private fun initRecyclerView() {
         showProgressDialog(requireContext())
-        followViewModel.getRequests().observe(viewLifecycleOwner,{
+        adapter.clear()
+        followViewModel.getRequests().observe(viewLifecycleOwner, {
             hideProgressDialog()
             for (s: String in it) {
                 mainViewModel.getCurrentUser(s).observe(viewLifecycleOwner, { u ->
                     rec?.adapter = adapter
-                    rec?.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, true)
-                     adapter.add(UserList(u, requireContext()))
-                     Log.d("u", u.id)
+                    rec?.layoutManager =
+                        LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, true)
+                    adapter.add(UserList(u, requireContext()))
+                    Log.d("u", u.id)
                 })
             }
         })
         adapter.setOnItemClickListener { item, view ->
             val userItem = item as UserList
             Log.d("image", item.user.imageProfile)
-            val age= findAge(item.user.birthday).toString() +", "+ zodiac(item.user.birthday)
+            val age = findAge(item.user.birthday).toString() + ", " + zodiac(item.user.birthday)
             CardProfileFragment.newInstance(
                 item.user,
                 item.user.id,

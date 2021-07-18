@@ -120,7 +120,7 @@ class PrivateChat : AppCompatActivity() {
         if (edit) {
             mainViewModel.editMessage(text, chatId)
         } else {
-            mainViewModel.performSendMessage(text, chatId, selectedPhotoUri!!, reply, isText).observe(
+            mainViewModel.performSendMessage(text, chatId, selectedPhotoUri!!, reply, userId,isText).observe(
                 this,
                 {
                     Log.d("send message", it)
@@ -187,9 +187,14 @@ class PrivateChat : AppCompatActivity() {
             if (chatMessage.idUSer == FirebaseAuth.getInstance().uid) {
                 adapter.add(0, ChatItem(this, chatMessage, userImage, "false", chatMessage.reply))
                 type = false
+
             } else {
                 adapter.add(0, ChatItem(this, chatMessage, userImage, "true", chatMessage.reply))
                 type = true
+                mainViewModel.seenMessage(chatId, chatMessage.id)
+                    .observe(this@PrivateChat, {
+                        Log.d("getit", it.toString())
+                    })
             }
             adapter.notifyDataSetChanged()
             adapter.setOnItemClickListener { i, view ->
@@ -201,9 +206,9 @@ class PrivateChat : AppCompatActivity() {
                     m.setOptionalIconsVisible(true)
                 }
                 popup.gravity=Gravity.RIGHT
+                popup.setForceShowIcon(true)
                 popup.setOnMenuItemClickListener { item ->
                     when (item.itemId) {
-
                         R.id.edit -> {
                             item.icon=getDrawable(R.drawable.edit)
                             view.setBackgroundColor(Color.parseColor("#000000"))
@@ -263,11 +268,11 @@ class PrivateChat : AppCompatActivity() {
                 val firstVisibleItemPosition =
                     (chatRecyclerView.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
                 if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount && firstVisibleItemPosition >= 0) {
-                    if (!type)
-                        mainViewModel.seenMessage(chatId, userId)
-                            .observe(this@PrivateChat, {
-                                Log.d("getit", it.toString())
-                            })
+//                    if (!type)
+//                        mainViewModel.seenMessage(chatId, userId)
+//                            .observe(this@PrivateChat, {
+//                                Log.d("getit", it.toString())
+//                            })
                 }
             }
         })
@@ -283,7 +288,12 @@ class PrivateChat : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             R.id.block -> {
-                TODO()
+                mainViewModel.addToBlackList(chatId).observe(this,{
+                    if(it){
+                        item?.title = "blocked"
+                        Toast.makeText(this,"blocked successfully" ,Toast.LENGTH_SHORT)
+                    }
+                })
                 return true
             }
             R.id.mute -> {
