@@ -131,7 +131,7 @@ class PChatDataSource {
                 Log.d("get","getmessage")
                 val chatMessage = p0.getValue(Message::class.java)
                 if (chatMessage != null) {
-                    Log.d("TAG1", chatMessage.context)
+                    Log.d("TAG1", chatMessage.id)
                     result.value=chatMessage
                 }
 
@@ -232,20 +232,14 @@ class PChatDataSource {
     fun seenMessage(toChat:String,messageId:String):MutableLiveData<Boolean>{
         var result = MutableLiveData<Boolean>()
         val fromId = FirebaseAuth.getInstance().uid
-        val ref=FirebaseDatabase.getInstance().getReference("/chat/$toChat/message/$fromId/$messageId").push()
-        val seenListener=ref.addValueEventListener(object :ValueEventListener{
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val hashmap = HashMap<String, Any>()
-                hashmap.put("seen", true)
-                ref.updateChildren(hashmap)
-                result.value=true
-            }
-            override fun onCancelled(error: DatabaseError) {
-                result.value=false
-            }
-
-        })
-       return result
+        val ref=FirebaseDatabase.getInstance().getReference("/user_message/$fromId/$toChat/")
+        Log.d("seen", ref.parent.toString())
+        val hashmap = HashMap<String, Any>()
+        hashmap.put("seen",true)
+        ref.child(messageId).updateChildren(hashmap).addOnSuccessListener {
+            result.value=true
+        }
+        return result
     }
     fun addToBlackList(toChat:String):MutableLiveData<Boolean>{
         val value = MutableLiveData<Boolean>()
@@ -260,6 +254,36 @@ class PChatDataSource {
             }
           return value
     }
+    fun numberOfNewMessages(toChat:String):MutableLiveData<Int>{
+        var result = MutableLiveData<Int>()
+        var total=0;
+        val fromId = FirebaseAuth.getInstance().uid
+        val ref=FirebaseDatabase.getInstance().getReference("/user_message/$fromId/$toChat/")
+        ref.addChildEventListener(object :ChildEventListener{
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                val chatMessage = snapshot.getValue(Message::class.java)
+                if(!chatMessage!!.isSeen) {
+                    Log.d("total",chatMessage.context.toString())
+                    total++
+                }
+                Log.d("total",total.toString())
+                result.value=total
 
+            }
+
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+            }
+
+            override fun onChildRemoved(snapshot: DataSnapshot) {
+            }
+
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+            }
+        })
+        return result
+    }
 
 }

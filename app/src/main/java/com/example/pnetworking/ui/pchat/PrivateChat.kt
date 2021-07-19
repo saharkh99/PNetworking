@@ -129,13 +129,16 @@ class PrivateChat : AppCompatActivity() {
                         var msg = Message()
                         msg.context = text
                         if(!mute)
+//                            calculate number of new messages
                              mainViewModel.sendNotification(msg, chatId, true)
+
                         hideKeyboardFrom(this, mainlayout)
                     } else {
                         Log.d("send message", "try again")
                     }
                 })
         }
+
 
     }
 
@@ -177,7 +180,7 @@ class PrivateChat : AppCompatActivity() {
     @SuppressLint("RestrictedApi")
     private fun listenForMessages() {
         mainViewModel.listenForMessages(chatId).observe(this, { chatMessage ->
-            Log.d("from", "1")
+            Log.d("from", chatMessage.id)
             val sdf = SimpleDateFormat("dd/MM/yyyy")
             val date = Date(chatMessage.timestamp * 1000)
             if (preMessageDate != sdf.format(date)) {
@@ -193,9 +196,11 @@ class PrivateChat : AppCompatActivity() {
                 type = true
                 mainViewModel.seenMessage(chatId, chatMessage.id)
                     .observe(this@PrivateChat, {
-                        Log.d("getit", it.toString())
+                        Log.d("get it", it.toString())
                     })
+
             }
+
             adapter.notifyDataSetChanged()
             adapter.setOnItemClickListener { i, view ->
                 val popup = PopupMenu(this, view)
