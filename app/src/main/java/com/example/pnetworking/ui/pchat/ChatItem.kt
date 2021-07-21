@@ -1,6 +1,5 @@
 package com.example.pnetworking.ui.pchat
 import android.content.Context
-import android.icu.util.UniversalTimeScale.toLong
 import android.net.Uri
 import android.os.Build
 import android.util.Log
@@ -11,13 +10,11 @@ import androidx.annotation.RequiresApi
 import com.bumptech.glide.Glide
 import com.example.pnetworking.models.Message
 import com.example.pnetworking.R
-import com.squareup.picasso.Picasso
 import com.xwray.groupie.GroupieViewHolder
 import com.xwray.groupie.Item
 import de.hdodenhof.circleimageview.CircleImageView
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.coroutines.coroutineContext
 
 
 class ChatItem(val context: Context, val text: Message, val image: String, val type:String, val reply:String) : Item<GroupieViewHolder>() {
@@ -31,6 +28,7 @@ class ChatItem(val context: Context, val text: Message, val image: String, val t
         val image_message=viewHolder.itemView.findViewById<CircleImageView>(R.id.chat_image_user)
         val image_Text=viewHolder.itemView.findViewById<ImageView>(R.id.chat_message_image_tv)
         val time=viewHolder.itemView.findViewById<TextView>(R.id.chat_massage_date)
+        val seen=viewHolder.itemView.findViewById<TextView>(R.id.chat_is_seen_tv)
         if(type=="date"){
             val textview = viewHolder.itemView.findViewById<TextView>(R.id.chat_date)
             val sdf = SimpleDateFormat("MM/dd/yyyy")
@@ -38,6 +36,10 @@ class ChatItem(val context: Context, val text: Message, val image: String, val t
             textview.text=sdf.format(date)
         }
         else{
+            if(text.seen){
+                Log.d("seenn ",text.seen.toString())
+                seen.text = "seen"
+            }
             if(reply!=""){
                 textReply.text=reply
                 textReply.visibility=View.VISIBLE

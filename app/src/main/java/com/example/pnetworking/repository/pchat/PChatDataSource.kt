@@ -2,25 +2,24 @@ package com.example.pnetworking.repository.pchat
 
 import android.net.Uri
 import android.util.Log
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import com.example.pnetworking.models.Chat
 import com.example.pnetworking.models.Message
-import com.example.pnetworking.models.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 class PChatDataSource {
     fun performSendMessage(
         text: String,
         chat: String,
         selectedPhotoUri: ArrayList<Uri>,
-        reply:String,
-        toID:String,
-        isText:Boolean
+        reply: String,
+        toID: String,
+        isText: Boolean
     ): MutableLiveData<String> {
         val value = MutableLiveData<String>()
         val fromId = FirebaseAuth.getInstance().uid
@@ -34,7 +33,7 @@ class PChatDataSource {
         val toReference =
             FirebaseDatabase.getInstance().getReference("/chat/$toChat/message/$fromId").push()
         var chatMessage = Message()
-        Log.d("time",System.currentTimeMillis().toString())
+        Log.d("time", System.currentTimeMillis().toString())
         if (isText) {
             chatMessage =
                 Message(
@@ -45,7 +44,8 @@ class PChatDataSource {
                     System.currentTimeMillis() / 1000,
                     "text",
                     "",
-                     reply
+                    reply,
+                    false
                 )
             reference.setValue(chatMessage)
                 .addOnSuccessListener {
@@ -68,11 +68,12 @@ class PChatDataSource {
 
 
         } else {
-            for (i in selectedPhotoUri){
-                Log.d("image",i.path!!)
+            for (i in selectedPhotoUri) {
+                Log.d("image", i.path!!)
                 val filename = UUID.randomUUID().toString()
                 val ref =
-                    FirebaseStorage.getInstance().getReference("chat/$toChat/image_messages/$filename")
+                    FirebaseStorage.getInstance()
+                        .getReference("chat/$toChat/image_messages/$filename")
                 ref.putFile(i!!)
                     .addOnSuccessListener {
                         Log.d("TAG", "Successfully uploaded image: ${it.metadata?.path}")
@@ -86,7 +87,9 @@ class PChatDataSource {
                                 toChat,
                                 System.currentTimeMillis() / 1000,
                                 "photo",
-                                it.toString()
+                                it.toString(),
+                                "",
+                                false
 
                             )
                             reference.setValue(chatMessage)
@@ -97,12 +100,14 @@ class PChatDataSource {
                                 Log.d("TAG", "Saved our chat message: ${reference.key}")
                             }
                             val latestMessageRef =
-                                FirebaseDatabase.getInstance().getReference("chat/latest-messages/$fromId/$toID")
+                                FirebaseDatabase.getInstance()
+                                    .getReference("chat/latest-messages/$fromId/$toID")
                             latestMessageRef.setValue(chatMessage).addOnSuccessListener {
                                 Log.d("shod", "shod")
                             }
                             val latestMessageRef2 =
-                                FirebaseDatabase.getInstance().getReference("chat/latest-messages/$toID/$fromId")
+                                FirebaseDatabase.getInstance()
+                                    .getReference("chat/latest-messages/$toID/$fromId")
                             latestMessageRef2.setValue(chatMessage).addOnSuccessListener {
                                 Log.d("shod", "shod")
                             }
@@ -118,21 +123,21 @@ class PChatDataSource {
         return value
     }
 
-    fun listenForMessages( chat: String):MutableLiveData<Message> {
-        Log.d("get","getmessage")
+    fun listenForMessages(chat: String): MutableLiveData<Message> {
+        Log.d("get", "getmessage")
         var result = MutableLiveData<Message>()
         val fromId = FirebaseAuth.getInstance().uid
         val toId = chat
-        Log.d("toid",toId)
-        Log.d("from",fromId.toString())
+        Log.d("toid", toId)
+        Log.d("from", fromId.toString())
         val ref = FirebaseDatabase.getInstance().getReference("/chat/$toId/message/$fromId")
         ref.addChildEventListener(object : ChildEventListener {
             override fun onChildAdded(p0: DataSnapshot, p1: String?) {
-                Log.d("get","getmessage")
+                Log.d("get", "getmessage")
                 val chatMessage = p0.getValue(Message::class.java)
                 if (chatMessage != null) {
                     Log.d("TAG1", chatMessage.id)
-                    result.value=chatMessage
+                    result.value = chatMessage
                 }
 
             }
@@ -153,8 +158,9 @@ class PChatDataSource {
             }
 
         })
-      return result
+        return result
     }
+
     fun addChat(fid: String): MutableLiveData<String> {
         var result = MutableLiveData<String>()
         val uid = FirebaseAuth.getInstance().currentUser.uid
@@ -197,18 +203,22 @@ class PChatDataSource {
         }
         return result
     }
-    fun removeMessage(toChat:String,msgId:String) {
+
+    fun removeMessage(toChat: String, msgId: String) {
         val fromId = FirebaseAuth.getInstance().uid
-            val ref = FirebaseDatabase.getInstance()
-                .getReference("/user_message/$fromId/$toChat/${msgId}")
-            ref.removeValue()
-           val ref1=FirebaseDatabase.getInstance().getReference("/chat/$toChat/message/$fromId/${msgId}")
-            ref1.removeValue()
+        val ref = FirebaseDatabase.getInstance()
+            .getReference("/user_message/$fromId/$toChat/${msgId}")
+        ref.removeValue()
+        val ref1 =
+            FirebaseDatabase.getInstance().getReference("/chat/$toChat/message/$fromId/${msgId}")
+        ref1.removeValue()
         val latestMessageRef =
-            FirebaseDatabase.getInstance().getReference("chat/$toChat/latest-messages/$fromId/${msgId}")
+            FirebaseDatabase.getInstance()
+                .getReference("chat/$toChat/latest-messages/$fromId/${msgId}")
         latestMessageRef.removeValue()
     }
-    fun editMessage(text: String,toChat:String) {
+
+    fun editMessage(text: String, toChat: String) {
         val fromId = FirebaseAuth.getInstance().uid
         val reference =
             FirebaseDatabase.getInstance().getReference("/user_message/$fromId/$toChat").push()
@@ -222,6 +232,7 @@ class PChatDataSource {
         toReference.updateChildren(hashmap)
         latestMessageRef.updateChildren(hashmap)
     }
+
     fun changeTypingStatus(idChat: String) {
         val fromId = FirebaseAuth.getInstance().uid
         val ref = FirebaseDatabase.getInstance().getReference("/users/$fromId")
@@ -229,21 +240,23 @@ class PChatDataSource {
         hashmap.put("typingTo", idChat)
         ref.updateChildren(hashmap)
     }
-    fun seenMessage(toChat:String,messageId:String):MutableLiveData<Boolean>{
+
+    fun seenMessage(toChat: String, messageId: String): MutableLiveData<Boolean> {
         var result = MutableLiveData<Boolean>()
         val fromId = FirebaseAuth.getInstance().uid
-        val ref=FirebaseDatabase.getInstance().getReference("/user_message/$fromId/$toChat/")
+        val ref = FirebaseDatabase.getInstance().getReference("/user_message/$fromId/$toChat/")
         Log.d("seen", ref.parent.toString())
         val hashmap = HashMap<String, Any>()
-        hashmap.put("seen",true)
+        hashmap.put("seen", true)
         ref.child(messageId).updateChildren(hashmap).addOnSuccessListener {
-            result.value=true
+            result.value = true
         }
         return result
     }
-    fun addToBlackList(toChat:String):MutableLiveData<Boolean>{
+
+    fun addToBlackList(toChat: String): MutableLiveData<Boolean> {
         val value = MutableLiveData<Boolean>()
-        value.value=false
+        value.value = false
         val fromId = FirebaseAuth.getInstance().uid
         val reference =
             FirebaseDatabase.getInstance().getReference("/black_lists/$fromId").push()
@@ -252,22 +265,27 @@ class PChatDataSource {
                 Log.d("TAG", "Saved our chat message: ${reference.key}")
                 value.value = true
             }
-          return value
+        return value
     }
-    fun numberOfNewMessages(toChat:String):MutableLiveData<Int>{
-        var result = MutableLiveData<Int>()
-        var total=0;
+
+    fun numberOfNewMessages(toChat: String): MutableLiveData<HashMap<String, Any>> {
+        var result = MutableLiveData<HashMap<String, Any>>()
+        var total = 0
+        val hashmap = HashMap<String, Any>()
         val fromId = FirebaseAuth.getInstance().uid
-        val ref=FirebaseDatabase.getInstance().getReference("/user_message/$fromId/$toChat/")
-        ref.addChildEventListener(object :ChildEventListener{
+        val ref = FirebaseDatabase.getInstance().getReference("/user_message/$fromId")
+        ref.addChildEventListener(object : ChildEventListener {
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                val chatMessage = snapshot.getValue(Message::class.java)
-                if(!chatMessage!!.isSeen) {
-                    Log.d("total",chatMessage.context.toString())
-                    total++
+                snapshot.children.forEach {
+                    val chatMessage = it.getValue(Message::class.java)
+                    if (!chatMessage!!.seen) {
+                        total++
+                    }
                 }
-                Log.d("total",total.toString())
-                result.value=total
+                Log.d("total hashmap", hashmap.keys.toString())
+                hashmap[snapshot.key!!.removePrefix(fromId.toString())] = total
+                total = 0
+                result.value = hashmap
 
             }
 
@@ -282,7 +300,8 @@ class PChatDataSource {
 
             override fun onCancelled(error: DatabaseError) {
             }
-        })
+        }
+        )
         return result
     }
 

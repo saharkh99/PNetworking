@@ -14,7 +14,7 @@ data class Message(
     val type: String = "text",
     val imageUrl: String = "",
     val reply: String = "",
-    val isSeen:Boolean=false
+    val seen:Boolean
 ) : Parcelable {
     @RequiresApi(Build.VERSION_CODES.Q)
     constructor(parcel: Parcel) : this(
@@ -33,15 +33,15 @@ data class Message(
 
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeString(id)
         parcel.writeString(idUSer)
         parcel.writeString(context)
         parcel.writeString(idTo)
-        parcel.writeString(id)
         parcel.writeLong(timestamp)
         parcel.writeString(type)
         parcel.writeString(imageUrl)
         parcel.writeString(reply)
-        parcel.writeBoolean(isSeen)
+        parcel.writeBoolean(seen)
     }
 
     override fun describeContents() = 0

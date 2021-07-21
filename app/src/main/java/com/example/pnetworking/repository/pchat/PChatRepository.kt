@@ -14,5 +14,5 @@ interface PChatRepository {
     fun editMessage(text: String,toChat:String)
     fun seenMessage(toChat:String,userId:String):MutableLiveData<Boolean>
     fun addToBlackList(toChat:String):MutableLiveData<Boolean>
-    fun numberOfNewMessages(toChat:String):MutableLiveData<Int>
+    fun numberOfNewMessages(toChat:String):MutableLiveData<HashMap<String, Any>>
 }
