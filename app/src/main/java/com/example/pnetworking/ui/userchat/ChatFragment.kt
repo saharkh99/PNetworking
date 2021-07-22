@@ -71,17 +71,17 @@ open class ChatFragment : ChatFragments() {
         adapter3.clear()
         recNew?.adapter = adapter3
         recNew?.layoutManager =
-            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, true)
-
+            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        val users=ArrayList<String>()
         pChatViewModel.numberOfNewMessages("").observe(viewLifecycleOwner, {
             it.forEach { (t, u) ->
+                Log.d("totalss", " $t $u")
                 mainViewModel.getCurrentUser(t).observe(viewLifecycleOwner, { user ->
-                    Log.d("totalss", " $t $u")
                     val myInt = u as? Int ?: 0
-                    Log.d("totalss", user.id)
+                    Log.d("totalss", user.name)
+                    if(!users.contains(t))
                     adapter3.add(UserProList(user, requireContext(), myInt))
-                    adapter3.notifyDataSetChanged()
-
+                    users.add(t)
 
                 })
 

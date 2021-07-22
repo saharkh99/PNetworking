@@ -9,6 +9,8 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
         android:orientation="vertical">
 
     <de.hdodenhof.circleimageview.CircleImageView
@@ -23,6 +25,7 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:orientation="horizontal">
         <TextView
             android:layout_width="wrap_content"
@@ -30,7 +33,10 @@
             android:text="sahar khazali"
             android:id="@+id/pro_card_name"
             android:textStyle="bold"
-            android:padding="8dp"
+            android:paddingLeft="8dp"
+            android:paddingBottom="8dp"
+            android:paddingTop="8dp"
+            android:layout_gravity="center"
             android:textColor="@color/purple_500"
             android:textAppearance="?attr/textAppearanceHeadline6"
             />
@@ -38,7 +44,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="3"
-            android:padding="8dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:paddingRight="8dp"
+            android:paddingLeft="5dp"
             android:textStyle="bold"
             android:id="@+id/pro_card_num"
             android:backgroundTint="@color/teal_200"
