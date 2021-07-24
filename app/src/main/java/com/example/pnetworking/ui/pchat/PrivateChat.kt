@@ -179,6 +179,7 @@ class PrivateChat : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.Q)
     @SuppressLint("RestrictedApi")
     private fun listenForMessages() {
+        adapter.clear()
         mainViewModel.listenForMessages(chatId).observe(this, { chatMessage ->
             Log.d("from", chatMessage.id)
             val sdf = SimpleDateFormat("dd/MM/yyyy")

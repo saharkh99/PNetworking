@@ -6,12 +6,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pnetworking.databinding.FragmentChatBinding
-import com.example.pnetworking.models.Message
 import com.example.pnetworking.ui.connection.UserList
 import com.example.pnetworking.ui.pchat.PrivateChateViewModel
 import com.example.pnetworking.ui.profile.CardProfileFragment
@@ -69,18 +67,18 @@ open class ChatFragment : ChatFragments() {
     @RequiresApi(Build.VERSION_CODES.N)
     private fun getNewMessages() {
         adapter3.clear()
-        recNew?.adapter = adapter3
-        recNew?.layoutManager =
+        recNew.adapter = adapter3
+        recNew.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-        val users=ArrayList<String>()
+        val users = ArrayList<String>()
         pChatViewModel.numberOfNewMessages("").observe(viewLifecycleOwner, {
             it.forEach { (t, u) ->
                 Log.d("totalss", " $t $u")
                 mainViewModel.getCurrentUser(t).observe(viewLifecycleOwner, { user ->
                     val myInt = u as? Int ?: 0
                     Log.d("totalss", user.name)
-                    if(!users.contains(t))
-                    adapter3.add(UserProList(user, requireContext(), myInt))
+                    if (!users.contains(t))
+                        adapter3.add(UserProList(user, requireContext(), myInt))
                     users.add(t)
 
                 })
@@ -93,12 +91,12 @@ open class ChatFragment : ChatFragments() {
         try {
             chatViewModel.getRecentMessages().observe(viewLifecycleOwner, {
                 adapter2.clear()
-                recRecent?.adapter = adapter2
-                recRecent?.layoutManager =
+                recRecent.adapter = adapter2
+                recRecent.layoutManager =
                     LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, true)
                 mainViewModel.getCurrentUser(it.idUSer).observe(viewLifecycleOwner, { u ->
-                    recRecent?.adapter = adapter2
-                    recRecent?.layoutManager =
+                    recRecent.adapter = adapter2
+                    recRecent.layoutManager =
                         LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, true)
                     u.bio = it.context
                     val x = it.idTo.removePrefix(it.idUSer)
@@ -126,8 +124,8 @@ open class ChatFragment : ChatFragments() {
             hideProgressDialog()
             for (s: String in it) {
                 mainViewModel.getCurrentUser(s).observe(viewLifecycleOwner, { u ->
-                    rec?.adapter = adapter
-                    rec?.layoutManager =
+                    rec.adapter = adapter
+                    rec.layoutManager =
                         LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, true)
                     adapter.add(UserList(u, requireContext()))
                     Log.d("u", u.id)
@@ -147,7 +145,7 @@ open class ChatFragment : ChatFragments() {
                 "friends: " + item.user.connection.toString(),
                 item.user.favorites,
                 age,
-                ChatFragment.TAG
+                TAG
             ).show(parentFragmentManager, CardProfileFragment.TAG)
 
         }
