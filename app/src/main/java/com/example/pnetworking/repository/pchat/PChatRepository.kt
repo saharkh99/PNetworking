@@ -13,6 +13,7 @@ interface PChatRepository {
     fun removeMessage(toChat:String,msgId:String)
     fun editMessage(text: String,toChat:String)
     fun seenMessage(toChat:String,userId:String):MutableLiveData<Boolean>
-    fun addToBlackList(toChat:String):MutableLiveData<Boolean>
+    fun addToBlackList(toChat:String,userId: String):MutableLiveData<Boolean>
     fun numberOfNewMessages(toChat:String):MutableLiveData<HashMap<String, Any>>
+    fun checkBlackList(toChat: String): MutableLiveData<Boolean>
 }

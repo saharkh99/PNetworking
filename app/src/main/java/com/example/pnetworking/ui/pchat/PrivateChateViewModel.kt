@@ -37,10 +37,13 @@ class PrivateChateViewModel(private val pChatRepository: PChatRepository,
      fun seenMessage(toChat:String,userId:String):MutableLiveData<Boolean>{
          return pChatRepository.seenMessage(toChat, userId)
      }
-     fun addToBlackList(toChat: String):MutableLiveData<Boolean>{
-          return pChatRepository.addToBlackList(toChat)
+     fun addToBlackList(toChat: String,userId:String):MutableLiveData<Boolean>{
+          return pChatRepository.addToBlackList(toChat,userId)
      }
      fun numberOfNewMessages(toChat:String):MutableLiveData<HashMap<String, Any>>{
           return pChatRepository.numberOfNewMessages(toChat)
+     }
+     fun checkBlackList(toChat: String): MutableLiveData<Boolean>{
+          return pChatRepository.checkBlackList(toChat)
      }
 }

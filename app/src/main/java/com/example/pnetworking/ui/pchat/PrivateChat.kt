@@ -1,7 +1,6 @@
 package com.example.pnetworking.ui.pchat
 
 import android.Manifest
-import android.R.menu
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
@@ -25,7 +24,6 @@ import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.view.get
 import androidx.core.widget.doAfterTextChanged
 import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -180,63 +178,69 @@ class PrivateChat : AppCompatActivity() {
     @SuppressLint("RestrictedApi")
     private fun listenForMessages() {
         adapter.clear()
-        mainViewModel.listenForMessages(chatId).observe(this, { chatMessage ->
-            Log.d("from", chatMessage.id)
-            val sdf = SimpleDateFormat("dd/MM/yyyy")
-            val date = Date(chatMessage.timestamp * 1000)
-            if (preMessageDate != sdf.format(date)) {
-                adapter.add(0, ChatItem(this, chatMessage, userImage, "date", chatMessage.reply))
-                preMessageDate = sdf.format(date)
-            }
-            if (chatMessage.idUSer == FirebaseAuth.getInstance().uid) {
-                adapter.add(0, ChatItem(this, chatMessage, userImage, "false", chatMessage.reply))
-                type = false
-
-            } else {
-                adapter.add(0, ChatItem(this, chatMessage, userImage, "true", chatMessage.reply))
-                type = true
-                mainViewModel.seenMessage(chatId, chatMessage.id)
-                    .observe(this@PrivateChat, {
-                        Log.d("get it", it.toString())
-                    })
-
-            }
-
-            adapter.notifyDataSetChanged()
-            adapter.setOnItemClickListener { i, view ->
-                val popup = PopupMenu(this, view)
-                val msg = i as ChatItem
-                popup.inflate(R.menu.options_menu)
-                if (popup is MenuBuilder) {
-                    val m = popup as MenuBuilder
-                    m.setOptionalIconsVisible(true)
-                }
-                popup.gravity=Gravity.RIGHT
-                popup.setForceShowIcon(true)
-                popup.setOnMenuItemClickListener { item ->
-                    when (item.itemId) {
-                        R.id.edit -> {
-                            item.icon=getDrawable(R.drawable.edit)
-                            view.setBackgroundColor(Color.parseColor("#000000"))
-                            edit = true
-                            true
-                        }
-                        R.id.delete -> {
-                            if (!type)
-                                mainViewModel.removeMessage(chatId, msg.id.toString())
-                            true
-                        }
-                        R.id.reply -> {
-                            view.setBackgroundColor(Color.parseColor("#000000"))
-                            reply = msg.text.context
-                            true
-                        }
-                        else -> false
+        mainViewModel.checkBlackList(chatId).observe(this,{ blocked->
+            if(blocked!=true){
+                Log.d("from", blocked.toString())
+                mainViewModel.listenForMessages(chatId).observe(this, { chatMessage ->
+                    Log.d("from", chatMessage.id)
+                    val sdf = SimpleDateFormat("dd/MM/yyyy")
+                    val date = Date(chatMessage.timestamp * 1000)
+                    if (preMessageDate != sdf.format(date)) {
+                        adapter.add(0, ChatItem(this, chatMessage, userImage, "date", chatMessage.reply))
+                        preMessageDate = sdf.format(date)
                     }
-                }
-                popup.show()
-            }
+                    if (chatMessage.idUSer == FirebaseAuth.getInstance().uid) {
+                        adapter.add(0, ChatItem(this, chatMessage, userImage, "false", chatMessage.reply))
+                        type = false
+
+                    } else {
+                        adapter.add(0, ChatItem(this, chatMessage, userImage, "true", chatMessage.reply))
+                        type = true
+                        mainViewModel.seenMessage(chatId, chatMessage.id)
+                            .observe(this@PrivateChat, {
+                                Log.d("get it", it.toString())
+                            })
+
+                    }
+
+                    adapter.notifyDataSetChanged()
+                    adapter.setOnItemClickListener { i, view ->
+                        val popup = PopupMenu(this, view)
+                        val msg = i as ChatItem
+                        popup.inflate(R.menu.options_menu)
+                        if (popup is MenuBuilder) {
+                            val m = popup as MenuBuilder
+                            m.setOptionalIconsVisible(true)
+                        }
+                        popup.gravity=Gravity.END
+                        popup.setForceShowIcon(true)
+                        popup.setOnMenuItemClickListener { item ->
+                            when (item.itemId) {
+                                R.id.edit -> {
+                                    item.icon=getDrawable(R.drawable.edit)
+                                    view.setBackgroundColor(Color.parseColor("#000000"))
+                                    edit = true
+                                    true
+                                }
+                                R.id.delete -> {
+                                    if (!type)
+                                        mainViewModel.removeMessage(chatId, msg.id.toString())
+                                    true
+                                }
+                                R.id.reply -> {
+                                    view.setBackgroundColor(Color.parseColor("#000000"))
+                                    reply = msg.text.context
+                                    true
+                                }
+                                else -> false
+                            }
+                        }
+                        popup.show()
+                    }
+                })
+          }
         })
+
     }
 
     @ExperimentalStdlibApi
@@ -294,10 +298,11 @@ class PrivateChat : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             R.id.block -> {
-                mainViewModel.addToBlackList(chatId).observe(this,{
+                mainViewModel.addToBlackList(chatId,userId).observe(this,{
                     if(it){
                         item?.title = "blocked"
                         Toast.makeText(this,"blocked successfully" ,Toast.LENGTH_SHORT)
+
                     }
                 })
                 return true

@@ -254,12 +254,12 @@ class PChatDataSource {
         return result
     }
 
-    fun addToBlackList(toChat: String): MutableLiveData<Boolean> {
+    fun addToBlackList(toChat: String,userId:String): MutableLiveData<Boolean> {
         val value = MutableLiveData<Boolean>()
         value.value = false
         val fromId = FirebaseAuth.getInstance().uid
         val reference =
-            FirebaseDatabase.getInstance().getReference("/black_lists/$fromId").push()
+            FirebaseDatabase.getInstance().getReference("users/$fromId/black_lists/$toChat")
         reference.setValue(toChat)
             .addOnSuccessListener {
                 Log.d("TAG", "Saved our chat message: ${reference.key}")
@@ -267,6 +267,29 @@ class PChatDataSource {
             }
         return value
     }
+    fun checkBlackList(toChat: String): MutableLiveData<Boolean> {
+        var value = MutableLiveData<Boolean>()
+        val fromId = FirebaseAuth.getInstance().uid
+        val reference =
+            FirebaseDatabase.getInstance().getReference("users/$fromId/black_lists/$toChat").child(toChat)
+        reference.addValueEventListener(object :ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                value.value = false
+
+                if(snapshot.value !=null){
+                    Log.d("TAG33333333", " ${snapshot.value}")
+                    value.value=true
+                    Log.d("TAG33333333", " ${ value.value}")
+
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {
+            }
+
+        })
+        return value
+    }
+
 
     fun numberOfNewMessages(toChat: String): MutableLiveData<HashMap<String, Any>> {
         var result = MutableLiveData<HashMap<String, Any>>()
