@@ -206,15 +206,20 @@ class PChatDataSource {
 
     fun removeMessage(toChat: String, msgId: String) {
         val fromId = FirebaseAuth.getInstance().uid
+        Log.d("delete",msgId)
         val ref = FirebaseDatabase.getInstance()
-            .getReference("/user_message/$fromId/$toChat/${msgId}")
-        ref.removeValue()
+            .getReference("/chat/$toChat/message/$fromId/$msgId")
+        Log.d("delete",ref.parent.toString())
+
+        ref.removeValue().addOnSuccessListener {
+            Log.d("delete","msgId")
+        }
         val ref1 =
-            FirebaseDatabase.getInstance().getReference("/chat/$toChat/message/$fromId/${msgId}")
+            FirebaseDatabase.getInstance().getReference("/chat/$toChat/message/$fromId/$msgId")
         ref1.removeValue()
         val latestMessageRef =
             FirebaseDatabase.getInstance()
-                .getReference("chat/$toChat/latest-messages/$fromId/${msgId}")
+                .getReference("chat/$toChat/latest-messages/$fromId/$msgId")
         latestMessageRef.removeValue()
     }
 
@@ -289,7 +294,6 @@ class PChatDataSource {
         })
         return value
     }
-
 
     fun numberOfNewMessages(toChat: String): MutableLiveData<HashMap<String, Any>> {
         var result = MutableLiveData<HashMap<String, Any>>()

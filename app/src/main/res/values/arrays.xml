@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="Language">
+    <item>English (US)</item>
+    <item>English (UK)</item>
+    <item>French (France)</item>
+    <item>Spanish (Spain)</item>
+    <item>Italian</item>
+    </string-array>
+    <string-array name="pref_upload_quality_entries">salam</string-array>
+    <string-array name="pref_upload_quality_values">salam</string-array>
+</resources>

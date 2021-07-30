@@ -9,6 +9,26 @@
     <fragment android:id="@+id/chatFragment"
         android:label="ChatFragment"
         tools:layout="@layout/fragment_chat"
-        android:name="com.example.pnetworking.ui.userchat.ChatFragment"/>
+        android:name="com.example.pnetworking.ui.userchat.ChatFragment">
+        <action
+            android:id="@+id/action_chatFragment_to_friendsActivity"
+            app:destination="@id/friendsActivity" />
+        <argument
+            android:name="userId"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_chatFragment_to_settingActivity"
+            app:destination="@id/settingActivity" />
+    </fragment>
+    <activity
+        android:id="@+id/friendsActivity"
+        android:name="com.example.pnetworking.ui.features.FriendsActivity"
+        android:label="activity_friends"
+        tools:layout="@layout/activity_friends" />
+    <activity
+        android:id="@+id/settingActivity"
+        android:name="com.example.pnetworking.ui.features.SettingActivity"
+        android:label="activity_setting"
+        tools:layout="@layout/activity_setting" />
 
 </navigation>

@@ -1,5 +1,6 @@
 package com.example.pnetworking.ui.userchat
 
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -7,10 +8,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
+import androidx.cardview.widget.CardView
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pnetworking.databinding.FragmentChatBinding
 import com.example.pnetworking.ui.connection.UserList
+import com.example.pnetworking.ui.features.SettingsActivity
 import com.example.pnetworking.ui.pchat.PrivateChateViewModel
 import com.example.pnetworking.ui.profile.CardProfileFragment
 import com.example.pnetworking.ui.profile.FollowViewModel
@@ -34,6 +38,8 @@ open class ChatFragment : ChatFragments() {
     lateinit var rec: RecyclerView
     lateinit var recRecent: RecyclerView
     lateinit var recNew: RecyclerView
+    lateinit var friendsCard:CardView
+    lateinit var settingCard:CardView
     val adapter = GroupAdapter<GroupieViewHolder>()
     val adapter2 = GroupAdapter<GroupieViewHolder>()
     val adapter3 = GroupAdapter<GroupieViewHolder>()
@@ -52,6 +58,18 @@ open class ChatFragment : ChatFragments() {
         rec = binding.recentMessageRequests
         recRecent = binding.recentMessageRecyclerview
         recNew = binding.recentMessageNewRecyclerview
+        friendsCard=binding.cartFriends
+        friendsCard.setOnClickListener {
+                val action= ChatFragmentDirections.actionChatFragmentToFriendsActivity()
+                view.findNavController().navigate(action)
+        }
+        settingCard=binding.cartSetting
+        settingCard.setOnClickListener {
+//            val action= ChatFragmentDirections.actionChatFragmentToSettingActivity()
+//            view.findNavController().navigate(action)
+            startActivity(Intent(requireContext(), SettingsActivity::class.java))
+
+        }
         return view
     }
 

@@ -223,8 +223,12 @@ class PrivateChat : AppCompatActivity() {
                                     true
                                 }
                                 R.id.delete -> {
-                                    if (!type)
-                                        mainViewModel.removeMessage(chatId, msg.id.toString())
+                                    if (!type) {
+                                        Log.d("message","deleted")
+                                        mainViewModel.removeMessage(chatId, chatMessage.id)
+                                        adapter.notifyItemRemoved(msg.id.toInt())
+                                        Toast.makeText(this," massage is deleted",Toast.LENGTH_SHORT)
+                                    }
                                     true
                                 }
                                 R.id.reply -> {

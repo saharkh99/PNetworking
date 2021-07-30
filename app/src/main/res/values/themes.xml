@@ -58,4 +58,9 @@
     <style name="popupMenuStyle" parent="Widget.AppCompat.PopupMenu">
         <item name="android:popupBackground">@color/pink</item>
     </style>
+    <style name="PreferenceTheme" parent="@style/LibAppTheme">
+        <item name="android:colorBackground">@color/purple_200</item>
+        <item name="titleTextColor">@color/purple_500</item>
+    </style>
+
 </resources>
