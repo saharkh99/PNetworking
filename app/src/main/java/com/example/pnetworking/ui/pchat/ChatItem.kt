@@ -71,13 +71,12 @@ class ChatItem(val context: Context, val text: Message, val image: String, val t
 
     }
     override fun getLayout(): Int {
-        if(type=="true")
-          return R.layout.row_from_chat
-        else if(type=="false")
+        if (type == "true")
+            return R.layout.row_from_chat
+        else if (type == "false")
             return R.layout.row_to_chat
         else
             return R.layout.row_date_message
 
     }
-
 }

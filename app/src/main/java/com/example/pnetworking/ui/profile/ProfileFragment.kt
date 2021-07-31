@@ -21,6 +21,7 @@ import com.example.pnetworking.R
 import com.example.pnetworking.databinding.FragmentProfileBinding
 import com.example.pnetworking.models.User
 import com.example.pnetworking.ui.connection.UserList
+import com.example.pnetworking.ui.features.SettingsActivity
 import com.example.pnetworking.utils.ChatFragments
 import com.example.pnetworking.utils.findAge
 import com.example.pnetworking.utils.zodiac
@@ -28,6 +29,7 @@ import com.squareup.picasso.Picasso
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import de.hdodenhof.circleimageview.CircleImageView
+import org.koin.android.ext.android.bind
 import org.koin.android.viewmodel.ext.android.viewModel
 
 
@@ -38,6 +40,7 @@ class ProfileFragment : ChatFragments() {
     private val followViewModel by viewModel<FollowViewModel>()
     lateinit var edit: Button
     lateinit var image: CircleImageView
+    lateinit var setting:ImageView
     lateinit var name: TextView
     lateinit var bio: TextView
     lateinit var age:TextView
@@ -75,6 +78,9 @@ class ProfileFragment : ChatFragments() {
             val action=ProfileFragmentDirections.actionProfileFragmentToProfileEditActivity2(user.name,user.bio)
             view.findNavController().navigate(action)
 
+        }
+        setting.setOnClickListener {
+            startActivity(Intent(requireContext(), SettingsActivity::class.java))
         }
     }
 
@@ -180,6 +186,7 @@ class ProfileFragment : ChatFragments() {
         connectionRecyclerView=binding.profileRecConnections
         age=binding.profileBirthdayUser
         zodiac=binding.profileAstro
+        setting=binding.profileSetting
     }
 
 }

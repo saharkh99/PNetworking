@@ -1,21 +1,30 @@
 package com.example.pnetworking.ui.features
 
+import android.content.Intent
 import android.os.Bundle
 import android.preference.*
 import android.preference.Preference
-import android.preference.Preference.OnPreferenceClickListener
-import android.util.Log
 import android.view.MenuItem
 import com.example.pnetworking.R
 
 
+lateinit var themeName:String
 class SettingsActivity : AppCompatPreferenceActivity() {
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // load settings fragment
+        val pref = PreferenceManager
+            .getDefaultSharedPreferences(this)
+        themeName = pref.getString("pref_share", "purple")!!
+        if (themeName == "purple") {
+            setTheme(R.style.Theme_PNetworking)
+        } else if (themeName == "white") {
+            setTheme(R.style.AppTheme)
+        }
         fragmentManager.beginTransaction().replace(android.R.id.content, MainPreferenceFragment()).commit()
+
 
     }
 
@@ -24,10 +33,7 @@ class SettingsActivity : AppCompatPreferenceActivity() {
             super.onCreate(savedInstanceState)
             addPreferencesFromResource(R.xml.preferences)
 
-            // gallery EditText change listener
             bindPreferenceSummaryToValue(findPreference("key_email_name"))
-
-            // notification preference change listener
             bindPreferenceSummaryToValue(findPreference("key_password_name"))
         }
     }
@@ -55,11 +61,7 @@ class SettingsActivity : AppCompatPreferenceActivity() {
             val stringValue = newValue.toString()
 
             if (preference is ListPreference) {
-                // For list preferences, look up the correct display value in
-                // the preference's 'entries' list.
                 val index = preference.findIndexOfValue(stringValue)
-
-                // Set the summary to reflect the new value.
                 preference.setSummary(
                     if (index >= 0)
                         preference.entries[index]
@@ -69,8 +71,26 @@ class SettingsActivity : AppCompatPreferenceActivity() {
             } else if (preference is EditTextPreference) {
                 if (preference.getKey() == "key_password_name") {
                     preference.setSummary(stringValue)
+
                 }
-            } else {
+                else if (preference.getKey() == "key_email_name") {
+                    preference.setSummary(stringValue)
+                }
+
+            }
+            else if(preference is SwitchPreference){
+                if(!preference.isEnabled){
+                    themeName="white"
+                }else{
+                    themeName="purple"
+                }
+            }
+            else {
+                if(preference.getKey() == "test"){
+                    preference.setOnPreferenceClickListener {
+                        true
+                    }
+                }
                 preference.summary = stringValue
             }
             true

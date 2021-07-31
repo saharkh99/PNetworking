@@ -18,7 +18,6 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.menu.MenuBuilder
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -31,9 +30,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.pnetworking.R
 import com.example.pnetworking.databinding.ActivityPrivateChatBinding
 import com.example.pnetworking.models.Message
+import com.example.pnetworking.utils.ChatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.paulrybitskyi.persistentsearchview.PersistentSearchView
 import com.squareup.picasso.Picasso
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
@@ -46,7 +47,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 
-class PrivateChat : AppCompatActivity() {
+class PrivateChat : ChatActivity() {
     //-seen-new message-typing-docs
     var username = ""
     var userImage = ""
@@ -69,6 +70,7 @@ class PrivateChat : AppCompatActivity() {
     lateinit var imageSend: ImageButton
     lateinit var mainlayout: ConstraintLayout
     lateinit var binding: ActivityPrivateChatBinding
+    lateinit var chatSearch:PersistentSearchView
     val adapter = GroupAdapter<GroupieViewHolder>()
     lateinit var chatRecyclerView: RecyclerView
     private val PERMISSION_REQUEST_CODE = 1
@@ -200,9 +202,7 @@ class PrivateChat : AppCompatActivity() {
                             .observe(this@PrivateChat, {
                                 Log.d("get it", it.toString())
                             })
-
                     }
-
                     adapter.notifyDataSetChanged()
                     adapter.setOnItemClickListener { i, view ->
                         val popup = PopupMenu(this, view)
@@ -218,7 +218,7 @@ class PrivateChat : AppCompatActivity() {
                             when (item.itemId) {
                                 R.id.edit -> {
                                     item.icon=getDrawable(R.drawable.edit)
-                                    view.setBackgroundColor(Color.parseColor("#000000"))
+                                    view.setBackgroundColor(Color.parseColor("#33efe6fa"))
                                     edit = true
                                     true
                                 }
@@ -257,6 +257,7 @@ class PrivateChat : AppCompatActivity() {
         editChat = binding.chatMessageBoxEt
         mainlayout = binding.mainLayout
         imageSend = binding.chatAttachmentButton
+        chatSearch=binding.chatSearchMessage
         if (userImage != "true")
             Picasso.get().load(Uri.parse(userImage)).into(imageCircle)
         else
@@ -298,6 +299,7 @@ class PrivateChat : AppCompatActivity() {
         return true
     }
 
+    @ExperimentalStdlibApi
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
@@ -326,10 +328,40 @@ class PrivateChat : AppCompatActivity() {
                return true
             }
             R.id.search -> {
-                TODO()
+                val l=ArrayList<Message>()
+                    chatSearch.visibility = View.VISIBLE
+                    with(chatSearch) {
+                        setOnLeftBtnClickListener {
+                            onBackPressed()
+                        }
+                        setOnClearInputBtnClickListener {
+                            l.clear()
+                        }
+
+                        setOnSearchConfirmedListener { searchView, query ->
+                            searchView.collapse()
+                            searchView.onCancelPendingInputEvents()
+                            Log.d("has it?",query)
+                                for (i in 0 until chatRecyclerView.adapter!!.itemCount) {
+                                    val msg = adapter.getItem(i) as ChatItem
+                                    Log.d("has it?",msg.text.context.lowercase())
+                                    if(msg.text.context.lowercase().contains(query.lowercase())) {
+                                        Log.d("has it?","yes")
+                                        chatRecyclerView.getChildAt(i)
+                                            .setBackgroundColor(Color.parseColor("#33efe6fa"))
+                                    }
+                            }
+
+
+                        }
+                        setSuggestionsDisabled(true)
+
+                    }
+
+
+
                 return true
             }
-
         }
           return true
 

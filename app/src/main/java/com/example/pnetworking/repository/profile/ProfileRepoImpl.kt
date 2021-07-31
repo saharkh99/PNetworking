@@ -1,6 +1,5 @@
 package com.example.pnetworking.repository.profile
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.pnetworking.models.User
 

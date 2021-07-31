@@ -45,7 +45,7 @@ open class ChatFragment : ChatFragments() {
     val adapter3 = GroupAdapter<GroupieViewHolder>()
 
     companion object {
-        val TAG = "Chat"
+        const val TAG = "Chat"
     }
 
     override fun onCreateView(
@@ -91,10 +91,10 @@ open class ChatFragment : ChatFragments() {
         val users = ArrayList<String>()
         pChatViewModel.numberOfNewMessages("").observe(viewLifecycleOwner, {
             it.forEach { (t, u) ->
-                Log.d("totalss", " $t $u")
+                Log.d("totals", " $t $u")
                 mainViewModel.getCurrentUser(t).observe(viewLifecycleOwner, { user ->
                     val myInt = u as? Int ?: 0
-                    Log.d("totalss", user.name)
+                    Log.d("total's", user.name)
                     if (!users.contains(t))
                         adapter3.add(UserProList(user, requireContext(), myInt))
                     users.add(t)
@@ -150,7 +150,7 @@ open class ChatFragment : ChatFragments() {
                 })
             }
         })
-        adapter.setOnItemClickListener { item, view ->
+        adapter.setOnItemClickListener { item, _ ->
             val userItem = item as UserList
             Log.d("image", item.user.imageProfile)
             val age = findAge(item.user.birthday).toString() + ", " + zodiac(item.user.birthday)
