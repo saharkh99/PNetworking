@@ -18,12 +18,16 @@ import com.example.pnetworking.repository.pchat.PChatRepository
 import com.example.pnetworking.repository.profile.ProfileDataStore
 import com.example.pnetworking.repository.profile.ProfileRepoImpl
 import com.example.pnetworking.repository.profile.ProfileRepository
+import com.example.pnetworking.repository.settings.SettingsDataSource
+import com.example.pnetworking.repository.settings.SettingsRepoImpl
+import com.example.pnetworking.repository.settings.SettingsRepository
 import com.example.pnetworking.repository.test.TestDataSource
 import com.example.pnetworking.repository.test.TestRepository
 import com.example.pnetworking.repository.test.TestRepositoryImpl
 import com.example.pnetworking.ui.base.signin.SignInViewModel
 import com.example.pnetworking.ui.base.signup.SignUpViewModel
 import com.example.pnetworking.ui.base.test.TestViewModel
+import com.example.pnetworking.ui.features.SettingsViewModel
 import com.example.pnetworking.ui.pchat.PrivateChateViewModel
 import com.example.pnetworking.ui.profile.FollowViewModel
 import com.example.pnetworking.ui.profile.ProfileViewModel
@@ -76,5 +80,11 @@ val chatFmodule= module {
         ChatFViewModel(get())
     }
     single<ChatFragmentRepository> { ChatFragmentRepoImpl(ChatFragmentDataSource()) }
+}
+val settingsmodule= module {
+    viewModel {
+        SettingsViewModel(get())
+    }
+    single<SettingsRepository> { SettingsRepoImpl(SettingsDataSource()) }
 }
 

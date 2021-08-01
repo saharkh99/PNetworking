@@ -11,7 +11,7 @@ class App : Application() {
         startKoin {
             androidContext(this@App)
             modules(listOf(signupmodule, testmodule,profilemodule,connectionmodule, followmodule,
-                pchatmodule,chatFmodule))
+                pchatmodule,chatFmodule,settingsmodule))
         }
     }
 }

@@ -12,7 +12,7 @@ import com.google.firebase.database.ValueEventListener
 
 
 class SettingsDataSource {
-    private fun updateEmail(email:String,password:String,email2:String){
+     fun updateEmail(email:String,password:String,email2:String){
         val user = FirebaseAuth.getInstance().currentUser
         val credential = EmailAuthProvider
             .getCredential(email, password)
@@ -28,7 +28,7 @@ class SettingsDataSource {
                     }
             }
     }
-    private fun updatePassword(email:String,password:String,password2:String){
+     fun updatePassword(email:String,password:String,password2:String){
         val user = FirebaseAuth.getInstance().currentUser
         val credential = EmailAuthProvider
             .getCredential(email, password)
@@ -44,7 +44,7 @@ class SettingsDataSource {
                     }
             }
     }
-    private fun getBlackList(): MutableLiveData<List<User>>{
+     fun getBlackList(): MutableLiveData<List<User>>{
         val users = MutableLiveData<List<User>>()
         val uid = FirebaseAuth.getInstance().uid!!
         val l = ArrayList<User>()
@@ -53,15 +53,19 @@ class SettingsDataSource {
         ref.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(p0: DataSnapshot) {
                 p0.children.forEach {
-                    val ref = FirebaseDatabase.getInstance().getReference("/users/${it}")
+                    Log.d("NewMessage", (it.value.toString().removePrefix(uid)))
+                    val fid= (it.value.toString().removePrefix(uid))
+                    val ref = FirebaseDatabase.getInstance().getReference("/users/${fid}")
                     ref.addListenerForSingleValueEvent(object : ValueEventListener {
                         override fun onDataChange(p0: DataSnapshot) {
-                                Log.d("NewMessage", it.toString())
-                                val user = it.getValue(User::class.java)
+                                Log.d("NewMessage", ref.key.toString())
+                                val user = p0.getValue(User::class.java)
                                 if (user != null) {
                                     l.add(user)
-                                }
+                                    Log.d("NewMessage",user.name)
 
+                                }
+                            users.value = l
                         }
 
                         override fun onCancelled(p0: DatabaseError) {
@@ -69,14 +73,16 @@ class SettingsDataSource {
                         }
                     })
                 }
-                users.value = l
+
             }
 
             override fun onCancelled(p0: DatabaseError) {
 
             }
+
         })
-        return users
+
+         return users
     }
 
 }

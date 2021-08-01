@@ -91,6 +91,11 @@ class SettingsActivity : AppCompatPreferenceActivity() {
                         true
                     }
                 }
+                if(preference.getKey() == "test"){
+                    preference.setOnPreferenceClickListener {
+                        true
+                    }
+                }
                 preference.summary = stringValue
             }
             true

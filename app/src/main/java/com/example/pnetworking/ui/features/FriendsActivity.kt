@@ -4,10 +4,12 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pnetworking.databinding.ActivityFriendsBinding
 import com.example.pnetworking.ui.connection.UserList
+import com.example.pnetworking.ui.groupchat.UserChangeStatusItem
 import com.example.pnetworking.ui.profile.CardProfileFragment
 import com.example.pnetworking.ui.profile.FollowViewModel
 import com.example.pnetworking.ui.profile.ProfileFragment
@@ -25,6 +27,7 @@ class FriendsActivity : ChatActivity() {
     lateinit var friendsRecyclerView: RecyclerView
     private val followViewModel by viewModel<FollowViewModel>()
     private val mainViewModel by viewModel<ProfileViewModel>()
+    private val mainViewModel2 by viewModel<SettingsViewModel>()
 
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -41,12 +44,13 @@ class FriendsActivity : ChatActivity() {
             true
         )
         showProgressDialog(this)
+        val status=MutableLiveData<String>()
         followViewModel.getFollowers().observe(this,{
             hideProgressDialog()
             for (s: String in it) {
                 mainViewModel.getCurrentUser(s).observe(this, { u ->
                     if(u!=null)
-                        adapter.add(UserList(u,this))
+                        adapter.add(UserChangeStatusItem(u,this,"FOLLOW","UNFOLLOW",status))
                     Log.d("u", u.id)
                 })
             }

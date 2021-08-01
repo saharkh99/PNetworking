@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.pnetworking.databinding.FragmentChatBinding
 import com.example.pnetworking.ui.connection.UserList
 import com.example.pnetworking.ui.features.SettingsActivity
+import com.example.pnetworking.ui.groupchat.CreateGroupActivity
 import com.example.pnetworking.ui.pchat.PrivateChateViewModel
 import com.example.pnetworking.ui.profile.CardProfileFragment
 import com.example.pnetworking.ui.profile.FollowViewModel
@@ -24,6 +25,7 @@ import com.example.pnetworking.utils.findAge
 import com.example.pnetworking.utils.zodiac
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
+import org.koin.android.ext.android.bind
 import org.koin.android.viewmodel.ext.android.viewModel
 import java.lang.Exception
 
@@ -40,6 +42,7 @@ open class ChatFragment : ChatFragments() {
     lateinit var recNew: RecyclerView
     lateinit var friendsCard:CardView
     lateinit var settingCard:CardView
+    lateinit var groupCard:CardView
     val adapter = GroupAdapter<GroupieViewHolder>()
     val adapter2 = GroupAdapter<GroupieViewHolder>()
     val adapter3 = GroupAdapter<GroupieViewHolder>()
@@ -65,10 +68,11 @@ open class ChatFragment : ChatFragments() {
         }
         settingCard=binding.cartSetting
         settingCard.setOnClickListener {
-//            val action= ChatFragmentDirections.actionChatFragmentToSettingActivity()
-//            view.findNavController().navigate(action)
             startActivity(Intent(requireContext(), SettingsActivity::class.java))
-
+        }
+        groupCard=binding.cartAddGroup
+        groupCard.setOnClickListener {
+            startActivity(Intent(requireContext(), CreateGroupActivity::class.java))
         }
         return view
     }
