@@ -37,6 +37,9 @@ class FriendsActivity : ChatActivity() {
         val view = binding.root
         setContentView(view)
         init()
+        val intent = intent
+        val str = intent.getStringExtra("block")
+
         friendsRecyclerView?.adapter = adapter
         friendsRecyclerView.layoutManager = LinearLayoutManager(
            this,
@@ -45,16 +48,30 @@ class FriendsActivity : ChatActivity() {
         )
         showProgressDialog(this)
         val status=MutableLiveData<String>()
-        followViewModel.getFollowers().observe(this,{
-            hideProgressDialog()
-            for (s: String in it) {
-                mainViewModel.getCurrentUser(s).observe(this, { u ->
-                    if(u!=null)
-                        adapter.add(UserChangeStatusItem(u,this,"FOLLOW","UNFOLLOW",status))
-                    Log.d("u", u.id)
-                })
-            }
-        })
+       if(str==null){
+           followViewModel.getFollowers().observe(this,{
+               hideProgressDialog()
+               for (s: String in it) {
+                   mainViewModel.getCurrentUser(s).observe(this, { u ->
+                       if(u!=null)
+                           adapter.add(UserChangeStatusItem(u,this,"FOLLOW","UNFOLLOW",status))
+                       Log.d("u", u.id)
+                   })
+               }
+           })
+       }
+       else{
+           mainViewModel2.getBlackList().observe(this,{
+               hideProgressDialog()
+               it.forEach { u ->
+                   if (u != null)
+                       adapter.add(UserChangeStatusItem(u, this, "FOLLOW", "UNFOLLOW", status))
+                   Log.d("u", u.id)
+
+               }
+
+           })
+       }
         adapter.setOnItemClickListener { item, view ->
             val userItem = item as UserList
 
