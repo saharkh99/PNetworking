@@ -31,7 +31,7 @@ class UserChangeStatusItem(
         button.text = text
         button.setOnClickListener {
             button.text = text2
-            status.value = "true"
+            status.value = position.toString()
         }
 
 
