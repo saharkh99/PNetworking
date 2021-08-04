@@ -17,7 +17,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PNetworking"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ui.groupchat.CreateGroupActivity"></activity>
+        <activity android:name=".ui.groupchat.GroupChatActivity"></activity>
+        <activity android:name=".ui.groupchat.CreateGroupActivity" />
         <activity android:name=".ui.features.SettingsActivity" />
         <activity android:name=".ui.features.FriendsActivity" />
         <activity android:name=".ui.pchat.PrivateChat" />

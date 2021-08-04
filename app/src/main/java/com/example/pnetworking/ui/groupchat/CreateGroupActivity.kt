@@ -17,10 +17,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pnetworking.R
 import com.example.pnetworking.databinding.ActivityCreateGroupBinding
+import com.example.pnetworking.ui.base.signin.SigninActivity
 import com.example.pnetworking.ui.profile.FollowViewModel
 import com.example.pnetworking.ui.profile.ProfileViewModel
 import com.example.pnetworking.utils.ChatActivity
 import com.google.android.material.textfield.TextInputEditText
+import com.squareup.picasso.Picasso
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import de.hdodenhof.circleimageview.CircleImageView
@@ -64,6 +66,7 @@ class CreateGroupActivity : ChatActivity() {
             }
         }
         createBtn.setOnClickListener {
+            showProgressDialog(this)
             if (groupName.text.toString().isEmpty()) {
                 groupName.error = "Please enter your email"
             } else {
@@ -71,6 +74,7 @@ class CreateGroupActivity : ChatActivity() {
                 val bio = groupBio.text.toString()
                 groupViewModel.createGroup(selectedPhotoUri!![0], name, bio)
                     .observe(this, { chatid ->
+                        hideProgressDialog()
                         statuses.forEach {
                             it.observe(this, { s ->
                                 if (s != "") {
@@ -80,6 +84,11 @@ class CreateGroupActivity : ChatActivity() {
                                 }
                             })
                         }
+                        val intent = Intent(this, GroupChatActivity::class.java)
+                        intent.flags =
+                            Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        intent.putExtra("group_chat", chatid)
+                        startActivity(intent)
                     })
 
             }
@@ -97,6 +106,9 @@ class CreateGroupActivity : ChatActivity() {
             val photoPaths = ArrayList<Uri>()
             photoPaths.addAll(data.getParcelableArrayListExtra<Uri>(FilePickerConst.KEY_SELECTED_MEDIA)!!)
             selectedPhotoUri = photoPaths
+            groupImage.setBackgroundColor(0)
+            Picasso.get().load(Uri.parse(selectedPhotoUri!![0].toString())).into(groupImage)
+
         }
     }
 
