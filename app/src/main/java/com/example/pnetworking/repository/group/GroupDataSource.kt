@@ -80,10 +80,17 @@ class GroupDataSource {
             FirebaseDatabase.getInstance().getReference("/chat/group_chat/$chatId")
         ref.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(p0: DataSnapshot) {
-                Log.d("NewMessage", p0.toString())
-                val chat = p0.getValue(GroupChat::class.java)
-                if (chat != null) {
-                    result.value = chat
+                val g=GroupChat(p0.child("idUser").value.toString()
+                ,p0.child("idChat").value.toString()
+                ,p0.child("type").value.toString()
+                ,p0.child("name").value.toString()
+                ,p0.child("image").value.toString()
+                ,p0.child("summery").value.toString()
+                ,"")
+                Log.d("NewMessage",p0.child("summery").value.toString())
+                Log.d("NewMessage",p0.child("image").value.toString())
+                if (g != null) {
+                    result.value = g
                 }
             }
             override fun onCancelled(p0: DatabaseError) {

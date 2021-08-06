@@ -2,7 +2,7 @@ package com.example.pnetworking.ui.groupchat
 
 import android.content.Context
 import android.net.Uri
-import android.util.Log
+import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import androidx.lifecycle.MutableLiveData
@@ -18,7 +18,8 @@ class UserChangeStatusItem(
     val context: Context,
     val text: String,
     val text2: String,
-    val status: MutableLiveData<String>
+    val status: MutableLiveData<String>,
+    val rol: String
 ) : Item<GroupieViewHolder>() {
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {
         val name = viewHolder.itemView.findViewById<TextView>(R.id.user_row_name)
@@ -32,6 +33,10 @@ class UserChangeStatusItem(
         button.setOnClickListener {
             button.text = text2
             status.value = position.toString()
+        }
+        if(rol!=""){
+            val rol = viewHolder.itemView.findViewById<TextView>(R.id.user_row_role)
+            rol.visibility= View.VISIBLE
         }
 
 

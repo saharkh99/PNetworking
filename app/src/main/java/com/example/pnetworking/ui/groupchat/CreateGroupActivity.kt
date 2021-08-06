@@ -17,7 +17,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pnetworking.R
 import com.example.pnetworking.databinding.ActivityCreateGroupBinding
-import com.example.pnetworking.ui.base.signin.SigninActivity
 import com.example.pnetworking.ui.profile.FollowViewModel
 import com.example.pnetworking.ui.profile.ProfileViewModel
 import com.example.pnetworking.utils.ChatActivity
@@ -85,8 +84,8 @@ class CreateGroupActivity : ChatActivity() {
                             })
                         }
                         val intent = Intent(this, GroupChatActivity::class.java)
-                        intent.flags =
-                            Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
+//                        intent.flags =
+//                            Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
                         intent.putExtra("group_chat", chatid)
                         startActivity(intent)
                     })
@@ -96,7 +95,10 @@ class CreateGroupActivity : ChatActivity() {
         }
 
     }
-
+    override fun onDestroy() {
+        Log.w("TAG", "create destroyed")
+        super.onDestroy()
+    }
     var selectedPhotoUri: ArrayList<Uri>? = null
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -126,7 +128,7 @@ class CreateGroupActivity : ChatActivity() {
                 mainViewModel.getCurrentUser(s).observe(this, { u ->
                     val status = MutableLiveData<String>()
                     if (u != null)
-                        adapter.add(UserChangeStatusItem(u, this, "ADD", "REMOVE", status))
+                        adapter.add(UserChangeStatusItem(u, this, "ADD", "REMOVE", status,""))
                     Log.d("u", u.id)
                     statuses.add(status)
                 })

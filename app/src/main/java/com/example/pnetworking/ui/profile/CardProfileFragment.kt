@@ -10,7 +10,6 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import com.example.pnetworking.R
 import com.example.pnetworking.models.User
@@ -97,12 +96,14 @@ class CardProfileFragment : DialogFragment() {
             KEY_FRIENDS
         )
         val img = view.findViewById<ImageView>(R.id.profile_card_image)
-        Log.d("image", arguments?.getString(KEY_IMG)!!)
-        if (arguments?.getString(KEY_IMG) != "true") {
-            Picasso.get().load(Uri.parse(arguments?.getString(KEY_IMG))).into(img)
-        }
-        else
-            img.setImageResource(R.drawable.user)
+           Log.d("image", arguments.toString())
+
+            if (requireArguments().getString(KEY_IMG) != "" && requireArguments().getString(KEY_IMG) != null) {
+                Log.d("image", requireArguments().getString(KEY_IMG).toString())
+                if(requireArguments().getString(KEY_IMG)!=null)
+                Picasso.get().load(Uri.parse(requireArguments().getString(KEY_IMG))).into(img)
+            } else
+                img.setImageResource(R.drawable.user)
 
     }
 

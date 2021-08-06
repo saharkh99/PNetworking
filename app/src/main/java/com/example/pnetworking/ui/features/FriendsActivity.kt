@@ -54,7 +54,7 @@ class FriendsActivity : ChatActivity() {
                for (s: String in it) {
                    mainViewModel.getCurrentUser(s).observe(this, { u ->
                        if(u!=null)
-                           adapter.add(UserChangeStatusItem(u,this,"FOLLOW","UNFOLLOW",status))
+                           adapter.add(UserChangeStatusItem(u,this,"FOLLOW","UNFOLLOW",status,""))
                        Log.d("u", u.id)
                    })
                }
@@ -65,7 +65,7 @@ class FriendsActivity : ChatActivity() {
                hideProgressDialog()
                it.forEach { u ->
                    if (u != null)
-                       adapter.add(UserChangeStatusItem(u, this, "FOLLOW", "UNFOLLOW", status))
+                       adapter.add(UserChangeStatusItem(u, this, "FOLLOW", "UNFOLLOW", status,""))
                    Log.d("u", u.id)
 
                }

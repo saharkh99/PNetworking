@@ -3,6 +3,7 @@ package com.example.pnetworking.ui.groupchat
 import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
@@ -36,9 +37,7 @@ class GroupChatActivity : AppCompatActivity() {
         val intent = intent
         val chatID = intent.getStringExtra("group_chat")
         init()
-        toolbar.setOnClickListener {
-            GroupProfileFragment.newInstance(chatID!!).show(supportFragmentManager, "group profile")
-        }
+
         mainViewModel.getGroupChat(chatID!!).observe(this, { g ->
             if (g.image != "") {
                 Picasso.get().load(g.image).into(groupImage)
@@ -47,7 +46,14 @@ class GroupChatActivity : AppCompatActivity() {
 
             groupName.text = g.name
         })
+        toolbar.setOnClickListener {
+            GroupProfileFragment.newInstance(chatID!!).show(supportFragmentManager, "KEY_ID")
+        }
 
+    }
+    override fun onDestroy() {
+        Log.w("TAG", "group destroyed")
+        super.onDestroy()
     }
 
     private fun init() {

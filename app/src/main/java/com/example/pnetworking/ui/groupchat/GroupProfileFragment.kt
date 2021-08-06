@@ -1,6 +1,7 @@
 package com.example.pnetworking.ui.groupchat
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,10 +10,11 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pnetworking.R
-import com.example.pnetworking.ui.profile.CardProfileFragment
+import com.example.pnetworking.ui.profile.ProfileViewModel
 import com.squareup.picasso.Picasso
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
@@ -26,11 +28,12 @@ class GroupProfileFragment : DialogFragment() {
 
         fun newInstance(
             id: String,
-        ): CardProfileFragment {
+        ): GroupProfileFragment {
 
             val args = Bundle()
             args.putString(KEY_ID, id)
-            val fragment = CardProfileFragment()
+            Log.d("id",id)
+            val fragment = GroupProfileFragment()
             fragment.arguments = args
             return fragment
         }
@@ -38,6 +41,7 @@ class GroupProfileFragment : DialogFragment() {
     }
 
     private val viewGroup by viewModel<GroupViewModel>()
+    private val viewGroup2 by viewModel<ProfileViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -63,8 +67,8 @@ class GroupProfileFragment : DialogFragment() {
     }
 
     private fun setupView(view: View) {
-        viewGroup.getGroupChat(KEY_ID).observe(viewLifecycleOwner, { g ->
-            view.findViewById<TextView>(R.id.profile_group_name).text = g.name
+        viewGroup.getGroupChat(arguments?.getString(KEY_ID)!!).observe(viewLifecycleOwner, { g ->
+            view.findViewById<EditText>(R.id.profile_group_name).setText(g.name)
             val img = view.findViewById<ImageView>(R.id.profile_card_image)
             if (g.image != "") {
                 Picasso.get().load(g.image).into(img)
@@ -79,8 +83,13 @@ class GroupProfileFragment : DialogFragment() {
                 true
             )
             viewGroup.getParticipants(KEY_ID).observe(viewLifecycleOwner, {
+                val status= MutableLiveData<String>()
                 it.forEach { p ->
-                    //TODO
+                    viewGroup2.getCurrentUser(p.idUSer).observe(viewLifecycleOwner,{ u->
+                        if(u!=null)
+                            adapter.add(UserChangeStatusItem(u,requireContext(),"ADD","REMOVE",status,p.role))
+                        Log.d("u", u.id)
+                    })
                 }
             })
 
@@ -91,7 +100,7 @@ class GroupProfileFragment : DialogFragment() {
     }
 
     private fun setupClickListeners(view: View) {
-        view.findViewById<TextView>(R.id.profile_card_connect).setOnClickListener { view1 ->
+        view.findViewById<TextView>(R.id.profile_group_save).setOnClickListener { view1 ->
 
         }
     }
