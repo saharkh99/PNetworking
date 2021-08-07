@@ -19,4 +19,7 @@ class GroupViewModel(private val groupRepo: GroupRepository):ChatViewmodel(){
     fun getParticipants(chatId: String):MutableLiveData<List<Participant>>{
         return groupRepo.getParticipants(chatId)
     }
+    fun editGroup(name: String, bio: String,chatId: String): MutableLiveData<Boolean>{
+        return groupRepo.editGroup(name, bio, chatId)
+    }
 }

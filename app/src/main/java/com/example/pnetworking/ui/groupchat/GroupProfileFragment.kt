@@ -32,7 +32,7 @@ class GroupProfileFragment : DialogFragment() {
 
             val args = Bundle()
             args.putString(KEY_ID, id)
-            Log.d("id",id)
+            Log.d("id", id)
             val fragment = GroupProfileFragment()
             fragment.arguments = args
             return fragment
@@ -83,25 +83,36 @@ class GroupProfileFragment : DialogFragment() {
                 true
             )
             viewGroup.getParticipants(KEY_ID).observe(viewLifecycleOwner, {
-                val status= MutableLiveData<String>()
+                val status = MutableLiveData<String>()
                 it.forEach { p ->
-                    viewGroup2.getCurrentUser(p.idUSer).observe(viewLifecycleOwner,{ u->
-                        if(u!=null)
-                            adapter.add(UserChangeStatusItem(u,requireContext(),"ADD","REMOVE",status,p.role))
+                    viewGroup2.getCurrentUser(p.idUSer).observe(viewLifecycleOwner, { u ->
+                        if (u != null)
+                            adapter.add(
+                                UserChangeStatusItem(
+                                    u,
+                                    requireContext(),
+                                    "ADD",
+                                    "REMOVE",
+                                    status,
+                                    p.role
+                                )
+                            )
                         Log.d("u", u.id)
                     })
                 }
             })
-
-
         })
-
 
     }
 
     private fun setupClickListeners(view: View) {
         view.findViewById<TextView>(R.id.profile_group_save).setOnClickListener { view1 ->
-
+            viewGroup.editGroup(
+                view1.findViewById<EditText>(R.id.profile_group_name).text.toString(),
+                view1.findViewById<EditText>(R.id.profile_group_bio).text.toString(),
+                arguments?.getString(KEY_ID)!!
+            )
+            dismiss()
         }
     }
 

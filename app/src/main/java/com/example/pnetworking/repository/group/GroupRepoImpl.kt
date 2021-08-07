@@ -22,4 +22,9 @@ class GroupRepoImpl(private val groupDataSource: GroupDataSource): GroupReposito
     override fun getParticipants(chatId: String):MutableLiveData<List<Participant>>{
         return groupDataSource.getParticipants(chatId)
     }
+
+    override fun editGroup(name: String, bio: String, chatId: String): MutableLiveData<Boolean> {
+        return groupDataSource.editGroup(name, bio, chatId)
+    }
+
 }

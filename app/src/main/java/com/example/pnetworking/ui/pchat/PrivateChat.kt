@@ -32,7 +32,6 @@ import com.example.pnetworking.databinding.ActivityPrivateChatBinding
 import com.example.pnetworking.models.Message
 import com.example.pnetworking.utils.ChatActivity
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.ValueEventListener
 import com.paulrybitskyi.persistentsearchview.PersistentSearchView
 import com.squareup.picasso.Picasso
 import com.xwray.groupie.GroupAdapter
@@ -58,7 +57,6 @@ class PrivateChat : ChatActivity() {
     var isText=true
     var mute=false
     var preMessageDate=""
-    lateinit var seenListener: ValueEventListener
     lateinit var nameTextView: TextView
     lateinit var imageCircle: CircleImageView
     lateinit var toolbar: Toolbar

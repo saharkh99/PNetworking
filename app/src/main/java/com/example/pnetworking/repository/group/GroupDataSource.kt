@@ -3,6 +3,7 @@ package com.example.pnetworking.repository.group
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import com.example.pnetworking.models.Chat
 import com.example.pnetworking.models.GroupChat
 import com.example.pnetworking.models.Participant
 import com.example.pnetworking.models.User
@@ -53,6 +54,26 @@ class GroupDataSource {
             par.role = "admin"
             ref2.setValue(par).addOnSuccessListener {
                 Log.d("TAG", "Saved our chat message: ${ref.key}")
+            }
+
+            val refrence = FirebaseDatabase.getInstance().getReference("/chat/users/$chatId").key
+            if (refrence == null) {
+                val ref = FirebaseDatabase.getInstance().getReference("/chat/users/")
+                Log.d("ref", ref.key!!)
+                val chat = Chat()
+                with(chat) {
+                    idChat = chatId
+                    idUSer = uid
+                    type = "group"
+                }
+                ref.setValue(chat).addOnSuccessListener {
+                    Log.d("TAG", "add chat")
+                    result.value = chatId
+                }
+                    .addOnFailureListener {
+                        Log.e("TAG", "Failed to set value to database: ${it.message}")
+                        result.value = "false"
+                    }
             }
 
         }
@@ -117,6 +138,19 @@ class GroupDataSource {
 
             }
         })
+        return result
+    }
+    fun editGroup(name: String, bio: String,chatId: String): MutableLiveData<Boolean> {
+        var result = MutableLiveData<Boolean>()
+        val hashmap = HashMap<String, Any>()
+        hashmap.put("name", name)
+        hashmap.put("summery", bio)
+        val ref = FirebaseDatabase.getInstance().getReference("/chat/group_chat/$chatId")
+        ref.updateChildren(hashmap).addOnSuccessListener {
+            result.value = true
+        }.addOnFailureListener {
+            result.value = false
+        }
         return result
     }
 }

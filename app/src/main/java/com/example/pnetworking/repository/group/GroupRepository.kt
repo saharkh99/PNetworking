@@ -11,4 +11,5 @@ interface GroupRepository {
     fun addAParticipant(user: User, chatId: String)
     fun getGroupChat(chatId: String): MutableLiveData<GroupChat>
     fun getParticipants(chatId: String):MutableLiveData<List<Participant>>
+    fun editGroup(name: String, bio: String,chatId: String): MutableLiveData<Boolean>
 }
