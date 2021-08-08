@@ -13,9 +13,11 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pnetworking.databinding.FragmentChatBinding
+import com.example.pnetworking.models.User
 import com.example.pnetworking.ui.connection.UserList
 import com.example.pnetworking.ui.features.SettingsActivity
 import com.example.pnetworking.ui.groupchat.CreateGroupActivity
+import com.example.pnetworking.ui.groupchat.GroupViewModel
 import com.example.pnetworking.ui.pchat.PrivateChateViewModel
 import com.example.pnetworking.ui.profile.CardProfileFragment
 import com.example.pnetworking.ui.profile.FollowViewModel
@@ -25,7 +27,6 @@ import com.example.pnetworking.utils.findAge
 import com.example.pnetworking.utils.zodiac
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
-import org.koin.android.ext.android.bind
 import org.koin.android.viewmodel.ext.android.viewModel
 import java.lang.Exception
 
@@ -34,6 +35,7 @@ open class ChatFragment : ChatFragments() {
     private val mainViewModel by viewModel<ProfileViewModel>()
     private val chatViewModel by viewModel<ChatFViewModel>()
     private val pChatViewModel by viewModel<PrivateChateViewModel>()
+    private val groupViewModel by viewModel<GroupViewModel>()
 
     private var _binding: FragmentChatBinding? = null
     private val binding get() = _binding!!
@@ -98,11 +100,12 @@ open class ChatFragment : ChatFragments() {
                 Log.d("totals", " $t $u")
                 mainViewModel.getCurrentUser(t).observe(viewLifecycleOwner, { user ->
                     val myInt = u as? Int ?: 0
-                    Log.d("total's", user.name)
-                    if (!users.contains(t))
-                        adapter3.add(UserProList(user, requireContext(), myInt))
-                    users.add(t)
-
+                    if(user!=null){
+                        Log.d("total's", user.name)
+                        if (!users.contains(t))
+                            adapter3.add(UserProList(user, requireContext(), myInt))
+                        users.add(t)
+                    }
                 })
 
             }
@@ -116,22 +119,36 @@ open class ChatFragment : ChatFragments() {
                 recRecent.adapter = adapter2
                 recRecent.layoutManager =
                     LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, true)
-                mainViewModel.getCurrentUser(it.idUSer).observe(viewLifecycleOwner, { u ->
-                    recRecent.adapter = adapter2
-                    recRecent.layoutManager =
-                        LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, true)
-                    u.bio = it.context
-                    val x = it.idTo.removePrefix(it.idUSer)
-                    mainViewModel.getCurrentUser(x).observe(viewLifecycleOwner, { to ->
-                        u.emailText = to.emailText
-                        Log.d("x", u.emailText)
-                        u.imageProfile = to.imageProfile
-                        adapter2.add(UserList(u, requireContext()))
-                        adapter2.notifyDataSetChanged()
+                if(it.idTo.contains(it.idUSer)){
+                    mainViewModel.getCurrentUser(it.idUSer).observe(viewLifecycleOwner, { u ->
+                        recRecent.adapter = adapter2
+                        recRecent.layoutManager =
+                            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, true)
+                        u.bio = it.context
+                        val x = it.idTo.removePrefix(it.idUSer)
+                        mainViewModel.getCurrentUser(x).observe(viewLifecycleOwner, { to ->
+                            if(to!=null){
+                                u.emailText = to.emailText
+                                Log.d("x", u.emailText)
+                                u.imageProfile = to.imageProfile
+                                adapter2.add(UserList(u, requireContext()))
+                                adapter2.notifyDataSetChanged()
+                            }
+                        })
+//                    Log.d("u", u.emailText)
                     })
-                    Log.d("u", u.emailText)
-                })
-
+                }
+                else{
+                  groupViewModel.getGroupChat(it.idTo).observe(viewLifecycleOwner,{g->
+                      val u= User()
+                      u.imageProfile=g.image
+                      u.emailText="Group: "+ g.name
+                      u.name=g.name
+                      u.bio=it.context
+                      adapter2.add(UserList(u, requireContext()))
+                      adapter2.notifyDataSetChanged()
+                  })
+                }
             })
         } catch (e: Exception) {
             Log.d("recent", e.message!!)

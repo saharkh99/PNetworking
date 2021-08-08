@@ -54,15 +54,14 @@ class GroupChatActivity : AppCompatActivity() {
     lateinit var mainlayout: ConstraintLayout
     private val PERMISSION_REQUEST_CODE = 3
     val adapter = GroupAdapter<GroupieViewHolder>()
-    var isText=true
+    var isText = true
     var reply = ""
     var edit = false
     var type = false
-    var mute=false
-    var preMessageDate=""
-    lateinit var chatID:String
+    var mute = false
+    var preMessageDate = ""
+    lateinit var chatID: String
     private val mainViewModel2 by viewModel<PrivateChateViewModel>()
-
 
 
     @RequiresApi(Build.VERSION_CODES.Q)
@@ -89,13 +88,14 @@ class GroupChatActivity : AppCompatActivity() {
         uploadImage()
         send.setOnClickListener {
             Log.d("TAG", "Attempt to send message....")
-            isText=true
+            isText = true
             performSendMessage(editChat.text.toString())
         }
         listenForMessages()
 
 
     }
+
     override fun onDestroy() {
         Log.w("TAG", "group destroyed")
         super.onDestroy()
@@ -119,18 +119,20 @@ class GroupChatActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
     }
+
     @RequiresApi(Build.VERSION_CODES.Q)
     @SuppressLint("RestrictedApi")
     private fun listenForMessages() {
         adapter.clear()
-        mainViewModel2.checkBlackList(chatID).observe(this,{ blocked->
-            if(blocked!=true){
+        mainViewModel2.checkBlackList(chatID).observe(this, { blocked ->
+            if (blocked != true) {
                 Log.d("from", blocked.toString())
                 mainViewModel2.listenForMessages(chatID).observe(this, { chatMessage ->
                     Log.d("from", chatMessage.id)
                     val sdf = SimpleDateFormat("dd/MM/yyyy")
                     val date = Date(chatMessage.timestamp * 1000)
                     if (preMessageDate != sdf.format(date)) {
+//                      TODO set image of users
                         adapter.add(0, ChatItem(this, chatMessage, "", "date", chatMessage.reply))
                         preMessageDate = sdf.format(date)
                     }
@@ -155,22 +157,26 @@ class GroupChatActivity : AppCompatActivity() {
                             val m = popup as MenuBuilder
                             m.setOptionalIconsVisible(true)
                         }
-                        popup.gravity= Gravity.END
+                        popup.gravity = Gravity.END
                         popup.setForceShowIcon(true)
                         popup.setOnMenuItemClickListener { item ->
                             when (item.itemId) {
                                 R.id.edit -> {
-                                    item.icon=getDrawable(R.drawable.edit)
+                                    item.icon = getDrawable(R.drawable.edit)
                                     view.setBackgroundColor(Color.parseColor("#33efe6fa"))
                                     edit = true
                                     true
                                 }
                                 R.id.delete -> {
                                     if (!type) {
-                                        Log.d("message","deleted")
+                                        Log.d("message", "deleted")
                                         mainViewModel2.removeMessage(chatID, chatMessage.id)
                                         adapter.notifyItemRemoved(msg.id.toInt())
-                                        Toast.makeText(this," massage is deleted",Toast.LENGTH_SHORT)
+                                        Toast.makeText(
+                                            this,
+                                            " massage is deleted",
+                                            Toast.LENGTH_SHORT
+                                        )
                                     }
                                     true
                                 }
@@ -214,19 +220,27 @@ class GroupChatActivity : AppCompatActivity() {
             Log.d("TAG", "Photo was selected")
             val photoPaths = ArrayList<Uri>()
             photoPaths.addAll(data.getParcelableArrayListExtra<Uri>(FilePickerConst.KEY_SELECTED_MEDIA)!!)
-            selectedPhotoUri=photoPaths
-            isText=false
+            selectedPhotoUri = photoPaths
+            isText = false
             Log.d("photo", photoPaths.toString())
             performSendMessage("sent photo")
         }
     }
+
     private fun performSendMessage(text: String) {
         if (selectedPhotoUri == null)
-            selectedPhotoUri=ArrayList()
+            selectedPhotoUri = ArrayList()
         if (edit) {
             mainViewModel2.editMessage(text, chatID)
         } else {
-            mainViewModel2.performSendMessage(text, chatID, selectedPhotoUri!!, reply, chatID,isText).observe(
+            mainViewModel2.performSendMessage(
+                text,
+                chatID,
+                selectedPhotoUri!!,
+                reply,
+                chatID,
+                isText
+            ).observe(
                 this
             ) {
                 Log.d("send message", it)
@@ -248,12 +262,12 @@ class GroupChatActivity : AppCompatActivity() {
     }
 
 
-
     private fun hideKeyboardFrom(context: Context, view: View) {
         val imm: InputMethodManager =
             context.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
+
     private fun checkPermission(): Boolean {
         val result = ContextCompat.checkSelfPermission(
             this,

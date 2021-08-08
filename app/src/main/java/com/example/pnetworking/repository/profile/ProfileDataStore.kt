@@ -26,7 +26,7 @@ class ProfileDataStore {
 
             override fun onDataChange(p0: DataSnapshot) {
                 result.value = p0.getValue(User::class.java)
-                Log.d("re", p0.getValue(User::class.java)!!.id)
+//                Log.d("re", p0.getValue(User::class.java)!!.id)
             }
 
             override fun onCancelled(p0: DatabaseError) {
