@@ -2,19 +2,19 @@ package com.example.pnetworking.repository.auth
 
 import android.net.Uri
 import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import com.example.pnetworking.models.User
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import java.util.*
 
 class AuthDataSource {
     fun signup(email: String, password: String): MutableLiveData<String> {
-        var result = MutableLiveData<String>()
+        val result = MutableLiveData<String>()
         Log.d("TAG", "Attempting to create user with email: $email")
-        Log.d("email", email.toString())
+        Log.d("email", email)
         FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener {
                 if (!it.isSuccessful) return@addOnCompleteListener
@@ -30,8 +30,8 @@ class AuthDataSource {
     }
 
      fun uploadImageToFirebaseStorage(selectedPhotoUri: Uri): MutableLiveData<String> {
-        var result = MutableLiveData<String>()
-        if (selectedPhotoUri == null || selectedPhotoUri.path=="") {
+        val result = MutableLiveData<String>()
+        if (selectedPhotoUri.path=="") {
             result.value="true"
             return result
         }
@@ -39,7 +39,7 @@ class AuthDataSource {
         val filename = UUID.randomUUID().toString()
         val ref = FirebaseStorage.getInstance().getReference("/images/$filename")
 
-        ref.putFile(selectedPhotoUri!!)
+        ref.putFile(selectedPhotoUri)
             .addOnSuccessListener {
                 Log.d("TAG", "Successfully uploaded image: ${it.metadata?.path}")
                 ref.downloadUrl.addOnSuccessListener { it1 ->
@@ -97,7 +97,16 @@ class AuthDataSource {
                     result.value="true"
 
                 } else {
-                  result.value=task.result.toString()
+                    try {
+                        result.value=task.result.toString()
+                    } catch(e: FirebaseAuthInvalidCredentialsException) {
+                        Log.d("exception",e.message!!)
+                        result.value="invalid credential. the email or password is wrong"
+                    }
+                     catch(e: Exception) {
+                        Log.d("exception",e.message!!)
+                        result.value="something is wrong please try again"
+                    }
                 }
             }
         return result

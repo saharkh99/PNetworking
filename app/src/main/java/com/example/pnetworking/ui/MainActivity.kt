@@ -15,7 +15,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.iid.FirebaseInstanceId
 
 class MainActivity : ChatActivity() {
-    //share preference,search,setting
+    //share preference
     private var currentNavController: LiveData<NavController>? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,7 +23,7 @@ class MainActivity : ChatActivity() {
         if (savedInstanceState == null) {
             setupBottomNavigationBar()
         }
-        updateToken(FirebaseInstanceId.getInstance().getToken()!!)
+        updateToken(FirebaseInstanceId.getInstance().token!!)
     }
 
     private fun setupBottomNavigationBar() {
@@ -52,20 +52,21 @@ class MainActivity : ChatActivity() {
         changeOnlineStatus(true)
     }
 
-    override fun onDestroy() {
+    override fun onStop() {
         changeOnlineStatus(false).observe(this,{
             if(it){
-                super.onDestroy()
+                Log.d("offline","offline")
             }
         })
+        super.onStop()
     }
 
     private fun changeOnlineStatus(bool: Boolean):MutableLiveData<Boolean> {
-        var result = MutableLiveData<Boolean>()
+        val result = MutableLiveData<Boolean>()
         val uid = FirebaseAuth.getInstance().uid
         val ref = FirebaseDatabase.getInstance().getReference("/users/$uid")
         val hashmap = HashMap<String, Any>()
-        hashmap.put("online", bool)
+        hashmap["online"] = bool
         ref.updateChildren(hashmap).addOnCompleteListener {
             result.value = true
         }

@@ -8,7 +8,7 @@
         android:iconTint="@color/purple_200"
         android:title="chat"></item>
     <item android:id="@+id/connection"
-        android:icon="@drawable/connection"
+        android:icon="@drawable/group"
         android:iconTint="@color/purple_200"
         android:title="connection"></item>
 </menu>

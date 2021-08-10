@@ -16,6 +16,9 @@ class ProfileRepoImpl(private val profileDataStore: ProfileDataStore):ProfileRep
        return profileDataStore.editProfile(name, bio, uid,fav)
     }
 
+    override fun updatePhoto(image: String): MutableLiveData<Boolean> {
+        return profileDataStore.updatePhoto(image)
+    }
 
 
 }

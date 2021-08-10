@@ -29,4 +29,7 @@ class FollowViewModel(private val followRepository: FollowRepository): ChatViewm
     fun deleteRequest(fid:String):MutableLiveData<Boolean>{
         return followRepository.deleteRequest(fid)
     }
+    fun checkFriendship(fid:String):MutableLiveData<Boolean>{
+        return followRepository.checkFriendship(fid)
+    }
 }

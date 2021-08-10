@@ -28,4 +28,8 @@ class FollowRepoImpl(private val followDataSource: FollowDataSource): FollowRepo
     override fun deleteRequest(fid: String): MutableLiveData<Boolean> {
         return followDataSource.deleteRequest(fid)
     }
+
+    override fun checkFriendship(fid: String): MutableLiveData<Boolean> {
+        return followDataSource.checkFriendship(fid)
+    }
 }

@@ -68,6 +68,7 @@ class SigninActivity : ChatActivity() {
                             it,
                             Toast.LENGTH_LONG
                         ).show()
+                        hideProgressDialog()
                     }
                 })
 

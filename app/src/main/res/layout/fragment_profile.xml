@@ -28,6 +28,7 @@
         app:layout_constraintRight_toRightOf="parent"
         android:src="@drawable/user"
         android:layout_marginTop="15dp"
+        android:clickable="true"
         android:id="@+id/profile_picture_user"/>
     <TextView
         android:layout_width="wrap_content"
@@ -38,6 +39,7 @@
         android:textSize="@dimen/header3"
         android:id="@+id/profile_name_user"
         tools:text="sahar khazali"
+        android:textAppearance="?attr/textAppearanceHeadline5"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"/>
 
@@ -63,7 +65,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintRight_toLeftOf="@id/profile_online"
-        android:text="online"
+        android:text="ONLINE"
         android:id="@+id/profile_online_text"
         android:textColor="@color/purple_200"
         app:layout_constraintBottom_toTopOf="@id/view1"
@@ -97,7 +99,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:background="@color/white"
+            android:background="#11FFD5CF"
             >
         <TextView
             android:layout_width="match_parent"
@@ -250,7 +252,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:background="@color/white"
+            android:background="#11FFD5CF"
             >
         <TextView
             android:layout_width="match_parent"
@@ -293,7 +295,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/white"
+            android:background="#11FFD5CF"
             android:orientation="vertical">
 
             <TextView

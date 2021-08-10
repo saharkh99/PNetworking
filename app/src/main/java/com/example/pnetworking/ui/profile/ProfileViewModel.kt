@@ -1,8 +1,5 @@
 package com.example.pnetworking.ui.profile
 
-import android.util.Log
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.pnetworking.models.User
 import com.example.pnetworking.repository.profile.ProfileRepository
@@ -17,6 +14,9 @@ class ProfileViewModel(private val profileRepository: ProfileRepository):ChatVie
     }
     fun editProfile(name:String,bio:String,uid: String,fav:String):MutableLiveData<Boolean>{
         return profileRepository.editProfile(name, bio, uid,fav)
+    }
+    fun updatePhoto(image: String): MutableLiveData<Boolean>{
+        return profileRepository.updatePhoto(image)
     }
 
 

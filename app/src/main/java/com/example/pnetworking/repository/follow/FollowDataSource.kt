@@ -13,7 +13,7 @@ import com.google.firebase.database.ValueEventListener
 class FollowDataSource {
 
     fun follow(fid: String): MutableLiveData<Boolean> {
-        var result = MutableLiveData<Boolean>()
+        val result = MutableLiveData<Boolean>()
         val uid = FirebaseAuth.getInstance().uid!!
        // if (uid != fid) {
             val ref =
@@ -56,16 +56,16 @@ class FollowDataSource {
 
     fun increasingConnections(fid: String): MutableLiveData<Boolean> {
         val uid = FirebaseAuth.getInstance().uid!!
-        var result = MutableLiveData<Boolean>()
+        val result = MutableLiveData<Boolean>()
         val hashmap = HashMap<String, Any>()
-        var con: Int = 0
+        var con = 0
         val ref = FirebaseDatabase.getInstance().getReference("/users/$uid")
         ref.addListenerForSingleValueEvent(object : ValueEventListener {
 
             override fun onDataChange(p0: DataSnapshot) {
                 val user = p0.getValue(User::class.java)
                 con = user!!.connection
-                hashmap.put("connection", con + 1)
+                hashmap["connection"] = con + 1
                 Log.d("con", con.toString())
                 ref.updateChildren(hashmap).addOnSuccessListener {
                     Log.d("con", "connnnnnnn")
@@ -89,7 +89,7 @@ class FollowDataSource {
             override fun onDataChange(p0: DataSnapshot) {
                 val user = p0.getValue(User::class.java)
                 con = user!!.connection
-                hashmap.put("connection", con + 1)
+                hashmap["connection"] = con + 1
                 ref.updateChildren(hashmap).addOnSuccessListener {
                     Log.d("con", "connnnnnnn")
                     result.value = true
@@ -108,7 +108,7 @@ class FollowDataSource {
     }
 
     fun getFollowers(): MutableLiveData<List<String>> {
-        var result = MutableLiveData<List<String>>()
+        val result = MutableLiveData<List<String>>()
         val l = ArrayList<String>()
         val uid = FirebaseAuth.getInstance().uid!!
         val ref = FirebaseDatabase.getInstance().getReference("/connection/$uid")
@@ -129,10 +129,10 @@ class FollowDataSource {
 
     fun sendRequest(fid: String): MutableLiveData<Boolean> {
         val uid = FirebaseAuth.getInstance().uid!!
-        var result = MutableLiveData<Boolean>()
+        val result = MutableLiveData<Boolean>()
         val ref = FirebaseDatabase.getInstance().getReference("/users/$fid/requests")
         val hashmap = HashMap<String, Any>()
-        hashmap.put(uid, uid)
+        hashmap[uid] = uid
         ref.setValue(hashmap).addOnSuccessListener {
             result.value = true
         }
@@ -141,7 +141,7 @@ class FollowDataSource {
 
     fun getRequests(): MutableLiveData<List<String>> {
         val uid = FirebaseAuth.getInstance().uid!!
-        var result = MutableLiveData<List<String>>()
+        val result = MutableLiveData<List<String>>()
         val l = ArrayList<String>()
         val ref = FirebaseDatabase.getInstance().getReference("/users/$uid/requests")
         ref.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -163,7 +163,7 @@ class FollowDataSource {
     }
 
     fun deleteRequest(fid:String):MutableLiveData<Boolean>{
-        var result = MutableLiveData<Boolean>()
+        val result = MutableLiveData<Boolean>()
         val uid = FirebaseAuth.getInstance().uid!!
         val ref = FirebaseDatabase.getInstance().getReference("/users/$fid/requests/")
         ref.removeValue().addOnSuccessListener {
@@ -171,5 +171,27 @@ class FollowDataSource {
             Log.d("shod","shod")
         }
          return result
+    }
+    fun checkFriendship(fid:String):MutableLiveData<Boolean>{
+        val result = MutableLiveData<Boolean>()
+        val uid = FirebaseAuth.getInstance().uid!!
+        val ref =
+            FirebaseDatabase.getInstance().getReference("/connection/$uid/")
+        ref.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(p0: DataSnapshot) {
+                p0.children.forEach {
+                    Log.d("follow", it.toString())
+                    val f = it.getValue(Follow::class.java)
+                    Log.d("follow2", f!!.idFriend)
+                    result.value = f!!.idFriend==fid && f.idUSer==uid
+                }
+
+            }
+
+            override fun onCancelled(p0: DatabaseError) {
+
+            }
+        })
+        return result
     }
 }

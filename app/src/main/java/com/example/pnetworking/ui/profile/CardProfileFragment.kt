@@ -85,7 +85,7 @@ class CardProfileFragment : DialogFragment() {
     }
 
     private fun setupView(view: View) {
-        view.findViewById<TextView>(R.id.profile_card_name).text = "name: "+arguments?.getString(KEY_NAME)
+        view.findViewById<TextView>(R.id.profile_card_name).text =arguments?.getString(KEY_NAME)!!.capitalize()
         view.findViewById<TextView>(R.id.profile_card_bio).text = "BIO: "+arguments?.getString(KEY_BIO)
         view.findViewById<TextView>(R.id.profile_card_favorites).text ="FAVORITES: "+arguments?.getString(
             KEY_FAVORITE
@@ -104,6 +104,14 @@ class CardProfileFragment : DialogFragment() {
                 Picasso.get().load(Uri.parse(requireArguments().getString(KEY_IMG))).into(img)
             } else
                 img.setImageResource(R.drawable.user)
+
+        profileViewModel.checkFriendship(arguments?.getString(KEY_ID)!!).observe(viewLifecycleOwner,{
+            if(it){
+                view.findViewById<TextView>(R.id.profile_card_connect).isClickable=false
+                view.findViewById<TextView>(R.id.profile_card_connect).text="connected"
+                view.findViewById<TextView>(R.id.profile_card_connect).setTextColor(resources.getColor(R.color.teal_200))
+            }
+        })
 
     }
 
