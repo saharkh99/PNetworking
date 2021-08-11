@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import com.example.pnetworking.R
 import com.example.pnetworking.models.User
@@ -59,7 +60,8 @@ class CardProfileFragment : DialogFragment() {
 
     }
 
-    private val profileViewModel by viewModel<FollowViewModel>()
+    private val followViewModel by viewModel<FollowViewModel>()
+    private val profileViewModel by viewModel<ProfileViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -105,10 +107,10 @@ class CardProfileFragment : DialogFragment() {
             } else
                 img.setImageResource(R.drawable.user)
 
-        profileViewModel.checkFriendship(arguments?.getString(KEY_ID)!!).observe(viewLifecycleOwner,{
+        followViewModel.checkFriendship(arguments?.getString(KEY_ID)!!).observe(viewLifecycleOwner,{
             if(it){
                 view.findViewById<TextView>(R.id.profile_card_connect).isClickable=false
-                view.findViewById<TextView>(R.id.profile_card_connect).text="connected"
+                view.findViewById<TextView>(R.id.profile_card_connect).text="disconnect"
                 view.findViewById<TextView>(R.id.profile_card_connect).setTextColor(resources.getColor(R.color.teal_200))
             }
         })
@@ -119,20 +121,21 @@ class CardProfileFragment : DialogFragment() {
         view.findViewById<TextView>(R.id.profile_card_connect).setOnClickListener { view1->
             Log.d("tag",arguments?.getString(KEY_TAG).toString())
             if(arguments?.getString(KEY_TAG)=="Chat") {
-                profileViewModel.follow(arguments?.getString(KEY_ID)!!)
+                followViewModel.follow(arguments?.getString(KEY_ID)!!)
                     .observe(viewLifecycleOwner, {
                         if (it) {
                             Log.d("shod", "shod")
-                            profileViewModel.increasingConnections(arguments?.getString(KEY_ID)!!)
+                            followViewModel.increasingConnections(arguments?.getString(KEY_ID)!!)
                                 .observe(viewLifecycleOwner, { it1 ->
                                     if (it1) {
                                         view.findViewById<TextView>(R.id.profile_card_connect).setBackgroundColor(getResources().getColor(R.color.teal_200))
                                         view1.background = resources.getDrawable(R.color.teal_200)
                                         view1.isClickable =
                                             false
-                                        profileViewModel.deleteRequest(arguments?.getString(KEY_ID)!!).observe(viewLifecycleOwner,{
+                                        followViewModel.deleteRequest(arguments?.getString(KEY_ID)!!).observe(viewLifecycleOwner,{
                                            if(it) {
                                                Log.d("shod3", "shod3")
+                                               profileViewModel.changePhaseOfRequest("connected")
                                                dismiss()
                                            }
                                         })
@@ -143,7 +146,7 @@ class CardProfileFragment : DialogFragment() {
             }
 
             if(arguments?.getString(KEY_TAG)=="Profile")
-            profileViewModel.sendRequest(arguments?.getString(KEY_ID)!!).observe(viewLifecycleOwner,{
+            followViewModel.sendRequest(arguments?.getString(KEY_ID)!!).observe(viewLifecycleOwner,{
                 if(it){
                     Log.d("shod","shod")
                     dismiss()

@@ -7,8 +7,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.cardview.widget.CardView
+import androidx.lifecycle.MutableLiveData
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -53,6 +55,7 @@ open class ChatFragment : ChatFragments() {
         const val TAG = "Chat"
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -76,7 +79,21 @@ open class ChatFragment : ChatFragments() {
         groupCard.setOnClickListener {
             startActivity(Intent(requireContext(), CreateGroupActivity::class.java))
         }
+        checkPhrase()
+
         return view
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun checkPhrase() {
+        mainViewModel.getPhaseOfRequest().observe(viewLifecycleOwner,{
+            if(it=="connected"){
+                initRecyclerView()
+                showErrorSnackBar("ssssss",requireContext(),requireView())
+                Log.d("phase",requireActivity().toString())
+                mainViewModel.changePhaseOfRequest("normal")
+            }
+        })
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -85,7 +102,6 @@ open class ChatFragment : ChatFragments() {
         initRecyclerView()
         getRecentMessage()
         getNewMessages()
-
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
@@ -186,9 +202,12 @@ open class ChatFragment : ChatFragments() {
                 age,
                 TAG
             ).show(parentFragmentManager, CardProfileFragment.TAG)
-
+           adapter.notifyDataSetChanged()
         }
-
     }
+
+
+
+
 
 }

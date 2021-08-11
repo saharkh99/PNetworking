@@ -6,6 +6,10 @@ import com.example.pnetworking.repository.profile.ProfileRepository
 import com.example.pnetworking.utils.ChatViewmodel
 
 class ProfileViewModel(private val profileRepository: ProfileRepository):ChatViewmodel() {
+    companion object{
+        val phase=MutableLiveData<String>()
+    }
+
     fun getIDUser():MutableLiveData<String?> {
         return profileRepository.getUID()
     }
@@ -18,6 +22,14 @@ class ProfileViewModel(private val profileRepository: ProfileRepository):ChatVie
     fun updatePhoto(image: String): MutableLiveData<Boolean>{
         return profileRepository.updatePhoto(image)
     }
+    fun changePhaseOfRequest(phaseStr:String){
+        phase.value=phaseStr
+    }
+    fun getPhaseOfRequest():MutableLiveData<String>{
+        return phase
+    }
+
+
 
 
 
