@@ -11,4 +11,6 @@ interface FollowRepository {
     fun getRequests(): MutableLiveData<List<String>>
     fun deleteRequest(fid:String):MutableLiveData<Boolean>
     fun checkFriendship(fid:String):MutableLiveData<Boolean>
+    fun disconnect(fid:String):MutableLiveData<Boolean>
+    fun decreaseConnections(fid: String): MutableLiveData<Boolean>
 }

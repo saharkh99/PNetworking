@@ -172,6 +172,7 @@ class FollowDataSource {
         }
          return result
     }
+
     fun checkFriendship(fid:String):MutableLiveData<Boolean>{
         val result = MutableLiveData<Boolean>()
         val uid = FirebaseAuth.getInstance().uid!!
@@ -189,6 +190,75 @@ class FollowDataSource {
             }
 
             override fun onCancelled(p0: DatabaseError) {
+
+            }
+        })
+        return result
+    }
+
+    fun disconnect(fid:String):MutableLiveData<Boolean>{
+        val result = MutableLiveData<Boolean>()
+        val uid = FirebaseAuth.getInstance().uid!!
+        val ref =
+            FirebaseDatabase.getInstance().getReference("/connection/$uid/$fid")
+        ref.removeValue().addOnCompleteListener {
+            Log.d("remove",uid)
+        }
+        val ref1 = FirebaseDatabase.getInstance().getReference("/connection/$fid/$uid")
+        ref1.removeValue().addOnCompleteListener {
+            Log.d("remove",fid)
+            result.value=true
+        }
+        return result
+    }
+
+    fun decreaseConnections(fid: String): MutableLiveData<Boolean> {
+        val uid = FirebaseAuth.getInstance().uid!!
+        val result = MutableLiveData<Boolean>()
+        val hashmap = HashMap<String, Any>()
+        var con = Int.MAX_VALUE
+        val ref = FirebaseDatabase.getInstance().getReference("/users/$uid")
+        ref.addListenerForSingleValueEvent(object : ValueEventListener {
+
+            override fun onDataChange(p0: DataSnapshot) {
+                val user = p0.getValue(User::class.java)
+                con = user!!.connection
+                hashmap["connection"] = con - 1
+                Log.d("con", con.toString())
+                ref.updateChildren(hashmap).addOnSuccessListener {
+                    Log.d("con", "connnnnnnn")
+                    result.value = true
+                }.addOnFailureListener {
+                    result.value = false
+                }
+
+            }
+
+            override fun onCancelled(p0: DatabaseError) {
+                Log.d("error", p0.message)
+
+            }
+        })
+
+        con = Int.MAX_VALUE
+        val ref1 = FirebaseDatabase.getInstance().getReference("/users/$fid")
+        ref.addListenerForSingleValueEvent(object : ValueEventListener {
+
+            override fun onDataChange(p0: DataSnapshot) {
+                val user = p0.getValue(User::class.java)
+                con = user!!.connection
+                hashmap["connection"] = con - 1
+                ref.updateChildren(hashmap).addOnSuccessListener {
+                    Log.d("con", "connnnnnnn")
+                    result.value = true
+                }.addOnFailureListener {
+                    result.value = false
+                }
+
+            }
+
+            override fun onCancelled(p0: DatabaseError) {
+                Log.d("error", p0.message)
 
             }
         })

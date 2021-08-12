@@ -128,7 +128,7 @@ class CreateGroupActivity : ChatActivity() {
                 mainViewModel.getCurrentUser(s).observe(this, { u ->
                     val status = MutableLiveData<String>()
                     if (u != null)
-                        adapter.add(UserChangeStatusItem(u, this, "ADD", "REMOVE", status,""))
+                        adapter.add(UserChangeStatusItem(u, this, "ADD", "REMOVE","",mainViewModel))
                     Log.d("u", u.id)
                     statuses.add(status)
                 })

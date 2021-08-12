@@ -18,7 +18,7 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.Observer
+import androidx.lifecycle.MutableLiveData
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -27,6 +27,7 @@ import com.example.pnetworking.databinding.FragmentProfileBinding
 import com.example.pnetworking.models.User
 import com.example.pnetworking.ui.connection.UserList
 import com.example.pnetworking.ui.features.SettingsActivity
+import com.example.pnetworking.ui.groupchat.UserChangeStatusItem
 import com.example.pnetworking.utils.ChatFragments
 import com.example.pnetworking.utils.findAge
 import com.example.pnetworking.utils.zodiac
@@ -62,10 +63,14 @@ class ProfileFragment : ChatFragments() {
     val adapter = GroupAdapter<GroupieViewHolder>()
     private val PERMISSION_REQUEST_CODE = 10
 
+    //remove requests, sign out and setting
+
+
     companion object{
          val TAG = "profile"
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -73,6 +78,13 @@ class ProfileFragment : ChatFragments() {
     ): View {
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
         val view = binding.root
+        followViewModel.getStatusConnection().observe(viewLifecycleOwner,{
+            if(!it) {
+                initRec()
+                getProfile()
+                followViewModel.changeConnection(true)
+            }
+        })
         return view
     }
 
@@ -139,34 +151,20 @@ class ProfileFragment : ChatFragments() {
             true
         )
         adapter.clear()
-        followViewModel.getFollowers().observe(viewLifecycleOwner, {
+        followViewModel.getFollowers().observe(viewLifecycleOwner, { it ->
             hideProgressDialog()
             for (s: String in it) {
                 mainViewModel.getCurrentUser(s).observe(viewLifecycleOwner, { u ->
+                    val ph=MutableLiveData<String>()
+                    ph.value="disconnect"
                     if(u!=null)
-                    adapter.add(UserList(u, requireContext()))
-                    Log.d("u", u.id)
+                    adapter.add(UserChangeStatusItem(u,requireContext(),"disconnect","connect","",followViewModel))
+//                    adapter.add(UserList(u, requireContext()))
+
                 })
             }
+
         })
-        adapter.setOnItemClickListener { item, view ->
-            val userItem = item as UserList
-
-            Log.d("image", item.user.imageProfile)
-
-            val age= findAge(item.user.birthday).toString() +", "+ zodiac(item.user.birthday)
-            CardProfileFragment.newInstance(
-                item.user,
-                item.user.id,
-                item.user.name,
-                item.user.bio,
-                item.user.imageProfile,
-                "FRIENDS: " + item.user.connection.toString(),
-                item.user.favorites,
-                age,
-                TAG
-            ).show(parentFragmentManager, CardProfileFragment.TAG)
-        }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -198,8 +196,8 @@ class ProfileFragment : ChatFragments() {
                         onlineText.visibility = View.GONE
                     }
                     age.text =
-                        com.example.pnetworking.utils.findAge(currentUser.birthday).toString()
-                    zodiac.text = com.example.pnetworking.utils.zodiac(currentUser.birthday)
+                        findAge(currentUser.birthday).toString()
+                    zodiac.text = zodiac(currentUser.birthday)
                 })
                 initRec()
             }

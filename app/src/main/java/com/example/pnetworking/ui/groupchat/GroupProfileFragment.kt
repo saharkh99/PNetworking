@@ -93,8 +93,8 @@ class GroupProfileFragment : DialogFragment() {
                                     requireContext(),
                                     "ADD",
                                     "REMOVE",
-                                    status,
-                                    p.role
+                                    p.role,
+                                    viewGroup2
                                 )
                             )
                         Log.d("u", u.id)

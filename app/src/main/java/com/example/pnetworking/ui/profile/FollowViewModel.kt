@@ -7,6 +7,9 @@ import com.example.pnetworking.repository.follow.FollowRepository
 import com.example.pnetworking.utils.ChatViewmodel
 
 class FollowViewModel(private val followRepository: FollowRepository): ChatViewmodel() {
+    companion object{
+        val changeConnection=MutableLiveData<Boolean>()
+    }
     fun getFollowers():MutableLiveData<List<String>> {
         return followRepository.getFollowers()
     }
@@ -31,5 +34,17 @@ class FollowViewModel(private val followRepository: FollowRepository): ChatViewm
     }
     fun checkFriendship(fid:String):MutableLiveData<Boolean>{
         return followRepository.checkFriendship(fid)
+    }
+    fun disconnect(fid:String):MutableLiveData<Boolean>{
+        return followRepository.disconnect(fid)
+    }
+    fun decreaseConnections(fid: String): MutableLiveData<Boolean>{
+        return followRepository.decreaseConnections(fid)
+    }
+    fun changeConnection(b:Boolean){
+        changeConnection.value=b
+    }
+    fun getStatusConnection():MutableLiveData<Boolean>{
+        return changeConnection
     }
 }

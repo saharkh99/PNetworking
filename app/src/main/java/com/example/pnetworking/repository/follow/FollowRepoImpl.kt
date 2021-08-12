@@ -32,4 +32,12 @@ class FollowRepoImpl(private val followDataSource: FollowDataSource): FollowRepo
     override fun checkFriendship(fid: String): MutableLiveData<Boolean> {
         return followDataSource.checkFriendship(fid)
     }
+
+    override fun disconnect(fid: String): MutableLiveData<Boolean> {
+        return followDataSource.disconnect(fid)
+    }
+
+    override fun decreaseConnections(fid: String): MutableLiveData<Boolean> {
+        return followDataSource.decreaseConnections(fid)
+    }
 }
