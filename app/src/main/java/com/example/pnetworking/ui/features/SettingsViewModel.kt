@@ -17,4 +17,8 @@ class SettingsViewModel(val settingsRepository: SettingsRepository):ChatViewmode
      fun getBlackList(): MutableLiveData<List<User>> {
         return settingsRepository.getBlackList()
     }
+    fun signOut(){}
+    fun unblock(fid:String){
+        settingsRepository.unblock(fid)
+    }
 }

@@ -25,7 +25,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.pnetworking.R
 import com.example.pnetworking.databinding.FragmentProfileBinding
 import com.example.pnetworking.models.User
-import com.example.pnetworking.ui.connection.UserList
 import com.example.pnetworking.ui.features.SettingsActivity
 import com.example.pnetworking.ui.groupchat.UserChangeStatusItem
 import com.example.pnetworking.utils.ChatFragments
@@ -63,8 +62,7 @@ class ProfileFragment : ChatFragments() {
     val adapter = GroupAdapter<GroupieViewHolder>()
     private val PERMISSION_REQUEST_CODE = 10
 
-    //remove requests, sign out and setting
-
+    //connection(doubled), blacklist, go to the specific chat and remove connect from profile
 
     companion object{
          val TAG = "profile"

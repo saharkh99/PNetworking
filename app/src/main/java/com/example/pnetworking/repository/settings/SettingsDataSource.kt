@@ -9,6 +9,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.ktx.Firebase
 
 
 class SettingsDataSource {
@@ -84,5 +85,25 @@ class SettingsDataSource {
 
          return users
     }
+     fun signOut(){
+         FirebaseAuth.getInstance().signOut()
+     }
+    fun unblock(fid:String){
+        val users = MutableLiveData<List<User>>()
+        val uid = FirebaseAuth.getInstance().uid!!
+        val ref =
+            FirebaseDatabase.getInstance().getReference("/black_lists/$uid/")
+        ref.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(p0: DataSnapshot) {
+                p0.children.forEach {
+                     if(it.getValue(true)==fid){
+                         ref.child("fid").removeValue()
+                     }
+                    }
+                }
+            override fun onCancelled(error: DatabaseError) {
+            }
+        })
 
+    }
 }

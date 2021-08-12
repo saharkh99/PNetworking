@@ -27,11 +27,10 @@ import kotlin.coroutines.coroutineContext
 
 
 class ConnectionFragment : ChatFragments() {
-    //search, add features like group chat or setting
     private val connectionViewModel by viewModel<ConnectionViewModel>()
     val adapter = GroupAdapter<GroupieViewHolder>()
     val binding = view?.findViewById<EditText>(R.id.input)
-    val l = ArrayList<User>()
+    lateinit var rec:RecyclerView
     lateinit var persistentSearchView:PersistentSearchView
 
 
@@ -54,23 +53,24 @@ class ConnectionFragment : ChatFragments() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         persistentSearchView=view.findViewById<PersistentSearchView>(R.id.persistentSearchView)
+        rec  =view?.findViewById<RecyclerView>(R.id.find_friends_recycler_View)
         with(persistentSearchView) {
             setOnLeftBtnClickListener {
-                l.clear()
                 adapter.clear()
                 onBackPressed()
             }
             setOnClearInputBtnClickListener {
-                l.clear()
                 adapter.clear()
             }
 
             setOnSearchConfirmedListener { searchView, query ->
                 showProgressDialog(requireContext())
                 searchView.collapse()
+                adapter.clear()
                 initRecyclerView(query)
                 searchView.onCancelPendingInputEvents()
                 dismissKeyboard(windowToken)
+
             }
 
             setSuggestionsDisabled(true)
@@ -83,24 +83,36 @@ class ConnectionFragment : ChatFragments() {
     @ExperimentalStdlibApi
     @RequiresApi(Build.VERSION_CODES.O)
     private fun initRecyclerView(query:String) {
-        adapter.clear()
-        l.clear()
-        val rec = view?.findViewById<RecyclerView>(R.id.find_friends_recycler_View)
+        Log.d("rec","ec")
+        rec?.removeAllViews()
         rec?.adapter = adapter
+        adapter.clear()
+        val l = ArrayList<User>()
         connectionViewModel.getUsers().observe(viewLifecycleOwner,{
             hideProgressDialog()
+            adapter.clear()
+            l.clear()
             for (u: User in it) {
                 Log.d("u",u.id)
-                if(u!=null ) {
+
+                if(u!=null  ) {
                     if(u.name.lowercase().contains(query.lowercase()) || u.emailText.lowercase().contains(query.lowercase())) {
+                        adapter.clear()
                         if(!l.contains(u)) {
-                            adapter.notifyDataSetChanged()
-                            adapter.add(UserList(u, requireContext()))
                             l.add(u)
                         }
                     }
                 }
             }
+            adapter.clear()
+            Log.d("user",l.toString())
+            rec?.adapter = adapter
+            l.forEach { e->
+                Log.d("user",e.name)
+                Log.d("user",adapter.itemCount.toString())
+                adapter.add(UserList(e, requireContext()))
+            }
+            l.clear()
         })
         adapter.setOnItemClickListener { item, _ ->
             val userItem = item as UserList

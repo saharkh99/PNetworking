@@ -29,6 +29,7 @@ class UserChangeStatusItem(
 ) : Item<GroupieViewHolder>() {
 
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {
+
         val name = viewHolder.itemView.findViewById<TextView>(R.id.user_row_name)
         val button = viewHolder.itemView.findViewById<Button>(R.id.add_user)
         val img = viewHolder.itemView.findViewById<CircleImageView>(R.id.user_row_image)
@@ -49,6 +50,12 @@ class UserChangeStatusItem(
                 v.changeConnection(false)
 
             }
+            else if(text=="remove"){
+                val v=viewmodel as FollowViewModel
+                v.deleteRequest(user.id)
+                v.changeConnection(false)
+            }
+
         }
         if(rol!=""){
             val rol = viewHolder.itemView.findViewById<TextView>(R.id.user_row_role)

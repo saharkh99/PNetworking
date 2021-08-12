@@ -15,4 +15,7 @@ class SettingsRepoImpl(private val seetingDataSource: SettingsDataSource): Setti
     override fun getBlackList(): MutableLiveData<List<User>> {
        return seetingDataSource.getBlackList()
     }
+
+    override fun signOut() =seetingDataSource.signOut()
+    override fun unblock(fid: String)=seetingDataSource.unblock(fid)
 }

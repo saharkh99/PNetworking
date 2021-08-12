@@ -20,6 +20,7 @@ import com.example.pnetworking.ui.connection.UserList
 import com.example.pnetworking.ui.features.SettingsActivity
 import com.example.pnetworking.ui.groupchat.CreateGroupActivity
 import com.example.pnetworking.ui.groupchat.GroupViewModel
+import com.example.pnetworking.ui.groupchat.UserChangeStatusItem
 import com.example.pnetworking.ui.pchat.PrivateChateViewModel
 import com.example.pnetworking.ui.profile.CardProfileFragment
 import com.example.pnetworking.ui.profile.FollowViewModel
@@ -80,7 +81,12 @@ open class ChatFragment : ChatFragments() {
             startActivity(Intent(requireContext(), CreateGroupActivity::class.java))
         }
         checkPhrase()
-
+        followViewModel.getStatusConnection().observe(viewLifecycleOwner,{
+            if(!it) {
+                initRecyclerView()
+                followViewModel.changeConnection(true)
+            }
+        })
         return view
     }
 
@@ -182,13 +188,13 @@ open class ChatFragment : ChatFragments() {
                     rec.adapter = adapter
                     rec.layoutManager =
                         LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, true)
-                    adapter.add(UserList(u, requireContext()))
+                    adapter.add(UserChangeStatusItem(u, requireContext(),"remove","remove","",followViewModel))
                     Log.d("u", u.id)
                 })
             }
         })
         adapter.setOnItemClickListener { item, _ ->
-            val userItem = item as UserList
+            val userItem = item as UserChangeStatusItem
             Log.d("image", item.user.imageProfile)
             val age = findAge(item.user.birthday).toString() + ", " + zodiac(item.user.birthday)
             CardProfileFragment.newInstance(

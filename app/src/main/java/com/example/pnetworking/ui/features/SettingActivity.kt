@@ -6,10 +6,9 @@ import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import com.example.pnetworking.databinding.ActivitySettingBinding
+import com.example.pnetworking.ui.base.signin.SigninActivity
 import com.example.pnetworking.ui.base.test.TestActivity
-import com.example.pnetworking.ui.groupchat.CreateGroupActivity
 import com.example.pnetworking.utils.ChatActivity
-import com.google.android.material.switchmaterial.SwitchMaterial
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class SettingsActivity : ChatActivity() {
@@ -24,6 +23,7 @@ class SettingsActivity : ChatActivity() {
     lateinit var savePassword: Button
     lateinit var cancelEmail: Button
     lateinit var cancelPassword: Button
+    lateinit var signout:Button
 
     lateinit var currentEmail: EditText
     lateinit var passwords: EditText
@@ -32,7 +32,7 @@ class SettingsActivity : ChatActivity() {
     lateinit var currentPasswords: EditText
     lateinit var newPasswords: EditText
     lateinit var repost: EditText
-    lateinit var theme: SwitchMaterial
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,6 +59,17 @@ class SettingsActivity : ChatActivity() {
         cancelPassword.setOnClickListener {
             cancelPasswordFun()
         }
+        signout.setOnClickListener {
+            signOut()
+        }
+    }
+
+    private fun signOut() {
+        mainViewModel.signOut()
+        val intent = Intent(this, SigninActivity::class.java)
+        intent.flags =
+            Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
+        startActivity(intent)
     }
 
     private fun cancelPasswordFun() {
@@ -151,11 +162,11 @@ class SettingsActivity : ChatActivity() {
         currentPasswords = binding.settingsPassword2
         newPasswords = binding.settingsNewEmail2
         repost = binding.settingsReportTxt
-        theme = binding.switchTheme
         saveEmail = binding.settingsSave
         savePassword = binding.settingsSave2
         cancelEmail = binding.settingsCancel
         cancelPassword = binding.settingsCancel2
+        signout=binding.settingsGo7
 
     }
 }
