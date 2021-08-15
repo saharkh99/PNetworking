@@ -56,7 +56,7 @@ class NotificationDataSource() {
                                  }
 
                                  override fun onError(e: Throwable) {
-                                     TODO("Not yet implemented")
+
                                  }
 
                              })

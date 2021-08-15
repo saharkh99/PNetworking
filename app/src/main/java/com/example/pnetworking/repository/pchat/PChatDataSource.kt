@@ -32,12 +32,16 @@ class PChatDataSource {
             FirebaseDatabase.getInstance().getReference("/user_message/$fromId/$toChat").push()
         val toReference =
             FirebaseDatabase.getInstance().getReference("/chat/$toChat/message/$fromId").push()
+        val fid=toChat.removePrefix(fromId!!)
+        val toId2=fid+fromId
+        Log.d("from", toId2)
+        val ref2 = FirebaseDatabase.getInstance().getReference("/chat/$toId2/message/$fid").push()
         var chatMessage = Message()
         Log.d("time", System.currentTimeMillis().toString())
         if (isText) {
             chatMessage =
                 Message(
-                    reference.key!!,
+                    ref2.key!!,
                     fromId,
                     text,
                     toChat,
@@ -55,6 +59,10 @@ class PChatDataSource {
             toReference.setValue(chatMessage).addOnSuccessListener {
                 value.value = "true"
             }
+            ref2.setValue(chatMessage).addOnSuccessListener {
+                value.value = "true"
+            }
+
             val latestMessageRef =
                 FirebaseDatabase.getInstance().getReference("chat/latest-messages/$fromId/$toID")
             latestMessageRef.setValue(chatMessage).addOnSuccessListener {
@@ -81,7 +89,7 @@ class PChatDataSource {
                         ref.downloadUrl.addOnSuccessListener {
                             Log.d("TAG", "File Location: $it")
                             chatMessage = Message(
-                                reference.key!!,
+                                ref2.key!!,
                                 fromId,
                                 "sent photo",
                                 toChat,
@@ -97,6 +105,9 @@ class PChatDataSource {
                                     Log.d("TAG", "Saved our chat message: ${reference.key}")
                                 }
                             toReference.setValue(chatMessage).addOnSuccessListener {
+                                Log.d("TAG", "Saved our chat message: ${reference.key}")
+                            }
+                            ref2.setValue(chatMessage).addOnSuccessListener {
                                 Log.d("TAG", "Saved our chat message: ${reference.key}")
                             }
                             val latestMessageRef =
@@ -130,8 +141,11 @@ class PChatDataSource {
         val toId = chat
         Log.d("toid", toId)
         Log.d("from", fromId.toString())
-        val ref = FirebaseDatabase.getInstance().getReference("/chat/$toId/message/$fromId")
-        ref.addChildEventListener(object : ChildEventListener {
+        val fid=toId.removePrefix(fromId!!)
+        val toId2=fid+fromId
+        Log.d("from", toId2)
+        val ref2 = FirebaseDatabase.getInstance().getReference("/chat/$toId2/message/$fid")
+        ref2.addChildEventListener(object : ChildEventListener {
             override fun onChildAdded(p0: DataSnapshot, p1: String?) {
                 Log.d("get", "getmessage")
                 val chatMessage = p0.getValue(Message::class.java)
@@ -207,20 +221,63 @@ class PChatDataSource {
     fun removeMessage(toChat: String, msgId: String) {
         val fromId = FirebaseAuth.getInstance().uid
         Log.d("delete",msgId)
+        val fid=toChat.removePrefix(fromId!!)
+        val toId2=fid+fromId
+        Log.d("from", toId2)
         val ref = FirebaseDatabase.getInstance()
-            .getReference("/chat/$toChat/message/$fromId/$msgId")
-        Log.d("delete",ref.parent.toString())
+            .getReference("/chat/$toChat/message/$fromId")
+        val ref3 = FirebaseDatabase.getInstance()
+            .getReference("/chat/$toId2/message/$fid")
+        ref.orderByKey().addListenerForSingleValueEvent(object :ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                snapshot.children.forEach {
+                    if(it.child("id").value==msgId){
+                        Log.d("delete44",it.ref.toString())
+                        it.ref.removeValue()
+                    }
+                }
 
-        ref.removeValue().addOnSuccessListener {
-            Log.d("delete","msgId")
-        }
-        val ref1 =
-            FirebaseDatabase.getInstance().getReference("/chat/$toChat/message/$fromId/$msgId")
-        ref1.removeValue()
+            }
+            override fun onCancelled(error: DatabaseError) {
+
+            }
+
+        })
+        ref3.orderByKey().addListenerForSingleValueEvent(object :ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                snapshot.children.forEach {
+                    if(it.child("id").value==msgId){
+                        Log.d("delete44",it.ref.toString())
+                        it.ref.removeValue()
+                    }
+                }
+
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+
+            }
+
+        })
         val latestMessageRef =
             FirebaseDatabase.getInstance()
-                .getReference("chat/$toChat/latest-messages/$fromId/$msgId")
-        latestMessageRef.removeValue()
+                .getReference("chat/$toChat/latest-messages/$fromId/")
+        latestMessageRef.orderByKey().addListenerForSingleValueEvent(object :ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                snapshot.children.forEach {
+                    if(it.child("id").value==msgId){
+                        Log.d("delete44",it.ref.toString())
+                        it.ref.removeValue()
+                    }
+                }
+
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+
+            }
+
+        })
     }
 
     fun editMessage(text: String, toChat: String) {

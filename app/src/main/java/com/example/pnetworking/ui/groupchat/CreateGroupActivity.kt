@@ -119,7 +119,7 @@ class CreateGroupActivity : ChatActivity() {
         friendsRecyclerView.layoutManager = LinearLayoutManager(
             this,
             LinearLayoutManager.VERTICAL,
-            true
+            false
         )
         showProgressDialog(this)
         followViewModel.getFollowers().observe(this, {

@@ -6,10 +6,8 @@ import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
 import android.view.*
-import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.example.chat.ui.main.connection.ConnectionViewModel
@@ -23,7 +21,6 @@ import com.paulrybitskyi.persistentsearchview.PersistentSearchView
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import org.koin.android.viewmodel.ext.android.viewModel
-import kotlin.coroutines.coroutineContext
 
 
 class ConnectionFragment : ChatFragments() {
@@ -106,7 +103,7 @@ class ConnectionFragment : ChatFragments() {
             }
             adapter.clear()
             Log.d("user",l.toString())
-            rec?.adapter = adapter
+//            rec?.adapter = adapter
             l.forEach { e->
                 Log.d("user",e.name)
                 Log.d("user",adapter.itemCount.toString())

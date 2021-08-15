@@ -54,19 +54,19 @@ class PrivateChat : ChatActivity() {
     var reply = ""
     var edit = false
     var type = false
-    var isText=true
-    var mute=false
-    var preMessageDate=""
+    var isText = true
+    var mute = false
+    var preMessageDate = ""
     lateinit var nameTextView: TextView
     lateinit var imageCircle: CircleImageView
     lateinit var toolbar: Toolbar
     lateinit var send: ImageButton
     lateinit var editChat: EditText
-    lateinit var chatMute:ImageView
+    lateinit var chatMute: ImageView
     lateinit var imageSend: ImageButton
     lateinit var mainlayout: ConstraintLayout
     lateinit var binding: ActivityPrivateChatBinding
-    lateinit var chatSearch:PersistentSearchView
+    lateinit var chatSearch: PersistentSearchView
     val adapter = GroupAdapter<GroupieViewHolder>()
     lateinit var chatRecyclerView: RecyclerView
     private val PERMISSION_REQUEST_CODE = 1
@@ -88,7 +88,7 @@ class PrivateChat : ChatActivity() {
         uploadImage()
         send.setOnClickListener {
             Log.d("TAG", "Attempt to send message....")
-            isText=true
+            isText = true
             performSendMessage(editChat.text.toString())
         }
         mainViewModel.addChat(userId).observe(this, {
@@ -110,31 +110,39 @@ class PrivateChat : ChatActivity() {
     }
 
     private fun performSendMessage(text: String) {
+
         if (selectedPhotoUri == null)
-            selectedPhotoUri=ArrayList()
-//        Log.d("selected", selectedPhotoUri?.path!!)
-        if (edit) {
-            mainViewModel.editMessage(text, chatId)
-        } else {
-            mainViewModel.performSendMessage(text, chatId, selectedPhotoUri!!, reply, userId,isText).observe(
-                this,
-                {
-                    Log.d("send message", it)
-                    if (it == "true") {
-                        editChat.setText("")
-                        var msg = Message()
-                        msg.context = text
-                        if(!mute)
+            selectedPhotoUri = ArrayList()
+        if (text != "") {
+            if (edit) {
+                mainViewModel.editMessage(text, chatId)
+            } else {
+                mainViewModel.performSendMessage(
+                    text,
+                    chatId,
+                    selectedPhotoUri!!,
+                    reply,
+                    userId,
+                    isText
+                ).observe(
+                    this,
+                    {
+                        Log.d("send message", it)
+                        if (it == "true") {
+                            editChat.setText("")
+                            var msg = Message()
+                            msg.context = text
+                            if (!mute)
 //                            calculate number of new messages
-                             mainViewModel.sendNotification(msg, chatId, true)
+                                mainViewModel.sendNotification(msg, chatId, true)
 
-                        hideKeyboardFrom(this, mainlayout)
-                    } else {
-                        Log.d("send message", "try again")
-                    }
-                })
+                            hideKeyboardFrom(this, mainlayout)
+                        } else {
+                            Log.d("send message", "try again")
+                        }
+                    })
+            }
         }
-
 
     }
 
@@ -165,8 +173,8 @@ class PrivateChat : ChatActivity() {
             Log.d("TAG", "Photo was selected")
             val photoPaths = ArrayList<Uri>()
             photoPaths.addAll(data.getParcelableArrayListExtra<Uri>(KEY_SELECTED_MEDIA)!!)
-            selectedPhotoUri=photoPaths
-            isText=false
+            selectedPhotoUri = photoPaths
+            isText = false
             Log.d("photo", photoPaths.toString())
             performSendMessage("sent photo")
         }
@@ -176,55 +184,81 @@ class PrivateChat : ChatActivity() {
     @SuppressLint("RestrictedApi")
     private fun listenForMessages() {
         adapter.clear()
-        mainViewModel.checkBlackList(chatId).observe(this,{ blocked->
-            if(blocked!=true){
+        mainViewModel.checkBlackList(chatId).observe(this, { blocked ->
+            if (blocked != true) {
                 Log.d("from", blocked.toString())
                 mainViewModel.listenForMessages(chatId).observe(this, { chatMessage ->
                     Log.d("from", chatMessage.id)
                     val sdf = SimpleDateFormat("dd/MM/yyyy")
                     val date = Date(chatMessage.timestamp * 1000)
                     if (preMessageDate != sdf.format(date)) {
-                        adapter.add(0, ChatItem(this, chatMessage, userImage, "date", chatMessage.reply))
+                        adapter.add(
+                            0,
+                            ChatItem(this, chatMessage, userImage, "date", chatMessage.reply)
+                        )
                         preMessageDate = sdf.format(date)
                     }
                     if (chatMessage.idUSer == FirebaseAuth.getInstance().uid) {
-                        adapter.add(0, ChatItem(this, chatMessage, userImage, "false", chatMessage.reply))
+                        adapter.add(
+                            0,
+                            ChatItem(this, chatMessage, userImage, "false", chatMessage.reply)
+                        )
                         type = false
 
                     } else {
-                        adapter.add(0, ChatItem(this, chatMessage, userImage, "true", chatMessage.reply))
+                        adapter.add(
+                            0,
+                            ChatItem(this, chatMessage, userImage, "true", chatMessage.reply)
+                        )
                         type = true
                         mainViewModel.seenMessage(chatId, chatMessage.id)
                             .observe(this@PrivateChat, {
                                 Log.d("get it", it.toString())
                             })
                     }
-                    adapter.notifyDataSetChanged()
                     adapter.setOnItemClickListener { i, view ->
+                        Log.d("adapter",i.id.toString())
                         val popup = PopupMenu(this, view)
                         val msg = i as ChatItem
+                        Log.d("adapter",msg.text.context)
                         popup.inflate(R.menu.options_menu)
                         if (popup is MenuBuilder) {
                             val m = popup as MenuBuilder
                             m.setOptionalIconsVisible(true)
                         }
-                        popup.gravity=Gravity.END
+                        if(i.text.idUSer == FirebaseAuth.getInstance().uid)
+                          popup.gravity = Gravity.END
+                        else
+                            popup.gravity = Gravity.START
                         popup.setForceShowIcon(true)
+                        if (i.text.idUSer != FirebaseAuth.getInstance().uid) {
+                            popup.menu.getItem(1).isVisible=false
+                            popup.menu.getItem(2).isVisible=false
+                        }
                         popup.setOnMenuItemClickListener { item ->
                             when (item.itemId) {
                                 R.id.edit -> {
-                                    item.icon=getDrawable(R.drawable.edit)
+                                    item.icon = getDrawable(R.drawable.edit)
                                     view.setBackgroundColor(Color.parseColor("#33efe6fa"))
+                                    editChat.setText(i.text.context)
                                     edit = true
                                     true
                                 }
                                 R.id.delete -> {
-                                    if (!type) {
-                                        Log.d("message","deleted")
-                                        mainViewModel.removeMessage(chatId, chatMessage.id)
-                                        adapter.notifyItemRemoved(msg.id.toInt())
-                                        Toast.makeText(this," massage is deleted",Toast.LENGTH_SHORT)
+                                    Log.d("message", i.text.idUSer + " "+FirebaseAuth.getInstance().uid )
+                                    if (i.text.idUSer == FirebaseAuth.getInstance().uid) {
+                                        Log.d("message", i.text.context)
+                                        mainViewModel.removeMessage(chatId,i.text.id)
+                                        adapter.notifyDataSetChanged()
+                                        adapter.remove(i)
+                                        Toast.makeText(
+                                            this,
+                                            " massage is deleted",
+                                            Toast.LENGTH_SHORT
+                                        )
                                     }
+                                    else
+                                        item.isVisible = false
                                     true
                                 }
                                 R.id.reply -> {
@@ -238,7 +272,7 @@ class PrivateChat : ChatActivity() {
                         popup.show()
                     }
                 })
-          }
+            }
         })
 
     }
@@ -253,7 +287,7 @@ class PrivateChat : ChatActivity() {
         editChat = binding.chatMessageBoxEt
         mainlayout = binding.mainLayout
         imageSend = binding.chatAttachmentButton
-        chatSearch=binding.chatSearchMessage
+        chatSearch = binding.chatSearchMessage
         if (userImage != "true")
             Picasso.get().load(Uri.parse(userImage)).into(imageCircle)
         else
@@ -298,70 +332,70 @@ class PrivateChat : ChatActivity() {
     @ExperimentalStdlibApi
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId){
+        when (item.itemId) {
             R.id.block -> {
-                mainViewModel.addToBlackList(chatId,userId).observe(this,{
-                    if(it){
+                mainViewModel.addToBlackList(chatId, userId).observe(this, {
+                    if (it) {
                         item?.title = "blocked"
-                        Toast.makeText(this,"blocked successfully" ,Toast.LENGTH_SHORT)
+                        Toast.makeText(this, "blocked successfully", Toast.LENGTH_SHORT)
 
                     }
                 })
                 return true
             }
             R.id.mute -> {
-                Log.d("x",item?.title.toString())
-                if(item?.title=="mute") {
+                Log.d("x", item?.title.toString())
+                if (item?.title == "mute") {
                     item.icon = getDrawable(R.drawable.unmute)
                     item?.title = "unmute"
-                    mute=false
-                }
-                else {
+                    mute = false
+                } else {
                     item?.title = "mute"
                     item?.icon = getDrawable(R.drawable.mute)
-                    mute=true
+                    mute = true
                 }
-               return true
+                return true
             }
             R.id.search -> {
-                val l=ArrayList<Message>()
-                    chatSearch.visibility = View.VISIBLE
-                    with(chatSearch) {
-                        setOnLeftBtnClickListener {
-                            onBackPressed()
-                        }
-                        setOnClearInputBtnClickListener {
-                            l.clear()
-                        }
+                val l = ArrayList<Message>()
+                chatSearch.visibility = View.VISIBLE
+                with(chatSearch) {
+                    setOnLeftBtnClickListener {
+                        onBackPressed()
+                    }
+                    setOnClearInputBtnClickListener {
+                        l.clear()
+                    }
 
-                        setOnSearchConfirmedListener { searchView, query ->
-                            searchView.collapse()
-                            searchView.onCancelPendingInputEvents()
-                            Log.d("has it?",query)
-                                for (i in 0 until chatRecyclerView.adapter!!.itemCount) {
-                                    val msg = adapter.getItem(i) as ChatItem
-                                    Log.d("has it?",msg.text.context.lowercase())
-                                    if(msg.text.context.lowercase().contains(query.lowercase())) {
-                                        Log.d("has it?","yes")
-                                        chatRecyclerView.getChildAt(i)
-                                            .setBackgroundColor(Color.parseColor("#33efe6fa"))
-                                    }
+                    setOnSearchConfirmedListener { searchView, query ->
+                        searchView.collapse()
+                        searchView.onCancelPendingInputEvents()
+                        Log.d("has it?", query)
+                        for (i in 0 until chatRecyclerView.adapter!!.itemCount) {
+                            val msg = adapter.getItem(i) as ChatItem
+                            Log.d("has it?", msg.text.context.lowercase())
+                            if (msg.text.context.lowercase().contains(query.lowercase())) {
+                                Log.d("has it?", "yes")
+                                chatRecyclerView.getChildAt(i)
+                                    .setBackgroundColor(Color.parseColor("#33efe6fa"))
                             }
-
-
                         }
-                        setSuggestionsDisabled(true)
+
 
                     }
+                    setSuggestionsDisabled(true)
+
+                }
 
 
 
                 return true
             }
         }
-          return true
+        return true
 
     }
+
     fun hideKeyboardFrom(context: Context, view: View) {
         val imm: InputMethodManager =
             context.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager

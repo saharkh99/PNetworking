@@ -153,6 +153,7 @@ open class ChatFragment : ChatFragments() {
                                 u.emailText = to.emailText
                                 Log.d("x", u.emailText)
                                 u.imageProfile = to.imageProfile
+                                u.name=to.name
                                 adapter2.add(UserList(u, requireContext()))
                                 adapter2.notifyDataSetChanged()
                             }

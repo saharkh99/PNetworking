@@ -58,9 +58,9 @@ class ChatItem(val context: Context, val text: Message, val image: String, val t
                 textview.text = text.context
             }
             val uri = image
-            if(type=="false"){
-                image_message.visibility=View.GONE
-            }
+
+            image_message.visibility=View.GONE
+
 //        if (uri != "" && !type)
 //            Picasso.get().load(uri).into(imageView)
             val sdf = SimpleDateFormat("hh:mm a")
