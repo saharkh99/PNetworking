@@ -60,6 +60,7 @@ class PrivateChat : ChatActivity() {
     var preMessageDate = ""
     var editContext:Int=0
     lateinit var editView:View
+    lateinit var replyView:View
     lateinit var nameTextView: TextView
     lateinit var imageCircle: CircleImageView
     lateinit var toolbar: Toolbar
@@ -126,7 +127,7 @@ class PrivateChat : ChatActivity() {
                 Log.d("edit",editContext.toString())
                 adapter.notifyDataSetChanged()
                 adapter.notifyItemChanged(editContext)
-
+                hideKeyboardFrom(this, mainlayout)
             } else {
                 mainViewModel.performSendMessage(
                     text,
@@ -146,7 +147,10 @@ class PrivateChat : ChatActivity() {
                             if (!mute)
 //                            calculate number of new messages
                                 mainViewModel.sendNotification(msg, chatId, true)
-
+                            if(reply!=""){
+                                replyView.setBackgroundColor(0)
+                                reply=""
+                            }
                             hideKeyboardFrom(this, mainlayout)
                         } else {
                             Log.d("send message", "try again")
@@ -276,8 +280,9 @@ class PrivateChat : ChatActivity() {
                                     true
                                 }
                                 R.id.reply -> {
-                                    view.setBackgroundColor(Color.parseColor("#000000"))
+                                    view.setBackgroundColor(Color.parseColor("#33efe6fa"))
                                     reply = msg.text.context
+                                    replyView=view
                                     true
                                 }
                                 else -> false
