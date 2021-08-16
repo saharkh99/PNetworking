@@ -31,8 +31,8 @@ class PrivateChateViewModel(private val pChatRepository: PChatRepository,
      fun removeMessage(toChat:String,msgId:String){
           pChatRepository.removeMessage(toChat, msgId)
      }
-     fun editMessage(text: String,toChat:String){
-          pChatRepository.editMessage(text, toChat)
+     fun editMessage(msgId: String,toChat:String,text: String){
+          pChatRepository.editMessage(msgId, toChat,text)
      }
      fun seenMessage(toChat:String,userId:String):MutableLiveData<Boolean>{
          return pChatRepository.seenMessage(toChat, userId)

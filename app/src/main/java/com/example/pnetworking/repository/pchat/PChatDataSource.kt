@@ -280,19 +280,51 @@ class PChatDataSource {
         })
     }
 
-    fun editMessage(text: String, toChat: String) {
+    fun editMessage(msgId: String, toChat: String, text:String) {
         val fromId = FirebaseAuth.getInstance().uid
-        val reference =
-            FirebaseDatabase.getInstance().getReference("/user_message/$fromId/$toChat").push()
-        val toReference =
-            FirebaseDatabase.getInstance().getReference("/chat/$toChat/message/$fromId").push()
-        val latestMessageRef =
-            FirebaseDatabase.getInstance().getReference("chat/$toChat/latest-messages/$fromId/")
-        val hashmap = HashMap<String, Any>()
-        hashmap.put("context", text)
-        reference.updateChildren(hashmap)
-        toReference.updateChildren(hashmap)
-        latestMessageRef.updateChildren(hashmap)
+        val fid=toChat.removePrefix(fromId!!)
+        val toId2=fid+fromId
+        val ref = FirebaseDatabase.getInstance()
+            .getReference("/chat/$toChat/message/$fromId")
+        val ref3 = FirebaseDatabase.getInstance()
+            .getReference("/chat/$toId2/message/$fid")
+        ref.orderByKey().addListenerForSingleValueEvent(object :ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                snapshot.children.forEach {
+                    Log.d("edit server",it.child("id").value.toString())
+                    Log.d("edit server",msgId)
+                    if(it.child("id").value==msgId){
+                        Log.d("edit server",it.ref.toString())
+                        val hashmap=HashMap<String,Any>()
+                        hashmap["context"] = text
+                        it.ref.updateChildren(hashmap)
+                    }
+                }
+
+            }
+            override fun onCancelled(error: DatabaseError) {
+
+            }
+
+        })
+        ref3.orderByKey().addListenerForSingleValueEvent(object :ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                snapshot.children.forEach {
+                    if(it.child("id").value==msgId){
+                        val hashmap=HashMap<String,Any>()
+                        hashmap["context"] = text
+                        it.ref.updateChildren(hashmap)
+                    }
+                }
+
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+
+            }
+
+        })
+
     }
 
     fun changeTypingStatus(idChat: String) {

@@ -52,11 +52,14 @@ class PrivateChat : ChatActivity() {
     var chatId = ""
     var userId = ""
     var reply = ""
+    var editId = ""
     var edit = false
     var type = false
     var isText = true
     var mute = false
     var preMessageDate = ""
+    var editContext:Int=0
+    lateinit var editView:View
     lateinit var nameTextView: TextView
     lateinit var imageCircle: CircleImageView
     lateinit var toolbar: Toolbar
@@ -114,8 +117,16 @@ class PrivateChat : ChatActivity() {
         if (selectedPhotoUri == null)
             selectedPhotoUri = ArrayList()
         if (text != "") {
-            if (edit) {
-                mainViewModel.editMessage(text, chatId)
+            if (edit && editId != "") {
+                Log.d("edit",editId)
+                mainViewModel.editMessage(editId, chatId, text)
+                editId = ""
+                editChat.setText("")
+                editView.setBackgroundColor(0)
+                Log.d("edit",editContext.toString())
+                adapter.notifyDataSetChanged()
+                adapter.notifyItemChanged(editContext)
+
             } else {
                 mainViewModel.performSendMessage(
                     text,
@@ -150,9 +161,6 @@ class PrivateChat : ChatActivity() {
         imageSend.setOnClickListener {
             if (Build.VERSION.SDK_INT >= 23) {
                 if (checkPermission()) {
-//                    val intent = Intent(Intent.ACTION_PICK)
-//                    intent.type = "image/*"
-//                    startActivityForResult(intent, 0)
                     FilePickerBuilder.instance
                         .setMaxCount(5) //optional
                         .setActivityTheme(R.style.LibAppTheme) //optional
@@ -217,23 +225,23 @@ class PrivateChat : ChatActivity() {
                             })
                     }
                     adapter.setOnItemClickListener { i, view ->
-                        Log.d("adapter",i.id.toString())
+                        Log.d("adapter", i.id.toString())
                         val popup = PopupMenu(this, view)
                         val msg = i as ChatItem
-                        Log.d("adapter",msg.text.context)
+                        Log.d("adapter", msg.text.context)
                         popup.inflate(R.menu.options_menu)
                         if (popup is MenuBuilder) {
                             val m = popup as MenuBuilder
                             m.setOptionalIconsVisible(true)
                         }
-                        if(i.text.idUSer == FirebaseAuth.getInstance().uid)
-                          popup.gravity = Gravity.END
+                        if (i.text.idUSer == FirebaseAuth.getInstance().uid)
+                            popup.gravity = Gravity.END
                         else
                             popup.gravity = Gravity.START
                         popup.setForceShowIcon(true)
                         if (i.text.idUSer != FirebaseAuth.getInstance().uid) {
-                            popup.menu.getItem(1).isVisible=false
-                            popup.menu.getItem(2).isVisible=false
+                            popup.menu.getItem(1).isVisible = false
+                            popup.menu.getItem(2).isVisible = false
                         }
                         popup.setOnMenuItemClickListener { item ->
                             when (item.itemId) {
@@ -242,13 +250,20 @@ class PrivateChat : ChatActivity() {
                                     view.setBackgroundColor(Color.parseColor("#33efe6fa"))
                                     editChat.setText(i.text.context)
                                     edit = true
+                                    editId = i.text.id
+                                    editView=view
+                                    Log.d("edit1",adapter.getAdapterPosition(i).toString())
+                                    editContext=adapter.getAdapterPosition(i)
                                     true
                                 }
                                 R.id.delete -> {
-                                    Log.d("message", i.text.idUSer + " "+FirebaseAuth.getInstance().uid )
+                                    Log.d(
+                                        "message",
+                                        i.text.idUSer + " " + FirebaseAuth.getInstance().uid
+                                    )
                                     if (i.text.idUSer == FirebaseAuth.getInstance().uid) {
                                         Log.d("message", i.text.context)
-                                        mainViewModel.removeMessage(chatId,i.text.id)
+                                        mainViewModel.removeMessage(chatId, i.text.id)
                                         adapter.notifyDataSetChanged()
                                         adapter.remove(i)
                                         Toast.makeText(
@@ -256,8 +271,7 @@ class PrivateChat : ChatActivity() {
                                             " massage is deleted",
                                             Toast.LENGTH_SHORT
                                         )
-                                    }
-                                    else
+                                    } else
                                         item.isVisible = false
                                     true
                                 }

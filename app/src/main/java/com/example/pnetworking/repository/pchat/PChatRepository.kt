@@ -11,7 +11,7 @@ interface PChatRepository {
     fun performSendMessage(text: String, chat: String, selectedPhotoUri: ArrayList<Uri>,reply:String,toId:String,isText:Boolean):MutableLiveData<String>
     fun listenForMessages( chat: String):MutableLiveData<Message>
     fun removeMessage(toChat:String,msgId:String)
-    fun editMessage(text: String,toChat:String)
+    fun editMessage(msgId: String,toChat:String,text: String)
     fun seenMessage(toChat:String,userId:String):MutableLiveData<Boolean>
     fun addToBlackList(toChat:String,userId: String):MutableLiveData<Boolean>
     fun numberOfNewMessages(toChat:String):MutableLiveData<HashMap<String, Any>>

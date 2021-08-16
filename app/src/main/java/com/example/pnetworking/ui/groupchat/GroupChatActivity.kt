@@ -231,7 +231,7 @@ class GroupChatActivity : AppCompatActivity() {
         if (selectedPhotoUri == null)
             selectedPhotoUri = ArrayList()
         if (edit) {
-            mainViewModel2.editMessage(text, chatID)
+            mainViewModel2.editMessage(text, chatID,text)
         } else {
             mainViewModel2.performSendMessage(
                 text,
