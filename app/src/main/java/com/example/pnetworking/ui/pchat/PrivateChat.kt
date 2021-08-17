@@ -133,11 +133,11 @@ class PrivateChat : ChatActivity() {
                             editChat.setText("")
                             var msg = Message()
                             msg.context = text
-                             mainViewModel.checkMuteList(chatId).observe(this,{ mute->
-                                 if(!mute){
-                                     mainViewModel.sendNotification(msg, chatId, true)
-                                 }
-                             })
+                            mainViewModel.checkMuteList(chatId).observe(this, { mute ->
+                                if (!mute) {
+                                    mainViewModel.sendNotification(msg, chatId, true)
+                                }
+                            })
 //                            calculate number of new messages
                             if (reply != "") {
                                 replyView.setBackgroundColor(0)
@@ -404,10 +404,24 @@ class PrivateChat : ChatActivity() {
                 chatSearch.visibility = View.VISIBLE
                 with(chatSearch) {
                     setOnLeftBtnClickListener {
-                        onBackPressed()
+                        chatSearch.visibility = View.INVISIBLE
+                        for (i in 0 until chatRecyclerView.adapter!!.itemCount) {
+                            val msg = adapter.getItem(i) as ChatItem
+                            if (chatRecyclerView.getChildAt(i) != null)
+                                chatRecyclerView.getChildAt(i)
+                                    .setBackgroundColor(0)
+                        }
                     }
                     setOnClearInputBtnClickListener {
                         l.clear()
+                        chatSearch.visibility = View.INVISIBLE
+                        for (i in 0 until chatRecyclerView.adapter!!.itemCount) {
+                            val msg = adapter.getItem(i) as ChatItem
+                            if (chatRecyclerView.getChildAt(i) != null)
+                                chatRecyclerView.getChildAt(i)
+                                    .setBackgroundColor(0)
+                        }
+
                     }
 
                     setOnSearchConfirmedListener { searchView, query ->
@@ -418,9 +432,10 @@ class PrivateChat : ChatActivity() {
                             val msg = adapter.getItem(i) as ChatItem
                             Log.d("has it?", msg.text.context.lowercase())
                             if (msg.text.context.lowercase().contains(query.lowercase())) {
-                                Log.d("has it?", "yes")
-                                chatRecyclerView.getChildAt(i)
-                                    .setBackgroundColor(Color.parseColor("#33efe6fa"))
+                                Log.d("has it?", i.toString())
+                                if (chatRecyclerView.getChildAt(i) != null)
+                                    chatRecyclerView.getChildAt(i)
+                                        .setBackgroundColor(Color.parseColor("#33efe6fa"))
                             }
                         }
 
@@ -450,11 +465,7 @@ class PrivateChat : ChatActivity() {
             this,
             Manifest.permission.READ_EXTERNAL_STORAGE
         )
-        return if (result == PackageManager.PERMISSION_GRANTED) {
-            true
-        } else {
-            false
-        }
+        return result == PackageManager.PERMISSION_GRANTED
     }
 
     private fun requestPermission() {
