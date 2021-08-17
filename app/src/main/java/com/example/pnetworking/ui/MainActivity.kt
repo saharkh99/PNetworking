@@ -52,13 +52,13 @@ class MainActivity : ChatActivity() {
         changeOnlineStatus(true)
     }
 
-    override fun onStop() {
+    override fun onDestroy() {
         changeOnlineStatus(false).observe(this,{
             if(it){
                 Log.d("offline","offline")
             }
         })
-        super.onStop()
+        super.onDestroy()
     }
 
     private fun changeOnlineStatus(bool: Boolean):MutableLiveData<Boolean> {

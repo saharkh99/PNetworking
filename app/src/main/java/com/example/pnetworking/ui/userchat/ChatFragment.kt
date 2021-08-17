@@ -7,10 +7,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.cardview.widget.CardView
-import androidx.lifecycle.MutableLiveData
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -21,7 +19,7 @@ import com.example.pnetworking.ui.features.SettingsActivity
 import com.example.pnetworking.ui.groupchat.CreateGroupActivity
 import com.example.pnetworking.ui.groupchat.GroupViewModel
 import com.example.pnetworking.ui.groupchat.UserChangeStatusItem
-import com.example.pnetworking.ui.pchat.PrivateChateViewModel
+import com.example.pnetworking.ui.pchat.PrivateChatViewModel
 import com.example.pnetworking.ui.profile.CardProfileFragment
 import com.example.pnetworking.ui.profile.FollowViewModel
 import com.example.pnetworking.ui.profile.ProfileViewModel
@@ -37,7 +35,7 @@ open class ChatFragment : ChatFragments() {
     private val followViewModel by viewModel<FollowViewModel>()
     private val mainViewModel by viewModel<ProfileViewModel>()
     private val chatViewModel by viewModel<ChatFViewModel>()
-    private val pChatViewModel by viewModel<PrivateChateViewModel>()
+    private val pChatViewModel by viewModel<PrivateChatViewModel>()
     private val groupViewModel by viewModel<GroupViewModel>()
 
     private var _binding: FragmentChatBinding? = null

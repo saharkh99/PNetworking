@@ -23,8 +23,6 @@ import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.widget.doAfterTextChanged
-import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pnetworking.R
@@ -58,9 +56,9 @@ class PrivateChat : ChatActivity() {
     var isText = true
     var mute = false
     var preMessageDate = ""
-    var editContext:Int=0
-    lateinit var editView:View
-    lateinit var replyView:View
+    var editContext: Int = 0
+    lateinit var editView: View
+    lateinit var replyView: View
     lateinit var nameTextView: TextView
     lateinit var imageCircle: CircleImageView
     lateinit var toolbar: Toolbar
@@ -74,7 +72,7 @@ class PrivateChat : ChatActivity() {
     val adapter = GroupAdapter<GroupieViewHolder>()
     lateinit var chatRecyclerView: RecyclerView
     private val PERMISSION_REQUEST_CODE = 1
-    private val mainViewModel by viewModel<PrivateChateViewModel>()
+    private val mainViewModel by viewModel<PrivateChatViewModel>()
 
 
     @RequiresApi(Build.VERSION_CODES.Q)
@@ -101,16 +99,7 @@ class PrivateChat : ChatActivity() {
                 chatId = it
             listenForMessages()
         })
-        changingTypingStatus()
-    }
 
-    private fun changingTypingStatus() {
-        editChat.doOnTextChanged { text, start, before, count ->
-
-        }
-        editChat.doAfterTextChanged {
-
-        }
     }
 
     private fun performSendMessage(text: String) {
@@ -119,12 +108,12 @@ class PrivateChat : ChatActivity() {
             selectedPhotoUri = ArrayList()
         if (text != "") {
             if (edit && editId != "") {
-                Log.d("edit",editId)
+                Log.d("edit", editId)
                 mainViewModel.editMessage(editId, chatId, text)
                 editId = ""
                 editChat.setText("")
                 editView.setBackgroundColor(0)
-                Log.d("edit",editContext.toString())
+                Log.d("edit", editContext.toString())
                 adapter.notifyDataSetChanged()
                 adapter.notifyItemChanged(editContext)
                 hideKeyboardFrom(this, mainlayout)
@@ -144,12 +133,15 @@ class PrivateChat : ChatActivity() {
                             editChat.setText("")
                             var msg = Message()
                             msg.context = text
-                            if (!mute)
+                             mainViewModel.checkMuteList(chatId).observe(this,{ mute->
+                                 if(!mute){
+                                     mainViewModel.sendNotification(msg, chatId, true)
+                                 }
+                             })
 //                            calculate number of new messages
-                                mainViewModel.sendNotification(msg, chatId, true)
-                            if(reply!=""){
+                            if (reply != "") {
                                 replyView.setBackgroundColor(0)
-                                reply=""
+                                reply = ""
                             }
                             hideKeyboardFrom(this, mainlayout)
                         } else {
@@ -255,9 +247,9 @@ class PrivateChat : ChatActivity() {
                                     editChat.setText(i.text.context)
                                     edit = true
                                     editId = i.text.id
-                                    editView=view
-                                    Log.d("edit1",adapter.getAdapterPosition(i).toString())
-                                    editContext=adapter.getAdapterPosition(i)
+                                    editView = view
+                                    Log.d("edit1", adapter.getAdapterPosition(i).toString())
+                                    editContext = adapter.getAdapterPosition(i)
                                     true
                                 }
                                 R.id.delete -> {
@@ -282,7 +274,7 @@ class PrivateChat : ChatActivity() {
                                 R.id.reply -> {
                                     view.setBackgroundColor(Color.parseColor("#33efe6fa"))
                                     reply = msg.text.context
-                                    replyView=view
+                                    replyView = view
                                     true
                                 }
                                 else -> false
@@ -345,6 +337,26 @@ class PrivateChat : ChatActivity() {
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.private_chat_menu, menu)
+        mainViewModel.IsInMuteList(chatId).observe(
+            this,
+            {
+                if (it) {
+                    menu!!.getItem(2).title = "unmute"
+                } else {
+                    menu!!.getItem(2).title = "mute"
+                }
+            },
+        )
+        mainViewModel.checkBlackList(chatId).observe(
+            this,
+            {
+                if (it) {
+                    menu!!.getItem(0).title = "blocked"
+                } else {
+                    menu!!.getItem(0).title = "block"
+                }
+            },
+        )
         return true
     }
 
@@ -353,13 +365,23 @@ class PrivateChat : ChatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.block -> {
-                mainViewModel.addToBlackList(chatId, userId).observe(this, {
-                    if (it) {
-                        item?.title = "blocked"
-                        Toast.makeText(this, "blocked successfully", Toast.LENGTH_SHORT)
+                if (item?.title == "block") {
+                    mainViewModel.addToBlackList(chatId, userId).observe(this, {
+                        if (it) {
+                            item?.title = "blocked"
+                            Toast.makeText(this, "blocked successfully", Toast.LENGTH_SHORT)
 
-                    }
-                })
+                        }
+                    })
+                } else {
+                    mainViewModel.removeFromBlackList(chatId).observe(this, {
+                        if (it) {
+                            item?.title = "block"
+                            Toast.makeText(this, "unblocked successfully", Toast.LENGTH_SHORT)
+
+                        }
+                    })
+                }
                 return true
             }
             R.id.mute -> {
@@ -367,10 +389,12 @@ class PrivateChat : ChatActivity() {
                 if (item?.title == "mute") {
                     item.icon = getDrawable(R.drawable.unmute)
                     item?.title = "unmute"
+                    mainViewModel.addToMuteList(chatId)
                     mute = false
                 } else {
-                    item?.title = "mute"
+                    item?.title = "unmute"
                     item?.icon = getDrawable(R.drawable.mute)
+                    mainViewModel.removeFromMuteList(chatId)
                     mute = true
                 }
                 return true

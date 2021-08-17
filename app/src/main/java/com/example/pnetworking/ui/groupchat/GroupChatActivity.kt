@@ -28,7 +28,7 @@ import com.example.pnetworking.R
 import com.example.pnetworking.databinding.ActivityPrivateChatBinding
 import com.example.pnetworking.models.Message
 import com.example.pnetworking.ui.pchat.ChatItem
-import com.example.pnetworking.ui.pchat.PrivateChateViewModel
+import com.example.pnetworking.ui.pchat.PrivateChatViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.squareup.picasso.Picasso
 import com.xwray.groupie.GroupAdapter
@@ -61,7 +61,7 @@ class GroupChatActivity : AppCompatActivity() {
     var mute = false
     var preMessageDate = ""
     lateinit var chatID: String
-    private val mainViewModel2 by viewModel<PrivateChateViewModel>()
+    private val mainViewModel2 by viewModel<PrivateChatViewModel>()
 
 
     @RequiresApi(Build.VERSION_CODES.Q)

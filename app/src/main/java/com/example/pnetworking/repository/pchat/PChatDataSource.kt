@@ -32,8 +32,8 @@ class PChatDataSource {
             FirebaseDatabase.getInstance().getReference("/user_message/$fromId/$toChat").push()
         val toReference =
             FirebaseDatabase.getInstance().getReference("/chat/$toChat/message/$fromId").push()
-        val fid=toChat.removePrefix(fromId!!)
-        val toId2=fid+fromId
+        val fid = toChat.removePrefix(fromId)
+        val toId2 = fid + fromId
         Log.d("from", toId2)
         val ref2 = FirebaseDatabase.getInstance().getReference("/chat/$toId2/message/$fid").push()
         var chatMessage = Message()
@@ -82,7 +82,7 @@ class PChatDataSource {
                 val ref =
                     FirebaseStorage.getInstance()
                         .getReference("chat/$toChat/image_messages/$filename")
-                ref.putFile(i!!)
+                ref.putFile(i)
                     .addOnSuccessListener {
                         Log.d("TAG", "Successfully uploaded image: ${it.metadata?.path}")
 
@@ -136,13 +136,13 @@ class PChatDataSource {
 
     fun listenForMessages(chat: String): MutableLiveData<Message> {
         Log.d("get", "getmessage")
-        var result = MutableLiveData<Message>()
+        val result = MutableLiveData<Message>()
         val fromId = FirebaseAuth.getInstance().uid
         val toId = chat
         Log.d("toid", toId)
         Log.d("from", fromId.toString())
-        val fid=toId.removePrefix(fromId!!)
-        val toId2=fid+fromId
+        val fid = toId.removePrefix(fromId!!)
+        val toId2 = fid + fromId
         Log.d("from", toId2)
         val ref2 = FirebaseDatabase.getInstance().getReference("/chat/$toId2/message/$fid")
         ref2.addChildEventListener(object : ChildEventListener {
@@ -176,7 +176,7 @@ class PChatDataSource {
     }
 
     fun addChat(fid: String): MutableLiveData<String> {
-        var result = MutableLiveData<String>()
+        val result = MutableLiveData<String>()
         val uid = FirebaseAuth.getInstance().currentUser.uid
         val chatId = uid.plus(fid)
         val refrence = FirebaseDatabase.getInstance().getReference("/chat/users/$chatId").key
@@ -220,34 +220,35 @@ class PChatDataSource {
 
     fun removeMessage(toChat: String, msgId: String) {
         val fromId = FirebaseAuth.getInstance().uid
-        Log.d("delete",msgId)
-        val fid=toChat.removePrefix(fromId!!)
-        val toId2=fid+fromId
+        Log.d("delete", msgId)
+        val fid = toChat.removePrefix(fromId!!)
+        val toId2 = fid + fromId
         Log.d("from", toId2)
         val ref = FirebaseDatabase.getInstance()
             .getReference("/chat/$toChat/message/$fromId")
         val ref3 = FirebaseDatabase.getInstance()
             .getReference("/chat/$toId2/message/$fid")
-        ref.orderByKey().addListenerForSingleValueEvent(object :ValueEventListener{
+        ref.orderByKey().addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 snapshot.children.forEach {
-                    if(it.child("id").value==msgId){
-                        Log.d("delete44",it.ref.toString())
+                    if (it.child("id").value == msgId) {
+                        Log.d("delete44", it.ref.toString())
                         it.ref.removeValue()
                     }
                 }
 
             }
+
             override fun onCancelled(error: DatabaseError) {
 
             }
 
         })
-        ref3.orderByKey().addListenerForSingleValueEvent(object :ValueEventListener{
+        ref3.orderByKey().addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 snapshot.children.forEach {
-                    if(it.child("id").value==msgId){
-                        Log.d("delete44",it.ref.toString())
+                    if (it.child("id").value == msgId) {
+                        Log.d("delete44", it.ref.toString())
                         it.ref.removeValue()
                     }
                 }
@@ -262,11 +263,11 @@ class PChatDataSource {
         val latestMessageRef =
             FirebaseDatabase.getInstance()
                 .getReference("chat/$toChat/latest-messages/$fromId/")
-        latestMessageRef.orderByKey().addListenerForSingleValueEvent(object :ValueEventListener{
+        latestMessageRef.orderByKey().addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 snapshot.children.forEach {
-                    if(it.child("id").value==msgId){
-                        Log.d("delete44",it.ref.toString())
+                    if (it.child("id").value == msgId) {
+                        Log.d("delete44", it.ref.toString())
                         it.ref.removeValue()
                     }
                 }
@@ -280,38 +281,22 @@ class PChatDataSource {
         })
     }
 
-    fun editMessage(msgId: String, toChat: String, text:String) {
+    fun editMessage(msgId: String, toChat: String, text: String) {
         val fromId = FirebaseAuth.getInstance().uid
-        val fid=toChat.removePrefix(fromId!!)
-        val toId2=fid+fromId
+        val fid = toChat.removePrefix(fromId!!)
+        val toId2 = fid + fromId
         val ref = FirebaseDatabase.getInstance()
             .getReference("/chat/$toChat/message/$fromId")
         val ref3 = FirebaseDatabase.getInstance()
             .getReference("/chat/$toId2/message/$fid")
-        ref.orderByKey().addListenerForSingleValueEvent(object :ValueEventListener{
+        ref.orderByKey().addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 snapshot.children.forEach {
-                    Log.d("edit server",it.child("id").value.toString())
-                    Log.d("edit server",msgId)
-                    if(it.child("id").value==msgId){
-                        Log.d("edit server",it.ref.toString())
-                        val hashmap=HashMap<String,Any>()
-                        hashmap["context"] = text
-                        it.ref.updateChildren(hashmap)
-                    }
-                }
-
-            }
-            override fun onCancelled(error: DatabaseError) {
-
-            }
-
-        })
-        ref3.orderByKey().addListenerForSingleValueEvent(object :ValueEventListener{
-            override fun onDataChange(snapshot: DataSnapshot) {
-                snapshot.children.forEach {
-                    if(it.child("id").value==msgId){
-                        val hashmap=HashMap<String,Any>()
+                    Log.d("edit server", it.child("id").value.toString())
+                    Log.d("edit server", msgId)
+                    if (it.child("id").value == msgId) {
+                        Log.d("edit server", it.ref.toString())
+                        val hashmap = HashMap<String, Any>()
                         hashmap["context"] = text
                         it.ref.updateChildren(hashmap)
                     }
@@ -324,19 +309,28 @@ class PChatDataSource {
             }
 
         })
+        ref3.orderByKey().addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                snapshot.children.forEach {
+                    if (it.child("id").value == msgId) {
+                        val hashmap = HashMap<String, Any>()
+                        hashmap["context"] = text
+                        it.ref.updateChildren(hashmap)
+                    }
+                }
 
-    }
+            }
 
-    fun changeTypingStatus(idChat: String) {
-        val fromId = FirebaseAuth.getInstance().uid
-        val ref = FirebaseDatabase.getInstance().getReference("/users/$fromId")
-        val hashmap = HashMap<String, Any>()
-        hashmap.put("typingTo", idChat)
-        ref.updateChildren(hashmap)
+            override fun onCancelled(error: DatabaseError) {
+
+            }
+
+        })
+
     }
 
     fun seenMessage(toChat: String, messageId: String): MutableLiveData<Boolean> {
-        var result = MutableLiveData<Boolean>()
+        val result = MutableLiveData<Boolean>()
         val fromId = FirebaseAuth.getInstance().uid
         val ref = FirebaseDatabase.getInstance().getReference("/user_message/$fromId/$toChat/")
         Log.d("seen", ref.parent.toString())
@@ -348,7 +342,7 @@ class PChatDataSource {
         return result
     }
 
-    fun addToBlackList(toChat: String,userId:String): MutableLiveData<Boolean> {
+    fun addToBlackList(toChat: String, userId: String): MutableLiveData<Boolean> {
         val value = MutableLiveData<Boolean>()
         value.value = false
         val fromId = FirebaseAuth.getInstance().uid
@@ -361,22 +355,114 @@ class PChatDataSource {
             }
         return value
     }
-    fun checkBlackList(toChat: String): MutableLiveData<Boolean> {
-        var value = MutableLiveData<Boolean>()
+
+    fun removeFromBlackList(toChat: String): MutableLiveData<Boolean> {
+        val value = MutableLiveData<Boolean>()
+        value.value = false
         val fromId = FirebaseAuth.getInstance().uid
         val reference =
-            FirebaseDatabase.getInstance().getReference("users/$fromId/black_lists/$toChat").child(toChat)
-        reference.addValueEventListener(object :ValueEventListener{
+            FirebaseDatabase.getInstance().getReference("users/$fromId/black_lists/$toChat")
+        reference.removeValue().addOnSuccessListener {
+            Log.d("TAG", "Saved our chat message: ${reference.key}")
+            value.value = true
+        }
+        return value
+    }
+
+    fun checkBlackList(toChat: String): MutableLiveData<Boolean> {
+        val value = MutableLiveData<Boolean>()
+        val fromId = FirebaseAuth.getInstance().uid
+        val reference =
+            FirebaseDatabase.getInstance().getReference("users/$fromId/black_lists/$toChat")
+                .child(toChat)
+        reference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 value.value = false
 
-                if(snapshot.value !=null){
+                if (snapshot.value != null) {
                     Log.d("TAG33333333", " ${snapshot.value}")
-                    value.value=true
-                    Log.d("TAG33333333", " ${ value.value}")
+                    value.value = true
+                    Log.d("TAG33333333", " ${value.value}")
 
                 }
             }
+
+            override fun onCancelled(error: DatabaseError) {
+            }
+
+        })
+        return value
+    }
+
+    fun addToMuteList(toChat: String): MutableLiveData<Boolean> {
+        val value = MutableLiveData<Boolean>()
+        value.value = false
+        val fromId = FirebaseAuth.getInstance().uid
+        val reference =
+            FirebaseDatabase.getInstance().getReference("users/$fromId/mute_list/$toChat")
+        reference.setValue(toChat)
+            .addOnSuccessListener {
+                Log.d("TAG", "Saved our chat message: ${reference.key}")
+                value.value = true
+            }
+        return value
+    }
+
+    fun removeFromMuteList(toChat: String): MutableLiveData<Boolean> {
+        val value = MutableLiveData<Boolean>()
+        value.value = false
+        val fromId = FirebaseAuth.getInstance().uid
+        val reference =
+            FirebaseDatabase.getInstance().getReference("users/$fromId/mute_list/$toChat")
+        reference.removeValue().addOnSuccessListener {
+            Log.d("TAG", "Saved our chat message: ${reference.key}")
+            value.value = true
+        }
+        return value
+    }
+    fun IsInMuteList(toChat: String): MutableLiveData<Boolean> {
+        val value = MutableLiveData<Boolean>()
+        value.value = false
+        val fromId = FirebaseAuth.getInstance().uid
+        val reference =
+            FirebaseDatabase.getInstance().getReference("users/$fromId/mute_list/$toChat")
+        reference.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                value.value = false
+                if (snapshot.value != null) {
+                    Log.d("TAG33333333", " ${snapshot.value}")
+                    value.value = true
+                    Log.d("TAG33333333", " ${value.value}")
+
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {
+            }
+
+        })
+        return value
+    }
+
+    fun checkMuteList(toChat: String): MutableLiveData<Boolean> {
+        var value = MutableLiveData<Boolean>()
+        val fromId = FirebaseAuth.getInstance().uid
+        val fid = toChat.replace(fromId!!,"")
+        Log.d("TAG33333333", "$fid")
+        val reference =
+            FirebaseDatabase.getInstance().getReference("users/$fid/mute_list/$toChat")
+                .child(toChat)
+        reference.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                value.value = false
+
+                if (snapshot.value != null) {
+                    Log.d("TAG33333333", " ${snapshot.value}")
+                    value.value = true
+                    Log.d("TAG33333333", " ${value.value}")
+
+                }
+            }
+
             override fun onCancelled(error: DatabaseError) {
             }
 

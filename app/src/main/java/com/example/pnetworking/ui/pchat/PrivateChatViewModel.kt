@@ -9,8 +9,8 @@ import com.example.pnetworking.repository.notifications.NotificationDataSource
 import com.example.pnetworking.repository.pchat.PChatRepository
 import com.example.pnetworking.utils.ChatViewmodel
 
-class PrivateChateViewModel(private val pChatRepository: PChatRepository,
-                            private val notificationDataSource: NotificationDataSource):ChatViewmodel() {
+class PrivateChatViewModel(private val pChatRepository: PChatRepository,
+                           private val notificationDataSource: NotificationDataSource):ChatViewmodel() {
      fun addChat(fid: String): MutableLiveData<String> =pChatRepository.addChat(fid)
      fun performSendMessage(
           text: String,
@@ -45,5 +45,20 @@ class PrivateChateViewModel(private val pChatRepository: PChatRepository,
      }
      fun checkBlackList(toChat: String): MutableLiveData<Boolean>{
           return pChatRepository.checkBlackList(toChat)
+     }
+     fun removeFromBlackList(toChat: String): MutableLiveData<Boolean>{
+          return pChatRepository.removeFromBlackList(toChat)
+     }
+     fun addToMuteList(toChat: String): MutableLiveData<Boolean>{
+          return pChatRepository.addToMuteList(toChat)
+     }
+     fun removeFromMuteList(toChat: String): MutableLiveData<Boolean>{
+          return pChatRepository.removeFromMuteList(toChat)
+     }
+     fun checkMuteList(toChat: String): MutableLiveData<Boolean>{
+          return pChatRepository.checkMuteList(toChat)
+     }
+     fun IsInMuteList(toChat: String): MutableLiveData<Boolean>{
+          return pChatRepository.IsInMuteList(toChat)
      }
 }

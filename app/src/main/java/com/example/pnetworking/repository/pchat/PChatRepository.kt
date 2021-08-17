@@ -16,4 +16,9 @@ interface PChatRepository {
     fun addToBlackList(toChat:String,userId: String):MutableLiveData<Boolean>
     fun numberOfNewMessages(toChat:String):MutableLiveData<HashMap<String, Any>>
     fun checkBlackList(toChat: String): MutableLiveData<Boolean>
+    fun removeFromBlackList(toChat: String): MutableLiveData<Boolean>
+    fun addToMuteList(toChat: String): MutableLiveData<Boolean>
+    fun removeFromMuteList(toChat: String): MutableLiveData<Boolean>
+    fun checkMuteList(toChat: String): MutableLiveData<Boolean>
+    fun IsInMuteList(toChat: String): MutableLiveData<Boolean>
 }

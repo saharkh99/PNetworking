@@ -32,13 +32,12 @@ import com.example.pnetworking.ui.base.signup.SignUpViewModel
 import com.example.pnetworking.ui.base.test.TestViewModel
 import com.example.pnetworking.ui.features.SettingsViewModel
 import com.example.pnetworking.ui.groupchat.GroupViewModel
-import com.example.pnetworking.ui.pchat.PrivateChateViewModel
+import com.example.pnetworking.ui.pchat.PrivateChatViewModel
 import com.example.pnetworking.ui.profile.FollowViewModel
 import com.example.pnetworking.ui.profile.ProfileViewModel
 import com.example.pnetworking.ui.userchat.ChatFViewModel
 import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
-import java.sql.Connection
 
 val signupmodule = module {
     viewModel {
@@ -75,7 +74,7 @@ val connectionmodule = module {
 }
 val pchatmodule = module {
     viewModel {
-        PrivateChateViewModel(get(), NotificationDataSource())
+        PrivateChatViewModel(get(), NotificationDataSource())
     }
     single<PChatRepository> { PChatRepoImpl(PChatDataSource()) }
 }

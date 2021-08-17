@@ -2,9 +2,7 @@ package com.example.pnetworking.repository.pchat
 
 import android.net.Uri
 import androidx.lifecycle.MutableLiveData
-import com.example.pnetworking.models.Chat
 import com.example.pnetworking.models.Message
-import com.example.pnetworking.models.User
 
 class PChatRepoImpl(private val pChatDataSource: PChatDataSource):PChatRepository {
     override fun addChat(fid: String): MutableLiveData<String> =pChatDataSource.addChat(fid)
@@ -42,6 +40,26 @@ class PChatRepoImpl(private val pChatDataSource: PChatDataSource):PChatRepositor
 
     override fun checkBlackList(toChat: String): MutableLiveData<Boolean> {
         return pChatDataSource.checkBlackList(toChat)
+    }
+
+    override fun removeFromBlackList(toChat: String): MutableLiveData<Boolean> {
+        return pChatDataSource.removeFromBlackList(toChat)
+    }
+
+    override fun addToMuteList(toChat: String): MutableLiveData<Boolean> {
+        return pChatDataSource.addToMuteList(toChat)
+    }
+
+    override fun removeFromMuteList(toChat: String): MutableLiveData<Boolean> {
+        return pChatDataSource.removeFromMuteList(toChat)
+    }
+
+    override fun checkMuteList(toChat: String): MutableLiveData<Boolean> {
+       return pChatDataSource.checkMuteList(toChat)
+    }
+
+    override fun IsInMuteList(toChat: String): MutableLiveData<Boolean> {
+        return pChatDataSource.IsInMuteList(toChat)
     }
 
 }
