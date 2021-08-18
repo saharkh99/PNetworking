@@ -45,4 +45,10 @@ class ChatFragmentDataSource {
     })
       return result
     }
+    fun getIdUser():MutableLiveData<String>{
+        val fromId = FirebaseAuth.getInstance().uid
+        var result = MutableLiveData<String>()
+        result.value=fromId
+        return result
+    }
 }

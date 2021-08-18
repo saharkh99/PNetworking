@@ -29,7 +29,8 @@ class PChatDataSource {
         }
         if (fromId == null) return value
         val reference =
-            FirebaseDatabase.getInstance().getReference("/user_message/$fromId/$toChat").push()
+            FirebaseDatabase.getInstance().getReference("/user_message/$fromId/$toID").push()
+        val reference2= FirebaseDatabase.getInstance().getReference("/user_message/$toID/$fromId").push()
         val toReference =
             FirebaseDatabase.getInstance().getReference("/chat/$toChat/message/$fromId").push()
         val fid = toChat.removePrefix(fromId)
@@ -60,6 +61,9 @@ class PChatDataSource {
                 value.value = "true"
             }
             ref2.setValue(chatMessage).addOnSuccessListener {
+                value.value = "true"
+            }
+            reference2.setValue(chatMessage).addOnSuccessListener {
                 value.value = "true"
             }
 
@@ -332,13 +336,43 @@ class PChatDataSource {
     fun seenMessage(toChat: String, messageId: String): MutableLiveData<Boolean> {
         val result = MutableLiveData<Boolean>()
         val fromId = FirebaseAuth.getInstance().uid
-        val ref = FirebaseDatabase.getInstance().getReference("/user_message/$fromId/$toChat/")
-        Log.d("seen", ref.parent.toString())
+        val toId=toChat.replace(fromId!!,"")
+        val toId2 = toId + fromId
+        val ref = FirebaseDatabase.getInstance().getReference("/chat/$toChat/message/$fromId")
+        val ref2 = FirebaseDatabase.getInstance().getReference("/chat/$toId2/message/$toId")
         val hashmap = HashMap<String, Any>()
-        hashmap.put("seen", true)
-        ref.child(messageId).updateChildren(hashmap).addOnSuccessListener {
-            result.value = true
-        }
+        hashmap["seen"] = true
+        ref.orderByKey().addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                snapshot.children.forEach {
+                    if (it.child("id").value == messageId) {
+                        ref.child(it.key.toString()).updateChildren(hashmap)
+                        result.value=true
+                    }
+                }
+
+            }
+            override fun onCancelled(error: DatabaseError) {
+
+            }
+
+        })
+        ref2.orderByKey().addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                snapshot.children.forEach {
+                    if (it.child("id").value == messageId) {
+                        Log.d("seen3",it.key.toString())
+                        ref2.child(it.key.toString()).updateChildren(hashmap)
+                        result.value=true
+                    }
+                }
+
+            }
+            override fun onCancelled(error: DatabaseError) {
+
+            }
+
+        })
         return result
     }
 

@@ -5,4 +5,5 @@ import com.example.pnetworking.models.Message
 
 interface ChatFragmentRepository {
     fun getRecentMessages(): MutableLiveData<Message>
+    fun getIdUser():MutableLiveData<String>
 }

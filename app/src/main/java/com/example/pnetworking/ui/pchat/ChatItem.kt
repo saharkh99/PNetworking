@@ -36,8 +36,10 @@ class ChatItem(val context: Context, val text: Message, val image: String, val t
             textview.text=sdf.format(date)
         }
         else{
+
+            seen.text="sent"
             if(text.seen){
-                Log.d("seenn ",text.seen.toString())
+                Log.d("soooooooooo ",text.seen.toString() + text.context)
                 seen.text = "seen"
             }
             if(reply!=""){
@@ -69,12 +71,11 @@ class ChatItem(val context: Context, val text: Message, val image: String, val t
 
     }
     override fun getLayout(): Int {
-        if (type == "true")
-            return R.layout.row_from_chat
-        else if (type == "false")
-            return R.layout.row_to_chat
-        else
-            return R.layout.row_date_message
+        return when (type) {
+            "true" -> R.layout.row_from_chat
+            "false" -> R.layout.row_to_chat
+            else -> R.layout.row_date_message
+        }
 
     }
 }

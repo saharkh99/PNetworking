@@ -43,9 +43,9 @@ open class ChatFragment : ChatFragments() {
     lateinit var rec: RecyclerView
     lateinit var recRecent: RecyclerView
     lateinit var recNew: RecyclerView
-    lateinit var friendsCard:CardView
-    lateinit var settingCard:CardView
-    lateinit var groupCard:CardView
+    lateinit var friendsCard: CardView
+    lateinit var settingCard: CardView
+    lateinit var groupCard: CardView
     val adapter = GroupAdapter<GroupieViewHolder>()
     val adapter2 = GroupAdapter<GroupieViewHolder>()
     val adapter3 = GroupAdapter<GroupieViewHolder>()
@@ -65,22 +65,22 @@ open class ChatFragment : ChatFragments() {
         rec = binding.recentMessageRequests
         recRecent = binding.recentMessageRecyclerview
         recNew = binding.recentMessageNewRecyclerview
-        friendsCard=binding.cartFriends
+        friendsCard = binding.cartFriends
         friendsCard.setOnClickListener {
-                val action= ChatFragmentDirections.actionChatFragmentToFriendsActivity()
-                view.findNavController().navigate(action)
+            val action = ChatFragmentDirections.actionChatFragmentToFriendsActivity()
+            view.findNavController().navigate(action)
         }
-        settingCard=binding.cartSetting
+        settingCard = binding.cartSetting
         settingCard.setOnClickListener {
             startActivity(Intent(requireContext(), SettingsActivity::class.java))
         }
-        groupCard=binding.cartAddGroup
+        groupCard = binding.cartAddGroup
         groupCard.setOnClickListener {
             startActivity(Intent(requireContext(), CreateGroupActivity::class.java))
         }
         checkPhrase()
-        followViewModel.getStatusConnection().observe(viewLifecycleOwner,{
-            if(!it) {
+        followViewModel.getStatusConnection().observe(viewLifecycleOwner, {
+            if (!it) {
                 initRecyclerView()
                 followViewModel.changeConnection(true)
             }
@@ -90,11 +90,11 @@ open class ChatFragment : ChatFragments() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun checkPhrase() {
-        mainViewModel.getPhaseOfRequest().observe(viewLifecycleOwner,{
-            if(it=="connected"){
+        mainViewModel.getPhaseOfRequest().observe(viewLifecycleOwner, {
+            if (it == "connected") {
                 initRecyclerView()
-                showErrorSnackBar("ssssss",requireContext(),requireView())
-                Log.d("phase",requireActivity().toString())
+                showErrorSnackBar("ssssss", requireContext(), requireView())
+                Log.d("phase", requireActivity().toString())
                 mainViewModel.changePhaseOfRequest("normal")
             }
         })
@@ -120,7 +120,7 @@ open class ChatFragment : ChatFragments() {
                 Log.d("totals", " $t $u")
                 mainViewModel.getCurrentUser(t).observe(viewLifecycleOwner, { user ->
                     val myInt = u as? Int ?: 0
-                    if(user!=null){
+                    if (user != null) {
                         Log.d("total's", user.name)
                         if (!users.contains(t))
                             adapter3.add(UserProList(user, requireContext(), myInt))
@@ -139,36 +139,40 @@ open class ChatFragment : ChatFragments() {
                 recRecent.adapter = adapter2
                 recRecent.layoutManager =
                     LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, true)
-                if(it.idTo.contains(it.idUSer)){
+                if (it.idTo.contains(it.idUSer)) {
                     mainViewModel.getCurrentUser(it.idUSer).observe(viewLifecycleOwner, { u ->
                         recRecent.adapter = adapter2
                         recRecent.layoutManager =
-                            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, true)
+                            LinearLayoutManager(
+                                requireContext(),
+                                LinearLayoutManager.VERTICAL,
+                                true
+                            )
                         u.bio = it.context
-                        val x = it.idTo.removePrefix(it.idUSer)
-                        mainViewModel.getCurrentUser(x).observe(viewLifecycleOwner, { to ->
-                            if(to!=null){
-                                u.emailText = to.emailText
-                                Log.d("x", u.emailText)
-                                u.imageProfile = to.imageProfile
-                                u.name=to.name
-                                adapter2.add(UserList(u, requireContext()))
-                                adapter2.notifyDataSetChanged()
-                            }
+                        chatViewModel.getIdUser().observe(viewLifecycleOwner, { id ->
+                            val x = it.idTo.replace(id, "")
+                            mainViewModel.getCurrentUser(x).observe(viewLifecycleOwner, { to ->
+                                if (to != null) {
+                                    u.emailText = to.emailText
+                                    Log.d("x", u.emailText)
+                                    u.imageProfile = to.imageProfile
+                                    u.name = to.name
+                                    adapter2.add(UserList(u, requireContext()))
+                                    adapter2.notifyDataSetChanged()
+                                }
+                            })
                         })
-//                    Log.d("u", u.emailText)
                     })
-                }
-                else{
-                  groupViewModel.getGroupChat(it.idTo).observe(viewLifecycleOwner,{g->
-                      val u= User()
-                      u.imageProfile=g.image
-                      u.emailText="Group: "+ g.name
-                      u.name=g.name
-                      u.bio=it.context
-                      adapter2.add(UserList(u, requireContext()))
-                      adapter2.notifyDataSetChanged()
-                  })
+                } else {
+                    groupViewModel.getGroupChat(it.idTo).observe(viewLifecycleOwner, { g ->
+                        val u = User()
+                        u.imageProfile = g.image
+                        u.emailText = "Group: " + g.name
+                        u.name = g.name
+                        u.bio = it.context
+                        adapter2.add(UserList(u, requireContext()))
+                        adapter2.notifyDataSetChanged()
+                    })
                 }
             })
         } catch (e: Exception) {
@@ -187,7 +191,16 @@ open class ChatFragment : ChatFragments() {
                     rec.adapter = adapter
                     rec.layoutManager =
                         LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, true)
-                    adapter.add(UserChangeStatusItem(u, requireContext(),"remove","remove","",followViewModel))
+                    adapter.add(
+                        UserChangeStatusItem(
+                            u,
+                            requireContext(),
+                            "remove",
+                            "remove",
+                            "",
+                            followViewModel
+                        )
+                    )
                     Log.d("u", u.id)
                 })
             }
@@ -207,12 +220,9 @@ open class ChatFragment : ChatFragments() {
                 age,
                 TAG
             ).show(parentFragmentManager, CardProfileFragment.TAG)
-           adapter.notifyDataSetChanged()
+            adapter.notifyDataSetChanged()
         }
     }
-
-
-
 
 
 }

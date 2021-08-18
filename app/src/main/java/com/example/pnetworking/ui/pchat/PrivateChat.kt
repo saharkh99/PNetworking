@@ -203,6 +203,7 @@ class PrivateChat : ChatActivity() {
                         preMessageDate = sdf.format(date)
                     }
                     if (chatMessage.idUSer == FirebaseAuth.getInstance().uid) {
+                        Log.d("from", chatMessage.context+ chatMessage.seen)
                         adapter.add(
                             0,
                             ChatItem(this, chatMessage, userImage, "false", chatMessage.reply)
@@ -210,6 +211,7 @@ class PrivateChat : ChatActivity() {
                         type = false
 
                     } else {
+
                         adapter.add(
                             0,
                             ChatItem(this, chatMessage, userImage, "true", chatMessage.reply)
@@ -217,8 +219,11 @@ class PrivateChat : ChatActivity() {
                         type = true
                         mainViewModel.seenMessage(chatId, chatMessage.id)
                             .observe(this@PrivateChat, {
-                                Log.d("get it", it.toString())
+                                Log.d("seen message", it.toString())
+                                adapter.notifyItemChanged(adapter.itemCount-1)
+                                adapter.notifyDataSetChanged()
                             })
+
                     }
                     adapter.setOnItemClickListener { i, view ->
                         Log.d("adapter", i.id.toString())

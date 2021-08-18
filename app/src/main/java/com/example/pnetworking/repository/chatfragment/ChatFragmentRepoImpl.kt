@@ -10,4 +10,8 @@ class ChatFragmentRepoImpl( val chatDataSource: ChatFragmentDataSource): ChatFra
         return chatDataSource.getRecentMessage()
     }
 
+    override fun getIdUser(): MutableLiveData<String> {
+        return chatDataSource.getIdUser()
+    }
+
 }
