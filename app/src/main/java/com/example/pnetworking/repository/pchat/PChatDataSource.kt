@@ -504,40 +504,30 @@ class PChatDataSource {
         return value
     }
 
-    fun numberOfNewMessages(toChat: String): MutableLiveData<HashMap<String, Any>> {
-        var result = MutableLiveData<HashMap<String, Any>>()
+    fun numberOfNewMessages(toChat: String): MutableLiveData<String> {
+        var result = MutableLiveData<String>()
         var total = 0
         val hashmap = HashMap<String, Any>()
         val fromId = FirebaseAuth.getInstance().uid
-        val ref = FirebaseDatabase.getInstance().getReference("/user_message/$fromId")
-        ref.addChildEventListener(object : ChildEventListener {
-            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+        val ref = FirebaseDatabase.getInstance().getReference("/chat/$toChat/message/$fromId")
+        ref.orderByKey().addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
                 snapshot.children.forEach {
                     val chatMessage = it.getValue(Message::class.java)
-                    if (!chatMessage!!.seen) {
+                    if (!chatMessage!!.seen  &&  chatMessage.idUSer!=fromId) {
                         total++
+                        Log.d("total ",total.toString())
                     }
                 }
-                Log.d("total hashmap", hashmap.keys.toString())
-                hashmap[snapshot.key!!.removePrefix(fromId.toString())] = total
+                result.value = total.toString()
                 total = 0
-                result.value = hashmap
 
             }
-
-            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-            }
-
-            override fun onChildRemoved(snapshot: DataSnapshot) {
-            }
-
-            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-            }
-
             override fun onCancelled(error: DatabaseError) {
+
             }
-        }
-        )
+
+        })
         return result
     }
 

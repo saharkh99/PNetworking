@@ -40,7 +40,7 @@ class PrivateChatViewModel(private val pChatRepository: PChatRepository,
      fun addToBlackList(toChat: String,userId:String):MutableLiveData<Boolean>{
           return pChatRepository.addToBlackList(toChat,userId)
      }
-     fun numberOfNewMessages(toChat:String):MutableLiveData<HashMap<String, Any>>{
+     fun numberOfNewMessages(toChat:String):MutableLiveData<String>{
           return pChatRepository.numberOfNewMessages(toChat)
      }
      fun checkBlackList(toChat: String): MutableLiveData<Boolean>{

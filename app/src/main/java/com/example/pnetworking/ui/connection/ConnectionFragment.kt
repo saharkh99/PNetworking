@@ -107,7 +107,7 @@ class ConnectionFragment : ChatFragments() {
             l.forEach { e->
                 Log.d("user",e.name)
                 Log.d("user",adapter.itemCount.toString())
-                adapter.add(UserList(e, requireContext()))
+                adapter.add(UserList(e, requireContext(),""))
             }
             l.clear()
         })

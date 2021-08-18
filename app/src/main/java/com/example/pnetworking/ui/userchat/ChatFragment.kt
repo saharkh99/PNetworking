@@ -48,7 +48,6 @@ open class ChatFragment : ChatFragments() {
     lateinit var groupCard: CardView
     val adapter = GroupAdapter<GroupieViewHolder>()
     val adapter2 = GroupAdapter<GroupieViewHolder>()
-    val adapter3 = GroupAdapter<GroupieViewHolder>()
 
     companion object {
         const val TAG = "Chat"
@@ -64,7 +63,6 @@ open class ChatFragment : ChatFragments() {
         val view = binding.root
         rec = binding.recentMessageRequests
         recRecent = binding.recentMessageRecyclerview
-        recNew = binding.recentMessageNewRecyclerview
         friendsCard = binding.cartFriends
         friendsCard.setOnClickListener {
             val action = ChatFragmentDirections.actionChatFragmentToFriendsActivity()
@@ -105,31 +103,7 @@ open class ChatFragment : ChatFragments() {
         super.onViewCreated(view, savedInstanceState)
         initRecyclerView()
         getRecentMessage()
-        getNewMessages()
-    }
 
-    @RequiresApi(Build.VERSION_CODES.N)
-    private fun getNewMessages() {
-        adapter3.clear()
-        recNew.adapter = adapter3
-        recNew.layoutManager =
-            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-        val users = ArrayList<String>()
-        pChatViewModel.numberOfNewMessages("").observe(viewLifecycleOwner, {
-            it.forEach { (t, u) ->
-                Log.d("totals", " $t $u")
-                mainViewModel.getCurrentUser(t).observe(viewLifecycleOwner, { user ->
-                    val myInt = u as? Int ?: 0
-                    if (user != null) {
-                        Log.d("total's", user.name)
-                        if (!users.contains(t))
-                            adapter3.add(UserProList(user, requireContext(), myInt))
-                        users.add(t)
-                    }
-                })
-
-            }
-        })
     }
 
     private fun getRecentMessage() {
@@ -152,14 +126,18 @@ open class ChatFragment : ChatFragments() {
                         chatViewModel.getIdUser().observe(viewLifecycleOwner, { id ->
                             val x = it.idTo.replace(id, "")
                             mainViewModel.getCurrentUser(x).observe(viewLifecycleOwner, { to ->
-                                if (to != null) {
-                                    u.emailText = to.emailText
-                                    Log.d("x", u.emailText)
-                                    u.imageProfile = to.imageProfile
-                                    u.name = to.name
-                                    adapter2.add(UserList(u, requireContext()))
-                                    adapter2.notifyDataSetChanged()
-                                }
+                                val chatId=id+to.id
+                                pChatViewModel.numberOfNewMessages(chatId).observe(viewLifecycleOwner,{ new->
+                                    if (to != null) {
+                                        u.emailText = to.emailText
+                                        Log.d("x", u.emailText)
+                                        u.imageProfile = to.imageProfile
+                                        u.name = to.name
+                                        adapter2.add(UserList(u, requireContext(),new))
+                                        adapter2.notifyDataSetChanged()
+                                    }
+                                })
+
                             })
                         })
                     })
@@ -170,7 +148,7 @@ open class ChatFragment : ChatFragments() {
                         u.emailText = "Group: " + g.name
                         u.name = g.name
                         u.bio = it.context
-                        adapter2.add(UserList(u, requireContext()))
+                        adapter2.add(UserList(u, requireContext(),""))
                         adapter2.notifyDataSetChanged()
                     })
                 }

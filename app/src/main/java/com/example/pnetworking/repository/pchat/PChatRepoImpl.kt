@@ -34,7 +34,7 @@ class PChatRepoImpl(private val pChatDataSource: PChatDataSource):PChatRepositor
     override fun addToBlackList(toChat: String,userId: String): MutableLiveData<Boolean> {
         return pChatDataSource.addToBlackList(toChat,userId)
     }
-    override fun numberOfNewMessages(toChat:String):MutableLiveData<HashMap<String, Any>>{
+    override fun numberOfNewMessages(toChat:String):MutableLiveData<String>{
         return pChatDataSource.numberOfNewMessages(toChat)
     }
 
