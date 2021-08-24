@@ -27,16 +27,15 @@ class GroupDataSource {
         val ref3 =
             FirebaseStorage.getInstance()
                 .getReference("group_chat/$chatId/image/$filename")
-        ref3.putFile(image).addOnSuccessListener {
-            Log.d("xxx", ref3.downloadUrl.toString())
+
+        Log.d("image",image.path!!)
+        if(image.path.isNullOrEmpty()){
             val ref =
                 FirebaseDatabase.getInstance().getReference("/chat/group_chat/$chatId")
             val gChat = GroupChat()
             gChat.idChat = chatId
             gChat.idUSer = uid
-            ref3.downloadUrl.addOnCompleteListener {
-                gChat.image = it.toString()
-            }
+            gChat.image = ""
             gChat.name = name
             gChat.summery = bio
             gChat.type = "group"
@@ -56,7 +55,7 @@ class GroupDataSource {
                 Log.d("TAG", "Saved our chat message: ${ref.key}")
             }
 
-            val refrence = FirebaseDatabase.getInstance().getReference("/chat/users/$chatId").key
+            val refrence = FirebaseDatabase.getInstance().getReference("/chat/users/$chatId")
             if (refrence == null) {
                 val ref = FirebaseDatabase.getInstance().getReference("/chat/users/")
                 Log.d("ref", ref.key!!)
@@ -66,7 +65,7 @@ class GroupDataSource {
                     idUSer = uid
                     type = "group"
                 }
-                ref.setValue(chat).addOnSuccessListener {
+                refrence.setValue(chat).addOnSuccessListener {
                     Log.d("TAG", "add chat")
                     result.value = chatId
                 }
@@ -76,7 +75,61 @@ class GroupDataSource {
                     }
             }
 
+
         }
+        else{
+            ref3.putFile(image).addOnSuccessListener {
+                Log.d("xxx", ref3.downloadUrl.toString())
+                val ref =
+                    FirebaseDatabase.getInstance().getReference("/chat/group_chat/$chatId")
+                val gChat = GroupChat()
+                gChat.idChat = chatId
+                gChat.idUSer = uid
+                ref3.downloadUrl.addOnCompleteListener {
+                    gChat.image = it.toString()
+                }
+                gChat.name = name
+                gChat.summery = bio
+                gChat.type = "group"
+                ref.setValue(gChat)
+                    .addOnSuccessListener {
+                        Log.d("TAG", "Saved our chat message: ${ref.key}")
+                        result.value = chatId
+                    }
+                val ref2 =
+                    FirebaseDatabase.getInstance()
+                        .getReference("/chat/group_chat/$chatId/participants/$pid")
+                val par = Participant()
+                par.idChat = chatId
+                par.idUSer = uid
+                par.role = "admin"
+                ref2.setValue(par).addOnSuccessListener {
+                    Log.d("TAG", "Saved our chat message: ${ref.key}")
+                }
+
+                val refrence = FirebaseDatabase.getInstance().getReference("/chat/users/$chatId")
+                if (refrence == null) {
+                    val ref = FirebaseDatabase.getInstance().getReference("/chat/users/")
+                    Log.d("ref", ref.key!!)
+                    val chat = Chat()
+                    with(chat) {
+                        idChat = chatId
+                        idUSer = uid
+                        type = "group"
+                    }
+                    refrence.setValue(chat).addOnSuccessListener {
+                        Log.d("TAG", "add chat")
+                        result.value = chatId
+                    }
+                        .addOnFailureListener {
+                            Log.e("TAG", "Failed to set value to database: ${it.message}")
+                            result.value = "false"
+                        }
+                }
+
+            }
+        }
+
         return result
     }
 
@@ -143,8 +196,8 @@ class GroupDataSource {
     fun editGroup(name: String, bio: String,chatId: String): MutableLiveData<Boolean> {
         var result = MutableLiveData<Boolean>()
         val hashmap = HashMap<String, Any>()
-        hashmap.put("name", name)
-        hashmap.put("summery", bio)
+        hashmap["name"] = name
+        hashmap["summery"] = bio
         val ref = FirebaseDatabase.getInstance().getReference("/chat/group_chat/$chatId")
         ref.updateChildren(hashmap).addOnSuccessListener {
             result.value = true

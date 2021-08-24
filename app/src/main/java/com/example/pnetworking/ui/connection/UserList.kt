@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
+import androidx.core.view.setPadding
 import com.example.pnetworking.R
 import com.example.pnetworking.models.User
 import com.squareup.picasso.Picasso
@@ -28,6 +29,7 @@ class UserList(val user: User,val context:Context,val new:String) : Item<Groupie
             Picasso.get().load(Uri.parse(user.imageProfile)).into(img)
             if(user.imageProfile==""){
                 img.setBackgroundResource(R.drawable.group)
+                img.setPadding(15)
             }
         }
         else {

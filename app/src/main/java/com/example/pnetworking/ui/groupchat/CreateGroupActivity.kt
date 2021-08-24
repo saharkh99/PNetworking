@@ -71,23 +71,32 @@ class CreateGroupActivity : ChatActivity() {
             } else {
                 val name = groupName.text.toString()
                 val bio = groupBio.text.toString()
+                if(selectedPhotoUri==null){
+                    selectedPhotoUri=ArrayList<Uri>()
+                    selectedPhotoUri!!.add(Uri.EMPTY)
+                    Log.d("null","null")
+                }
+
                 groupViewModel.createGroup(selectedPhotoUri!![0], name, bio)
                     .observe(this, { chatid ->
                         hideProgressDialog()
-                        statuses.forEach {
-                            it.observe(this, { s ->
-                                if (s != "") {
-                                    val item = adapter.getItem(s.toInt()) as UserChangeStatusItem
-                                    val participant = item.user
-                                    groupViewModel.addAParticipant(participant, chatid)
+                        groupViewModel.getAddedMembers().observe(this,{ list->
+                            list.forEach { s->
+                                    if (s != "") {
+                                        Log.d("parrrr",s)
+                                        val item = adapter.getItem(s.toInt()) as UserChangeStatusItem
+                                        val participant = item.user
+                                        groupViewModel.addAParticipant(participant, chatid)
+                                    }
                                 }
-                            })
-                        }
+                        })
                         val intent = Intent(this, GroupChatActivity::class.java)
-//                        intent.flags =
-//                            Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
                         intent.putExtra("group_chat", chatid)
+                        intent.flags =
+                            Intent.FLAG_ACTIVITY_CLEAR_TOP.or(Intent.FLAG_ACTIVITY_NEW_TASK)
                         startActivity(intent)
+
+
                     })
 
             }
@@ -126,11 +135,9 @@ class CreateGroupActivity : ChatActivity() {
             hideProgressDialog()
             for (s: String in it) {
                 mainViewModel.getCurrentUser(s).observe(this, { u ->
-                    val status = MutableLiveData<String>()
                     if (u != null)
-                        adapter.add(UserChangeStatusItem(u, this, "ADD", "REMOVE","",mainViewModel))
+                        adapter.add(UserChangeStatusItem(u, this, "ADD", "REMOVE USER","",groupViewModel))
                     Log.d("u", u.id)
-                    statuses.add(status)
                 })
             }
         })

@@ -55,6 +55,20 @@ class UserChangeStatusItem(
                 v.deleteRequest(user.id)
                 v.changeConnection(false)
             }
+            else if(text=="ADD"){
+
+                if(button.text=="REMOVE USER"){
+                    val v=viewmodel as GroupViewModel
+                    v.removeAddedMembers(position.toString())
+                    button.text=text
+                }
+                else{
+                    val v=viewmodel as GroupViewModel
+                    v.setAddedMembers(position.toString())
+                    button.text=text2
+                }
+            }
+
 
         }
         if(rol!=""){

@@ -17,8 +17,11 @@ import com.example.pnetworking.models.User
 import com.example.pnetworking.ui.connection.UserList
 import com.example.pnetworking.ui.features.SettingsActivity
 import com.example.pnetworking.ui.groupchat.CreateGroupActivity
+import com.example.pnetworking.ui.groupchat.GroupChatActivity
 import com.example.pnetworking.ui.groupchat.GroupViewModel
 import com.example.pnetworking.ui.groupchat.UserChangeStatusItem
+import com.example.pnetworking.ui.pchat.ChatItem
+import com.example.pnetworking.ui.pchat.PrivateChat
 import com.example.pnetworking.ui.pchat.PrivateChatViewModel
 import com.example.pnetworking.ui.profile.CardProfileFragment
 import com.example.pnetworking.ui.profile.FollowViewModel
@@ -83,6 +86,7 @@ open class ChatFragment : ChatFragments() {
                 followViewModel.changeConnection(true)
             }
         })
+
         return view
     }
 
@@ -144,15 +148,37 @@ open class ChatFragment : ChatFragments() {
                 } else {
                     groupViewModel.getGroupChat(it.idTo).observe(viewLifecycleOwner, { g ->
                         val u = User()
+                        u.id=g.idChat
                         u.imageProfile = g.image
                         u.emailText = "Group: " + g.name
                         u.name = g.name
                         u.bio = it.context
+                        u.gender="group"
+                        Log.d("group2",u.id)
                         adapter2.add(UserList(u, requireContext(),""))
                         adapter2.notifyDataSetChanged()
+
                     })
+
                 }
             })
+            adapter2.setOnItemClickListener { item, view ->
+                val user = item as UserList
+                if(item.user.gender=="group"){
+                    val intent = Intent(requireContext(), GroupChatActivity::class.java)
+                    Log.d("group",item.user.score)
+                    intent.putExtra("chat_fragment", item.user.id)
+                    startActivity(intent)
+                }
+                else{
+                    val intent = Intent(this.requireActivity(), PrivateChat::class.java)
+                    intent.putExtra("KEY_USER", item.user.name)
+                    intent.putExtra("KEY_USER2",item.user.imageProfile)
+                    intent.putExtra("KEY_USER3",item.user.id)
+                    startActivity(intent)
+                }
+
+            }
         } catch (e: Exception) {
             Log.d("recent", e.message!!)
         }

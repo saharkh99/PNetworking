@@ -35,6 +35,10 @@ class ChatItem(val context: Context, val text: Message, val image: String, val t
             val date = Date(text.timestamp * 1000)
             textview.text=sdf.format(date)
         }
+        else if(type=="group"){
+            val textview = viewHolder.itemView.findViewById<TextView>(R.id.chat_date)
+            textview.text=text.context
+        }
         else{
 
             seen.text="sent"

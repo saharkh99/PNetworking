@@ -1,6 +1,7 @@
 package com.example.pnetworking.ui.groupchat
 
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.example.pnetworking.models.GroupChat
 import com.example.pnetworking.models.Participant
@@ -9,6 +10,12 @@ import com.example.pnetworking.repository.group.GroupRepository
 import com.example.pnetworking.utils.ChatViewmodel
 
 class GroupViewModel(private val groupRepo: GroupRepository):ChatViewmodel(){
+    companion object {
+        val participants=MutableLiveData<String>()
+        val a=ArrayList<String>()
+        val listParticipant=MutableLiveData<ArrayList<String>>(a)
+
+    }
     fun createGroup(image: Uri, name:String, bio:String): MutableLiveData<String>{
         return groupRepo.createGroup(image, name, bio)
     }
@@ -21,5 +28,18 @@ class GroupViewModel(private val groupRepo: GroupRepository):ChatViewmodel(){
     }
     fun editGroup(name: String, bio: String,chatId: String): MutableLiveData<Boolean>{
         return groupRepo.editGroup(name, bio, chatId)
+    }
+    fun setAddedMembers(id:String){
+        participants.value=id
+        listParticipant.value!!.add(id)
+    }
+    fun removeAddedMembers(id:String){
+        participants.value=id
+        listParticipant.value!!.remove(id)
+        Log.d("xxxx",listParticipant.value!!.toString())
+
+    }
+    fun getAddedMembers():MutableLiveData<ArrayList<String>>{
+        return listParticipant
     }
 }

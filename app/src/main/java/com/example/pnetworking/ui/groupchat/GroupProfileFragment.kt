@@ -108,8 +108,8 @@ class GroupProfileFragment : DialogFragment() {
     private fun setupClickListeners(view: View) {
         view.findViewById<TextView>(R.id.profile_group_save).setOnClickListener { view1 ->
             viewGroup.editGroup(
-                view1.findViewById<EditText>(R.id.profile_group_name).text.toString(),
-                view1.findViewById<EditText>(R.id.profile_group_bio).text.toString(),
+                view.findViewById<EditText>(R.id.profile_group_name).text.toString(),
+                view.findViewById<EditText>(R.id.profile_group_bio).text.toString(),
                 arguments?.getString(KEY_ID)!!
             )
             dismiss()

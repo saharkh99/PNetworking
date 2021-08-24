@@ -59,6 +59,7 @@ class GroupChatActivity : AppCompatActivity() {
     var edit = false
     var type = false
     var mute = false
+    var group=false
     var preMessageDate = ""
     lateinit var chatID: String
     private val mainViewModel2 by viewModel<PrivateChatViewModel>()
@@ -71,14 +72,21 @@ class GroupChatActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
         val intent = intent
-        chatID = intent.getStringExtra("group_chat")!!
+        if(intent.getStringExtra("group_chat")!=null){
+            chatID = intent.getStringExtra("group_chat")!!
+            group=true
+
+        }
+        if(intent.getStringExtra("chat_fragment")!=null){
+            chatID = intent.getStringExtra("chat_fragment")!!
+        }
         init()
 
         mainViewModel.getGroupChat(chatID).observe(this, { g ->
             if (g.image != "") {
                 Picasso.get().load(g.image).into(groupImage)
             } else
-                groupImage.setImageResource(R.drawable.user)
+                groupImage.setImageResource(R.drawable.group)
 
             groupName.text = g.name
         })
@@ -124,6 +132,12 @@ class GroupChatActivity : AppCompatActivity() {
     @SuppressLint("RestrictedApi")
     private fun listenForMessages() {
         adapter.clear()
+        if(group){
+            val msg=Message()
+            msg.context="the group is created!!"
+            group=false
+            adapter.add(0, ChatItem(this, msg, "", "group", ""))
+        }
         mainViewModel2.checkBlackList(chatID).observe(this, { blocked ->
             if (blocked != true) {
                 Log.d("from", blocked.toString())
