@@ -3,6 +3,7 @@ package com.example.pnetworking.repository.group
 import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import com.example.pnetworking.models.GroupChat
+import com.example.pnetworking.models.Message
 import com.example.pnetworking.models.Participant
 import com.example.pnetworking.models.User
 
@@ -25,6 +26,21 @@ class GroupRepoImpl(private val groupDataSource: GroupDataSource): GroupReposito
 
     override fun editGroup(name: String, bio: String, chatId: String): MutableLiveData<Boolean> {
         return groupDataSource.editGroup(name, bio, chatId)
+    }
+
+    override fun listenForMessages(chat: String): MutableLiveData<Message> {
+        return groupDataSource.listenForMessages(chat)
+    }
+
+    override fun performSendMessage(
+        text: String,
+        chat: String,
+        selectedPhotoUri: ArrayList<Uri>,
+        reply: String,
+        toID: String,
+        isText: Boolean
+    ): MutableLiveData<String> {
+        return groupDataSource.performSendMessage(text, chat, selectedPhotoUri, reply, toID, isText)
     }
 
 }

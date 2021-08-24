@@ -82,8 +82,8 @@ class ConnectionFragment : ChatFragments() {
     private fun initRecyclerView(query:String) {
         Log.d("rec","ec")
         rec?.removeAllViews()
-        rec?.adapter = adapter
         adapter.clear()
+        rec?.adapter = adapter
         val l = ArrayList<User>()
         connectionViewModel.getUsers().observe(viewLifecycleOwner,{
             hideProgressDialog()
@@ -95,6 +95,7 @@ class ConnectionFragment : ChatFragments() {
                 if(u!=null  ) {
                     if(u.name.lowercase().contains(query.lowercase()) || u.emailText.lowercase().contains(query.lowercase())) {
                         adapter.clear()
+                        rec?.adapter = adapter
                         if(!l.contains(u)) {
                             l.add(u)
                         }

@@ -40,7 +40,6 @@ class ChatItem(val context: Context, val text: Message, val image: String, val t
             textview.text=text.context
         }
         else{
-
             seen.text="sent"
             if(text.seen){
                 Log.d("soooooooooo ",text.seen.toString() + text.context)

@@ -102,6 +102,7 @@ open class ChatFragment : ChatFragments() {
         })
     }
 
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -111,14 +112,16 @@ open class ChatFragment : ChatFragments() {
     }
 
     private fun getRecentMessage() {
+        adapter2.clear()
+        recRecent.adapter = adapter2
+        recRecent.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, true)
         try {
-            chatViewModel.getRecentMessages().observe(viewLifecycleOwner, {
-                adapter2.clear()
-                recRecent.adapter = adapter2
-                recRecent.layoutManager =
-                    LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, true)
+            chatViewModel.getRecentMessages(chatViewModel.getIdUser().value!!).observe(viewLifecycleOwner, {
+
                 if (it.idTo.contains(it.idUSer)) {
                     mainViewModel.getCurrentUser(it.idUSer).observe(viewLifecycleOwner, { u ->
+                        adapter2.clear()
                         recRecent.adapter = adapter2
                         recRecent.layoutManager =
                             LinearLayoutManager(
@@ -145,23 +148,41 @@ open class ChatFragment : ChatFragments() {
                             })
                         })
                     })
-                } else {
-                    groupViewModel.getGroupChat(it.idTo).observe(viewLifecycleOwner, { g ->
-                        val u = User()
-                        u.id=g.idChat
-                        u.imageProfile = g.image
-                        u.emailText = "Group: " + g.name
-                        u.name = g.name
-                        u.bio = it.context
-                        u.gender="group"
-                        Log.d("group2",u.id)
-                        adapter2.add(UserList(u, requireContext(),""))
-                        adapter2.notifyDataSetChanged()
+                }
 
+
+            })
+
+            chatViewModel.getChats().observe(viewLifecycleOwner,{ chats->
+                Log.d("chats","chats")
+                chats.forEach { c->
+                    chatViewModel.getRecentMessages(c).observe(viewLifecycleOwner, {
+                        Log.d("chats",c)
+                        adapter2.clear()
+                        recRecent.adapter = adapter2
+                        recRecent.layoutManager =
+                            LinearLayoutManager(
+                                requireContext(),
+                                LinearLayoutManager.VERTICAL,
+                                true
+                            )
+                        groupViewModel.getGroupChat(c).observe(viewLifecycleOwner, { g ->
+                            val u = User()
+                            u.id=g.idChat
+                            u.imageProfile = g.image
+                            u.emailText = "Group: " + g.name
+                            u.name = g.name
+                            u.bio = it.context
+                            u.gender="group"
+                            Log.d("group2",u.id)
+                            adapter2.add(UserList(u, requireContext(),""))
+                            adapter2.notifyDataSetChanged()
+
+                        })
                     })
-
                 }
             })
+
             adapter2.setOnItemClickListener { item, view ->
                 val user = item as UserList
                 if(item.user.gender=="group"){

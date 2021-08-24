@@ -4,6 +4,7 @@ import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.example.pnetworking.models.GroupChat
+import com.example.pnetworking.models.Message
 import com.example.pnetworking.models.Participant
 import com.example.pnetworking.models.User
 import com.example.pnetworking.repository.group.GroupRepository
@@ -42,4 +43,13 @@ class GroupViewModel(private val groupRepo: GroupRepository):ChatViewmodel(){
     fun getAddedMembers():MutableLiveData<ArrayList<String>>{
         return listParticipant
     }
+    fun listenForMessages(chat: String): MutableLiveData<Message> =groupRepo.listenForMessages(chat)
+    fun performSendMessage(
+        text: String,
+        chat: String,
+        selectedPhotoUri: ArrayList<Uri>,
+        reply: String,
+        toID: String,
+        isText: Boolean
+    ): MutableLiveData<String> =groupRepo.performSendMessage(text, chat, selectedPhotoUri, reply, toID, isText)
 }

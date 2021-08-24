@@ -141,62 +141,71 @@ class GroupChatActivity : AppCompatActivity() {
         mainViewModel2.checkBlackList(chatID).observe(this, { blocked ->
             if (blocked != true) {
                 Log.d("from", blocked.toString())
-                mainViewModel2.listenForMessages(chatID).observe(this, { chatMessage ->
+                mainViewModel.listenForMessages(chatID).observe(this, { chatMessage ->
                     Log.d("from", chatMessage.id)
                     val sdf = SimpleDateFormat("dd/MM/yyyy")
                     val date = Date(chatMessage.timestamp * 1000)
                     if (preMessageDate != sdf.format(date)) {
-//                      TODO set image of users
-                        adapter.add(0, ChatItem(this, chatMessage, "", "date", chatMessage.reply))
+                        adapter.add(
+                            0,
+                            ChatItem(this, chatMessage, "", "date", chatMessage.reply)
+                        )
                         preMessageDate = sdf.format(date)
                     }
                     if (chatMessage.idUSer == FirebaseAuth.getInstance().uid) {
-                        adapter.add(0, ChatItem(this, chatMessage, "", "false", chatMessage.reply))
+                        Log.d("from", chatMessage.context+ chatMessage.seen)
+                        adapter.add(
+                            0,
+                            ChatItem(this, chatMessage, "", "false", chatMessage.reply)
+                        )
                         type = false
 
                     } else {
-                        adapter.add(0, ChatItem(this, chatMessage, "", "true", chatMessage.reply))
+
+                        adapter.add(
+                            0,
+                            ChatItem(this, chatMessage, "", "true", chatMessage.reply)
+                        )
                         type = true
                         mainViewModel2.seenMessage(chatID, chatMessage.id)
                             .observe(this, {
-                                Log.d("get it", it.toString())
+                                Log.d("seen message", it.toString())
+                                adapter.notifyItemChanged(adapter.itemCount-1)
+                                adapter.notifyDataSetChanged()
                             })
+
                     }
-                    adapter.notifyDataSetChanged()
                     adapter.setOnItemClickListener { i, view ->
+                        Log.d("adapter", i.id.toString())
                         val popup = PopupMenu(this, view)
                         val msg = i as ChatItem
+                        Log.d("adapter", msg.text.context)
                         popup.inflate(R.menu.options_menu)
                         if (popup is MenuBuilder) {
                             val m = popup as MenuBuilder
                             m.setOptionalIconsVisible(true)
                         }
-                        popup.gravity = Gravity.END
+                        if (i.text.idUSer == FirebaseAuth.getInstance().uid)
+                            popup.gravity = Gravity.END
+                        else
+                            popup.gravity = Gravity.START
                         popup.setForceShowIcon(true)
+                        if (i.text.idUSer != FirebaseAuth.getInstance().uid) {
+                            popup.menu.getItem(1).isVisible = false
+                            popup.menu.getItem(2).isVisible = false
+                        }
                         popup.setOnMenuItemClickListener { item ->
                             when (item.itemId) {
                                 R.id.edit -> {
-                                    item.icon = getDrawable(R.drawable.edit)
-                                    view.setBackgroundColor(Color.parseColor("#33efe6fa"))
-                                    edit = true
+
                                     true
                                 }
                                 R.id.delete -> {
-                                    if (!type) {
-                                        Log.d("message", "deleted")
-                                        mainViewModel2.removeMessage(chatID, chatMessage.id)
-                                        adapter.notifyItemRemoved(msg.id.toInt())
-                                        Toast.makeText(
-                                            this,
-                                            " massage is deleted",
-                                            Toast.LENGTH_SHORT
-                                        )
-                                    }
+
                                     true
                                 }
                                 R.id.reply -> {
-                                    view.setBackgroundColor(Color.parseColor("#000000"))
-                                    reply = msg.text.context
+
                                     true
                                 }
                                 else -> false
@@ -247,7 +256,7 @@ class GroupChatActivity : AppCompatActivity() {
         if (edit) {
             mainViewModel2.editMessage(text, chatID,text)
         } else {
-            mainViewModel2.performSendMessage(
+            mainViewModel.performSendMessage(
                 text,
                 chatID,
                 selectedPhotoUri!!,

@@ -8,6 +8,7 @@ import com.example.pnetworking.utils.ChatViewmodel
 
 class ChatFViewModel(private val pChatRepository: ChatFragmentRepository): ChatViewmodel()
 {
-    fun getRecentMessages(): MutableLiveData<Message> =pChatRepository.getRecentMessages()
+    fun getRecentMessages(fromId:String): MutableLiveData<Message> =pChatRepository.getRecentMessages(fromId)
     fun getIdUser():MutableLiveData<String> =pChatRepository.getIdUser()
+    fun getChats():MutableLiveData<ArrayList<String>> =pChatRepository.getChats()
 }
