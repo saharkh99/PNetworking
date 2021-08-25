@@ -198,7 +198,7 @@ class PrivateChat : ChatActivity() {
                     if (preMessageDate != sdf.format(date)) {
                         adapter.add(
                             0,
-                            ChatItem(this, chatMessage, userImage, "date", chatMessage.reply)
+                            ChatItem(this, chatMessage, userImage, "date", chatMessage.reply,"")
                         )
                         preMessageDate = sdf.format(date)
                     }
@@ -206,7 +206,7 @@ class PrivateChat : ChatActivity() {
                         Log.d("from", chatMessage.context+ chatMessage.seen)
                         adapter.add(
                             0,
-                            ChatItem(this, chatMessage, userImage, "false", chatMessage.reply)
+                            ChatItem(this, chatMessage, userImage, "false", chatMessage.reply,"")
                         )
                         type = false
 
@@ -214,7 +214,7 @@ class PrivateChat : ChatActivity() {
 
                         adapter.add(
                             0,
-                            ChatItem(this, chatMessage, userImage, "true", chatMessage.reply)
+                            ChatItem(this, chatMessage, userImage, "true", chatMessage.reply,"")
                         )
                         type = true
                         mainViewModel.seenMessage(chatId, chatMessage.id)

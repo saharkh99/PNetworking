@@ -56,8 +56,12 @@ class GroupChatActivity : AppCompatActivity() {
     val adapter = GroupAdapter<GroupieViewHolder>()
     var isText = true
     var reply = ""
+    var editId = ""
+    var editContext: Int = 0
+    lateinit var editView: View
     var edit = false
     var type = false
+    lateinit var replyView: View
     var mute = false
     var group=false
     var preMessageDate = ""
@@ -136,45 +140,52 @@ class GroupChatActivity : AppCompatActivity() {
             val msg=Message()
             msg.context="the group is created!!"
             group=false
-            adapter.add(0, ChatItem(this, msg, "", "group", ""))
+            adapter.add(0, ChatItem(this, msg, "", "group", "",""))
         }
         mainViewModel2.checkBlackList(chatID).observe(this, { blocked ->
+            var userName=""
             if (blocked != true) {
                 Log.d("from", blocked.toString())
                 mainViewModel.listenForMessages(chatID).observe(this, { chatMessage ->
                     Log.d("from", chatMessage.id)
                     val sdf = SimpleDateFormat("dd/MM/yyyy")
                     val date = Date(chatMessage.timestamp * 1000)
-                    if (preMessageDate != sdf.format(date)) {
-                        adapter.add(
-                            0,
-                            ChatItem(this, chatMessage, "", "date", chatMessage.reply)
-                        )
-                        preMessageDate = sdf.format(date)
-                    }
-                    if (chatMessage.idUSer == FirebaseAuth.getInstance().uid) {
-                        Log.d("from", chatMessage.context+ chatMessage.seen)
-                        adapter.add(
-                            0,
-                            ChatItem(this, chatMessage, "", "false", chatMessage.reply)
-                        )
-                        type = false
+                    mainViewModel.getNameOfUser(chatMessage.idUSer).observe(this,{name->
+                        userName=name
+                        Log.d("group name",userName)
+                        if (preMessageDate != sdf.format(date)) {
+                            adapter.add(
+                                0,
+                                ChatItem(this, chatMessage, "", "date", chatMessage.reply,"")
+                            )
+                            preMessageDate = sdf.format(date)
+                        }
+                        if (chatMessage.idUSer == FirebaseAuth.getInstance().uid) {
+                            Log.d("from", chatMessage.context+ chatMessage.seen)
+                            adapter.add(
+                                0,
+                                ChatItem(this, chatMessage, "", "false", chatMessage.reply,userName)
+                            )
+                            type = false
 
-                    } else {
+                        }
+                        else {
 
-                        adapter.add(
-                            0,
-                            ChatItem(this, chatMessage, "", "true", chatMessage.reply)
-                        )
-                        type = true
-                        mainViewModel2.seenMessage(chatID, chatMessage.id)
-                            .observe(this, {
-                                Log.d("seen message", it.toString())
-                                adapter.notifyItemChanged(adapter.itemCount-1)
-                                adapter.notifyDataSetChanged()
-                            })
+                            adapter.add(
+                                0,
+                                ChatItem(this, chatMessage, "", "true", chatMessage.reply,userName)
+                            )
+                            type = true
+                            mainViewModel2.seenMessage(chatID, chatMessage.id)
+                                .observe(this, {
+                                    Log.d("seen message", it.toString())
+                                    adapter.notifyItemChanged(adapter.itemCount-1)
+                                    adapter.notifyDataSetChanged()
+                                })
 
-                    }
+                        }
+                    })
+
                     adapter.setOnItemClickListener { i, view ->
                         Log.d("adapter", i.id.toString())
                         val popup = PopupMenu(this, view)
@@ -197,15 +208,39 @@ class GroupChatActivity : AppCompatActivity() {
                         popup.setOnMenuItemClickListener { item ->
                             when (item.itemId) {
                                 R.id.edit -> {
-
+                                    item.icon = getDrawable(R.drawable.edit)
+                                    view.setBackgroundColor(Color.parseColor("#33efe6fa"))
+                                    editChat.setText(i.text.context)
+                                    edit = true
+                                    editId = i.text.id
+                                    editView = view
+                                    Log.d("edit1", adapter.getAdapterPosition(i).toString())
+                                    editContext = adapter.getAdapterPosition(i)
                                     true
                                 }
                                 R.id.delete -> {
-
+                                    Log.d(
+                                        "message",
+                                        i.text.idUSer + " " + FirebaseAuth.getInstance().uid
+                                    )
+                                    if (i.text.idUSer == FirebaseAuth.getInstance().uid) {
+                                        Log.d("message", i.text.context)
+                                        mainViewModel.removeMessage(chatID, i.text.id)
+                                        adapter.notifyDataSetChanged()
+                                        adapter.remove(i)
+                                        Toast.makeText(
+                                            this,
+                                            " massage is deleted",
+                                            Toast.LENGTH_SHORT
+                                        )
+                                    } else
+                                        item.isVisible = false
                                     true
                                 }
                                 R.id.reply -> {
-
+                                    view.setBackgroundColor(Color.parseColor("#33efe6fa"))
+                                    reply = msg.text.context
+                                    replyView = view
                                     true
                                 }
                                 else -> false
@@ -253,31 +288,48 @@ class GroupChatActivity : AppCompatActivity() {
     private fun performSendMessage(text: String) {
         if (selectedPhotoUri == null)
             selectedPhotoUri = ArrayList()
-        if (edit) {
-            mainViewModel2.editMessage(text, chatID,text)
-        } else {
-            mainViewModel.performSendMessage(
-                text,
-                chatID,
-                selectedPhotoUri!!,
-                reply,
-                chatID,
-                isText
-            ).observe(
-                this
-            ) {
-                Log.d("send message", it)
-                if (it == "true") {
-                    editChat.setText("")
-                    var msg = Message()
-                    msg.context = text
-                    if (!mute)
-                        mainViewModel2.sendNotification(msg, chatID, true)
-
-                    hideKeyboardFrom(this, mainlayout)
-                } else {
-                    Log.d("send message", "try again")
-                }
+        if (text != "") {
+            if (edit && editId != "") {
+                Log.d("edit", editId)
+                mainViewModel.editMessage(editId, chatID, text)
+                editId = ""
+                editChat.setText("")
+                editView.setBackgroundColor(0)
+                Log.d("edit", editContext.toString())
+                adapter.notifyDataSetChanged()
+                adapter.notifyItemChanged(editContext)
+                hideKeyboardFrom(this, mainlayout)
+            } else {
+                mainViewModel.performSendMessage(
+                    text,
+                    chatID,
+                    selectedPhotoUri!!,
+                    reply,
+                    chatID,
+                    isText
+                ).observe(
+                    this,
+                    {
+                        Log.d("send message", it)
+                        if (it == "true") {
+                            editChat.setText("")
+                            var msg = Message()
+                            msg.context = text
+                            mainViewModel2.checkMuteList(chatID).observe(this, { mute ->
+                                if (!mute) {
+                                    mainViewModel2.sendNotification(msg, chatID, true)
+                                }
+                            })
+//                            calculate number of new messages
+                            if (reply != "") {
+                                replyView.setBackgroundColor(0)
+                                reply = ""
+                            }
+                            hideKeyboardFrom(this, mainlayout)
+                        } else {
+                            Log.d("send message", "try again")
+                        }
+                    })
             }
         }
 

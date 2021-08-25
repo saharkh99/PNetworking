@@ -14,6 +14,17 @@
     android:id="@+id/chat_image_user"
     android:clickable="true"
     android:layout_margin="16dp"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="sahar"
+        android:textColor="@color/purple_200"
+        android:id="@+id/chat_name"
+        android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@id/chat_message_tv_linear"
+        app:layout_constraintRight_toRightOf="@id/chat_message_tv_linear"
+        android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+        />
     <LinearLayout
         android:layout_width="wrap_content"
         android:padding="3dp"

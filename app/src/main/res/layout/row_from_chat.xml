@@ -13,6 +13,16 @@
     android:src="@drawable/user"
     android:id="@+id/chat_image_user"
     android:layout_margin="16dp"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="sahar"
+        android:id="@+id/chat_name"
+        android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@id/chat_message_tv_linear"
+        app:layout_constraintLeft_toLeftOf="@id/chat_message_tv_linear"
+        android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+        />
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

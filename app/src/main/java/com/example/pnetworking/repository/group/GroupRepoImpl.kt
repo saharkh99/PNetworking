@@ -43,4 +43,16 @@ class GroupRepoImpl(private val groupDataSource: GroupDataSource): GroupReposito
         return groupDataSource.performSendMessage(text, chat, selectedPhotoUri, reply, toID, isText)
     }
 
+    override fun getNameOfUser(userId: String): MutableLiveData<String> {
+        return groupDataSource.getNameOfUser(userId)
+    }
+
+    override fun editMessage(msgId: String, toChat: String, text: String) {
+        return groupDataSource.editMessage(msgId, toChat, text)
+    }
+
+    override fun removeMessage(toChat: String, msgId: String) {
+        return groupDataSource.removeMessage(toChat,msgId)
+    }
+
 }

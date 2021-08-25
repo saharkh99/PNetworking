@@ -17,7 +17,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class ChatItem(val context: Context, val text: Message, val image: String, val type:String, val reply:String) : Item<GroupieViewHolder>() {
+class ChatItem(val context: Context, val text: Message, val image: String, val type:String, val reply:String,val group :String) : Item<GroupieViewHolder>() {
 
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -40,6 +40,15 @@ class ChatItem(val context: Context, val text: Message, val image: String, val t
             textview.text=text.context
         }
         else{
+            if(group!=""){
+                val textview1 = viewHolder.itemView.findViewById<TextView>(R.id.chat_name)
+                if(textview1!=null){
+                    textview1.visibility=View.VISIBLE
+                    textview1.text = group
+                    Log.d("group10000",textview1.text.toString())
+                }
+            }
+
             seen.text="sent"
             if(text.seen){
                 Log.d("soooooooooo ",text.seen.toString() + text.context)

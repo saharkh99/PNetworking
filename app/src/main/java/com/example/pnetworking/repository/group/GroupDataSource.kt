@@ -346,5 +346,93 @@ class GroupDataSource {
         return value
     }
 
+    fun getNameOfUser(userId:String):MutableLiveData<String>{
+        val result=MutableLiveData<String>()
+        val ref=FirebaseDatabase.getInstance().getReference("users/$userId/")
+        ref.addValueEventListener(object :ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                Log.d("group1000,",snapshot.key.toString())
+                snapshot.children.forEach {
+                    if(it.key=="name"){
+                        Log.d("group1000,",it.value.toString())
+                        result.value=it.value.toString()
+                    }
+                }
+
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+            }
+
+        })
+        return result
+    }
+
+    fun editMessage(msgId: String, toChat: String, text: String) {
+        val fromId = FirebaseAuth.getInstance().uid
+        val ref = FirebaseDatabase.getInstance()
+            .getReference("/chat/$toChat/message/")
+        ref.orderByKey().addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                snapshot.children.forEach {
+                    Log.d("edit server", it.child("id").value.toString())
+                    Log.d("edit server", msgId)
+                    if (it.child("id").value == msgId) {
+                        Log.d("edit server", it.ref.toString())
+                        val hashmap = HashMap<String, Any>()
+                        hashmap["context"] = text
+                        it.ref.updateChildren(hashmap)
+                    }
+                }
+
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+
+            }
+        })
+    }
+
+    fun removeMessage(toChat: String, msgId: String) {
+        val fromId = FirebaseAuth.getInstance().uid
+        val ref = FirebaseDatabase.getInstance()
+            .getReference("chat/$toChat/message/")
+        ref.orderByKey().addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                snapshot.children.forEach {
+                    if (it.child("id").value == msgId) {
+                        Log.d("delete44", it.ref.toString())
+                        it.ref.removeValue()
+                    }
+                }
+
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+
+            }
+
+        })
+
+        val latestMessageRef =
+            FirebaseDatabase.getInstance()
+                .getReference("chat/latest-messages/$toChat/")
+        latestMessageRef.orderByKey().addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                snapshot.children.forEach {
+                    if (it.child("id").value == msgId) {
+                        Log.d("delete44", it.ref.toString())
+                        it.ref.removeValue()
+                    }
+                }
+
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+
+            }
+
+        })
+    }
 
 }

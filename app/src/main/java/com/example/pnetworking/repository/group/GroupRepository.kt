@@ -22,4 +22,7 @@ interface GroupRepository {
         toID: String,
         isText: Boolean
     ): MutableLiveData<String>
+    fun getNameOfUser(userId:String):MutableLiveData<String>
+    fun editMessage(msgId: String, toChat: String, text: String)
+    fun removeMessage(toChat: String, msgId: String)
 }

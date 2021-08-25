@@ -52,4 +52,10 @@ class GroupViewModel(private val groupRepo: GroupRepository):ChatViewmodel(){
         toID: String,
         isText: Boolean
     ): MutableLiveData<String> =groupRepo.performSendMessage(text, chat, selectedPhotoUri, reply, toID, isText)
+    fun getNameOfUser(userId:String):MutableLiveData<String> =groupRepo.getNameOfUser(userId)
+
+    fun editMessage(msgId: String, toChat: String, text: String) =groupRepo.editMessage(msgId, toChat, text)
+
+    fun removeMessage(toChat: String, msgId: String) =groupRepo.removeMessage(toChat, msgId)
+
 }
