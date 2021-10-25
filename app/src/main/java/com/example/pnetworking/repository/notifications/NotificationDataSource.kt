@@ -19,10 +19,11 @@ class NotificationDataSource() {
     val ap=Client.buildService(ApiService::class.java)
     fun sendNotification(msg: Message,toChat:String,notify:Boolean){
         val fromId = FirebaseAuth.getInstance().uid
+        Log.d("tochat",toChat)
         val database=FirebaseDatabase.getInstance().getReference("/chat/$toChat/message/$fromId/")
         database.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                  Log.d("change","change")
+                  Log.d("change",msg.idTo +" "+msg.context)
                   if(notify)
                       sendNotifications(msg.idTo,msg.context,fromId!!)
             }

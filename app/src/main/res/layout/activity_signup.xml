@@ -118,7 +118,7 @@
             android:layout_margin="5dp"
             android:textColor="@color/purple_200"
             android:layout_height="wrap_content"
-            android:text="other" />
+            android:text="others" />
     </RadioGroup>
     <EditText
         android:id="@+id/signin_birthday"

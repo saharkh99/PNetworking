@@ -47,6 +47,7 @@ class ChatItem(val context: Context, val text: Message, val image: String, val t
                     textview1.text = group
                     Log.d("group10000",textview1.text.toString())
                 }
+                seen.visibility=View.GONE
             }
 
             seen.text="sent"

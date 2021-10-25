@@ -59,6 +59,7 @@ class FollowDataSource {
         val result = MutableLiveData<Boolean>()
         val hashmap = HashMap<String, Any>()
         var con = 0
+        Log.d("con", fid)
         val ref = FirebaseDatabase.getInstance().getReference("/users/$uid")
         ref.addListenerForSingleValueEvent(object : ValueEventListener {
 
@@ -82,14 +83,13 @@ class FollowDataSource {
             }
         })
 
-        con = 0
+        var con1 = 0
         val ref1 = FirebaseDatabase.getInstance().getReference("/users/$fid")
-        ref.addListenerForSingleValueEvent(object : ValueEventListener {
-
+        ref1.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(p0: DataSnapshot) {
                 val user = p0.getValue(User::class.java)
-                con = user!!.connection
-                hashmap["connection"] = con + 1
+                con1 = user!!.connection
+                hashmap["connection"] = con1 + 1
                 ref.updateChildren(hashmap).addOnSuccessListener {
                     Log.d("con", "connnnnnnn")
                     result.value = true
@@ -155,7 +155,6 @@ class FollowDataSource {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
             }
 
         })
@@ -165,10 +164,11 @@ class FollowDataSource {
     fun deleteRequest(fid:String):MutableLiveData<Boolean>{
         val result = MutableLiveData<Boolean>()
         val uid = FirebaseAuth.getInstance().uid!!
-        val ref = FirebaseDatabase.getInstance().getReference("/users/$fid/requests/")
+        Log.d("shod",fid)
+        val ref = FirebaseDatabase.getInstance().getReference("/users/$uid/requests/$fid")
         ref.removeValue().addOnSuccessListener {
             result.value=true
-            Log.d("shod","shod")
+            Log.d("shod","did you remove")
         }
          return result
     }

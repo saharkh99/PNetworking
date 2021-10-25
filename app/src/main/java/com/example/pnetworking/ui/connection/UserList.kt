@@ -26,6 +26,7 @@ class UserList(val user: User,val context:Context,val new:String) : Item<Groupie
         desc.text = user.bio
         Log.d("image",user.imageProfile)
         if (user.imageProfile.trim()!="true") {
+            img.setBackgroundResource(0)
             Picasso.get().load(Uri.parse(user.imageProfile)).into(img)
             if(user.imageProfile==""){
                 img.setBackgroundResource(R.drawable.group)

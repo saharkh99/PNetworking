@@ -13,8 +13,10 @@ import com.example.pnetworking.databinding.ActivityMainBinding.inflate
 import com.example.pnetworking.databinding.ActivityTestBinding
 import com.example.pnetworking.databinding.TestRowLayoutBinding
 import com.example.pnetworking.models.Question
+import com.example.pnetworking.ui.base.signin.SigninActivity
 import com.example.pnetworking.ui.base.signup.SignupActivity
 import com.example.pnetworking.utils.ChatActivity
+import com.google.android.gms.auth.api.signin.SignInAccount
 import com.xwray.groupie.Group
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
@@ -23,7 +25,8 @@ import org.koin.android.viewmodel.ext.android.viewModel
 
 val s =IntArray(12)
 
-val scores = MutableLiveData<IntArray>()
+var emotionScore = 0
+var extroScore = 0
 
 class TestActivity : ChatActivity() {
     private val mainViewModel by viewModel<TestViewModel>()
@@ -41,8 +44,16 @@ class TestActivity : ChatActivity() {
         })
         rec.adapter=adapter
         binding.testFinish.setOnClickListener {
-            scores.value=s
-            startActivity(Intent(this, SignupActivity::class.java))
+             for ( i in s.indices){
+                 if(i<6){
+                     emotionScore += s[i]
+                 }
+                 if(i>=6){
+                     extroScore += s[i]
+                 }
+             }
+            mainViewModel.storeScores(emotionScore, extroScore)
+            startActivity(Intent(this, SigninActivity::class.java))
             finish()
         }
     }

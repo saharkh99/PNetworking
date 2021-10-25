@@ -74,7 +74,7 @@ class IntroActivity : AppIntro2() {
 
     public override fun onDonePressed(currentFragment: Fragment?) {
         super.onDonePressed(currentFragment)
-        startActivity(Intent(this, TestActivity::class.java))
+        startActivity(Intent(this, SignupActivity::class.java))
         finish()
     }
 }

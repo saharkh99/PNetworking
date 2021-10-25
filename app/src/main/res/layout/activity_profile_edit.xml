@@ -58,7 +58,7 @@
         app:layout_constraintTop_toBottomOf="@id/edit_bio"
         app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginTop="24dp"
-        android:text=" favorites "
+        android:text=" FAVORITES "
         android:textSize="24dp"
         android:layout_marginLeft="24dp"
         android:textStyle="bold"

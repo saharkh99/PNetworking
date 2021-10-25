@@ -58,4 +58,6 @@ class GroupViewModel(private val groupRepo: GroupRepository):ChatViewmodel(){
 
     fun removeMessage(toChat: String, msgId: String) =groupRepo.removeMessage(toChat, msgId)
 
+    fun removeChat(chatId: String)=groupRepo.removeChat(chatId)
+
 }

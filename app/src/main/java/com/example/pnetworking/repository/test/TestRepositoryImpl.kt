@@ -9,4 +9,8 @@ class TestRepositoryImpl(private val testDataSource: TestDataSource): TestReposi
     override fun getQuestions(): MutableLiveData<List<Question>> {
         return testDataSource.fetchQuestions()
     }
+
+    override fun storeScores(emo: Int, extro: Int) {
+        return testDataSource.storeScores(emo, extro)
+    }
 }

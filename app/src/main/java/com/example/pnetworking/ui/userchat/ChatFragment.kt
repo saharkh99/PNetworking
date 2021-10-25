@@ -117,6 +117,7 @@ open class ChatFragment : ChatFragments() {
         recRecent.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, true)
         try {
+            Log.d("chats",chatViewModel.getIdUser().value!!)
             chatViewModel.getRecentMessages(chatViewModel.getIdUser().value!!).observe(viewLifecycleOwner, {
 
                 if (it.idTo.contains(it.idUSer)) {
@@ -136,6 +137,7 @@ open class ChatFragment : ChatFragments() {
                                 val chatId=id+to.id
                                 pChatViewModel.numberOfNewMessages(chatId).observe(viewLifecycleOwner,{ new->
                                     if (to != null) {
+                                        u.id=to.id
                                         u.emailText = to.emailText
                                         Log.d("x", u.emailText)
                                         u.imageProfile = to.imageProfile
@@ -152,33 +154,34 @@ open class ChatFragment : ChatFragments() {
 
 
             })
-
-            chatViewModel.getChats().observe(viewLifecycleOwner,{ chats->
+              chatViewModel.getChats().observe(viewLifecycleOwner,{ chats->
                 Log.d("chats","chats")
                 chats.forEach { c->
                     chatViewModel.getRecentMessages(c).observe(viewLifecycleOwner, {
-                        Log.d("chats",c)
-                        adapter2.clear()
-                        recRecent.adapter = adapter2
-                        recRecent.layoutManager =
-                            LinearLayoutManager(
-                                requireContext(),
-                                LinearLayoutManager.VERTICAL,
-                                true
-                            )
-                        groupViewModel.getGroupChat(c).observe(viewLifecycleOwner, { g ->
-                            val u = User()
-                            u.id=g.idChat
-                            u.imageProfile = g.image
-                            u.emailText = "Group: " + g.name
-                            u.name = g.name
-                            u.bio = it.context
-                            u.gender="group"
-                            Log.d("group2",u.id)
-                            adapter2.add(UserList(u, requireContext(),""))
-                            adapter2.notifyDataSetChanged()
+                        if (!it.idTo.contains(it.idUSer)){
+                            Log.d("chats",c)
+                            adapter2.clear()
+                            recRecent.adapter = adapter2
+                            recRecent.layoutManager =
+                                LinearLayoutManager(
+                                    requireContext(),
+                                    LinearLayoutManager.VERTICAL,
+                                    true
+                                )
+                            groupViewModel.getGroupChat(c).observe(viewLifecycleOwner, { g ->
+                                val u = User()
+                                u.id=g.idChat
+                                u.imageProfile = g.image
+                                u.emailText = "Group: " + g.name
+                                u.name = g.name
+                                u.bio = it.context
+                                u.gender="group"
+                                Log.d("group2",u.id)
+                                adapter2.add(UserList(u, requireContext(),""))
+                                adapter2.notifyDataSetChanged()
 
-                        })
+                            })
+                        }
                     })
                 }
             })
@@ -187,11 +190,12 @@ open class ChatFragment : ChatFragments() {
                 val user = item as UserList
                 if(item.user.gender=="group"){
                     val intent = Intent(requireContext(), GroupChatActivity::class.java)
-                    Log.d("group",item.user.score)
+                    Log.d("group",item.user.id)
                     intent.putExtra("chat_fragment", item.user.id)
                     startActivity(intent)
                 }
                 else{
+                    Log.d("pricate",item.user.name)
                     val intent = Intent(this.requireActivity(), PrivateChat::class.java)
                     intent.putExtra("KEY_USER", item.user.name)
                     intent.putExtra("KEY_USER2",item.user.imageProfile)
@@ -212,8 +216,9 @@ open class ChatFragment : ChatFragments() {
         followViewModel.getRequests().observe(viewLifecycleOwner, {
             hideProgressDialog()
             for (s: String in it) {
+                Log.d("u", s)
+
                 mainViewModel.getCurrentUser(s).observe(viewLifecycleOwner, { u ->
-                    rec.adapter = adapter
                     rec.layoutManager =
                         LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, true)
                     adapter.add(
@@ -226,13 +231,13 @@ open class ChatFragment : ChatFragments() {
                             followViewModel
                         )
                     )
-                    Log.d("u", u.id)
+                    rec.adapter = adapter
                 })
             }
         })
         adapter.setOnItemClickListener { item, _ ->
             val userItem = item as UserChangeStatusItem
-            Log.d("image", item.user.imageProfile)
+            Log.d("image1212", item.user.id)
             val age = findAge(item.user.birthday).toString() + ", " + zodiac(item.user.birthday)
             CardProfileFragment.newInstance(
                 item.user,
@@ -245,7 +250,7 @@ open class ChatFragment : ChatFragments() {
                 age,
                 TAG
             ).show(parentFragmentManager, CardProfileFragment.TAG)
-            adapter.notifyDataSetChanged()
+//            adapter.notifyDataSetChanged()
         }
     }
 

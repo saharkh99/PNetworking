@@ -15,4 +15,5 @@ class TestViewModel(private val testRepository: TestRepository): ChatViewmodel()
         question= testRepository.getQuestions()
     }
 
+    fun storeScores(emo:Int,extro:Int) =testRepository.storeScores(emo, extro)
 }

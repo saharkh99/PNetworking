@@ -133,11 +133,11 @@ class PrivateChat : ChatActivity() {
                             editChat.setText("")
                             var msg = Message()
                             msg.context = text
-                            mainViewModel.checkMuteList(chatId).observe(this, { mute ->
-                                if (!mute) {
-                                    mainViewModel.sendNotification(msg, chatId, true)
-                                }
-                            })
+//                            mainViewModel.checkMuteList(chatId).observe(this, { mute ->
+//                                if (!mute) {
+//                                    mainViewModel.sendNotification(msg, chatId, true)
+//                               }
+//                            })
 //                            calculate number of new messages
                             if (reply != "") {
                                 replyView.setBackgroundColor(0)

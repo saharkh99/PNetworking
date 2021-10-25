@@ -20,5 +20,9 @@ class ProfileRepoImpl(private val profileDataStore: ProfileDataStore):ProfileRep
         return profileDataStore.updatePhoto(image)
     }
 
+    override fun saveFav(fav: String) {
+        return profileDataStore.saveFav(fav)
+    }
+
 
 }

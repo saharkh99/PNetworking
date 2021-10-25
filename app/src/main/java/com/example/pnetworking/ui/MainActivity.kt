@@ -14,6 +14,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.iid.FirebaseInstanceId
 
+//https://1drv.ms/v/s!AqxPoSephaYbjig2puDaSQFlxyV4
 class MainActivity : ChatActivity() {
     //share preference
     private var currentNavController: LiveData<NavController>? = null

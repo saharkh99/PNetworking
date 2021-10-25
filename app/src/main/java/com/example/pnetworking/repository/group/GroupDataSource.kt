@@ -434,5 +434,21 @@ class GroupDataSource {
 
         })
     }
+   fun removeChat(chatId: String){
+       val ref =
+           FirebaseDatabase.getInstance().getReference("/chat/group_chat/$chatId")
 
+       ref.orderByKey().addListenerForSingleValueEvent(object : ValueEventListener {
+           override fun onDataChange(snapshot: DataSnapshot) {
+
+                       snapshot.ref.removeValue()
+           }
+
+           override fun onCancelled(error: DatabaseError) {
+
+           }
+
+       })
+
+   }
 }

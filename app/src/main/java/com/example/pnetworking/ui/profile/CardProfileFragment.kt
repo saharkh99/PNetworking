@@ -118,12 +118,12 @@ class CardProfileFragment : DialogFragment() {
 
     private fun setupClickListeners(view: View) {
         view.findViewById<TextView>(R.id.profile_card_connect).setOnClickListener { view1->
-            Log.d("tag",arguments?.getString(KEY_TAG).toString())
             if(arguments?.getString(KEY_TAG)=="Chat") {
+                Log.d("taggg",arguments?.getString(KEY_ID).toString())
                 followViewModel.follow(arguments?.getString(KEY_ID)!!)
                     .observe(viewLifecycleOwner, {
                         if (it) {
-                            Log.d("shod", "shod")
+                            Log.d("shod", arguments?.getString(KEY_ID)!!)
                             followViewModel.increasingConnections(arguments?.getString(KEY_ID)!!)
                                 .observe(viewLifecycleOwner, { it1 ->
                                     if (it1) {
@@ -133,7 +133,7 @@ class CardProfileFragment : DialogFragment() {
                                             false
                                         followViewModel.deleteRequest(arguments?.getString(KEY_ID)!!).observe(viewLifecycleOwner,{
                                            if(it) {
-                                               Log.d("shod3", "shod3")
+                                               Log.d("shod3", "remove request")
                                                profileViewModel.changePhaseOfRequest("connected")
                                                dismiss()
                                            }

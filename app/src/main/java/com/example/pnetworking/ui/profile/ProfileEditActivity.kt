@@ -51,6 +51,7 @@ class ProfileEditActivity : ChatActivity() {
             if (checkMusic.isChecked) fav="music $fav"
             if (checkTech.isChecked) fav="tech $fav"
             if (checkTravel.isChecked) fav="travel $fav"
+            mainViewModel.saveFav(fav)
             showProgressDialog(this)
             mainViewModel.getIDUser().observe(this, { uid ->
                 mainViewModel.editProfile(name.text.toString(), bio.text.toString(), uid!!, fav)

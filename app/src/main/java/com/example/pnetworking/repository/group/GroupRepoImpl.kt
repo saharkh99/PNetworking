@@ -55,4 +55,8 @@ class GroupRepoImpl(private val groupDataSource: GroupDataSource): GroupReposito
         return groupDataSource.removeMessage(toChat,msgId)
     }
 
+    override fun removeChat(chatId: String) {
+        return removeChat(chatId)
+    }
+
 }

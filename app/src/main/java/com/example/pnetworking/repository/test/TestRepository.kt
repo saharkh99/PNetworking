@@ -5,4 +5,5 @@ import com.example.pnetworking.models.Question
 
 interface TestRepository {
     fun getQuestions(): MutableLiveData<List<Question>>
+    fun storeScores(emo:Int,extro:Int)
 }

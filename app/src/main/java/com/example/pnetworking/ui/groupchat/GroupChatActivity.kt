@@ -13,6 +13,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
@@ -130,6 +132,10 @@ class GroupChatActivity : AppCompatActivity() {
         )
         setSupportActionBar(toolbar)
 
+        setSupportActionBar(toolbar)
+        toolbar.inflateMenu(R.menu.private_chat_menu)
+        toolbar.overflowIcon = ContextCompat.getDrawable(this, R.drawable.more)
+
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
@@ -176,12 +182,14 @@ class GroupChatActivity : AppCompatActivity() {
                                 ChatItem(this, chatMessage, "", "true", chatMessage.reply,userName)
                             )
                             type = true
+                            /////////////////////////////////remove
                             mainViewModel2.seenMessage(chatID, chatMessage.id)
                                 .observe(this, {
                                     Log.d("seen message", it.toString())
                                     adapter.notifyItemChanged(adapter.itemCount-1)
                                     adapter.notifyDataSetChanged()
                                 })
+                            ////////////////////////////////remove
 
                         }
                     })
@@ -387,5 +395,53 @@ class GroupChatActivity : AppCompatActivity() {
                 Log.e("value", "Permission Denied, You cannot use local drive .")
             }
         }
+    }
+
+
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.private_chat_menu, menu)
+        mainViewModel2.IsInMuteList(chatID).observe(
+            this,
+            {
+                if (it) {
+                    menu!!.getItem(2).title = "unmute"
+                } else {
+                    menu!!.getItem(2).title = "mute"
+                }
+            },
+        )
+        menu!!.getItem(0).title = "remove"
+        menu!!.getItem(1).isVisible=false
+        return true
+    }
+
+    @ExperimentalStdlibApi
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.block -> {
+                mainViewModel.removeChat(chatID)
+                return true
+            }
+            R.id.mute -> {
+                Log.d("x", item?.title.toString())
+                if (item?.title == "mute") {
+                    item.icon = getDrawable(R.drawable.unmute)
+                    item?.title = "unmute"
+                    mainViewModel2.addToMuteList(chatID)
+                    mute = false
+                } else {
+                    item?.title = "unmute"
+                    item?.icon = getDrawable(R.drawable.mute)
+                    mainViewModel2.removeFromMuteList(chatID)
+                    mute = true
+                }
+                return true
+            }
+
+        }
+        return true
+
     }
 }

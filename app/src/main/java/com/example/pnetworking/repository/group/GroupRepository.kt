@@ -25,4 +25,5 @@ interface GroupRepository {
     fun getNameOfUser(userId:String):MutableLiveData<String>
     fun editMessage(msgId: String, toChat: String, text: String)
     fun removeMessage(toChat: String, msgId: String)
+    fun removeChat(chatId: String)
 }

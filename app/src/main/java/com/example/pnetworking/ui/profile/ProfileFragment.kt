@@ -157,7 +157,6 @@ class ProfileFragment : ChatFragments() {
                     ph.value="disconnect"
                     if(u!=null)
                     adapter.add(UserChangeStatusItem(u,requireContext(),"disconnect","connect","",followViewModel))
-//                    adapter.add(UserList(u, requireContext()))
 
                 })
             }

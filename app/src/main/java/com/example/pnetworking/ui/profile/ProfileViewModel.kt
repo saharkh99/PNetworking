@@ -28,8 +28,7 @@ class ProfileViewModel(private val profileRepository: ProfileRepository):ChatVie
     fun getPhaseOfRequest():MutableLiveData<String>{
         return phase
     }
-
-
+    fun saveFav(fav:String) = profileRepository.saveFav(fav)
 
 
 
